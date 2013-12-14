@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.btnAppend = new System.Windows.Forms.Button();
             this.btnParse = new System.Windows.Forms.Button();
             this.txtTeamName = new System.Windows.Forms.TextBox();
             this.btnPaste = new System.Windows.Forms.Button();
@@ -36,7 +37,6 @@
             this.btnCopyForSheet = new System.Windows.Forms.Button();
             this.btnCopyForScout = new System.Windows.Forms.Button();
             this.txtTeamStatsOutput = new System.Windows.Forms.TextBox();
-            this.btnAppend = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -66,6 +66,16 @@
             this.splitContainer1.Size = new System.Drawing.Size(434, 381);
             this.splitContainer1.SplitterDistance = 215;
             this.splitContainer1.TabIndex = 0;
+            // 
+            // btnAppend
+            // 
+            this.btnAppend.Location = new System.Drawing.Point(53, 3);
+            this.btnAppend.Name = "btnAppend";
+            this.btnAppend.Size = new System.Drawing.Size(53, 23);
+            this.btnAppend.TabIndex = 3;
+            this.btnAppend.Text = "Append";
+            this.btnAppend.UseVisualStyleBackColor = true;
+            this.btnAppend.Click += new System.EventHandler(this.btnAppend_Click);
             // 
             // btnParse
             // 
@@ -105,6 +115,7 @@
             this.txtTeamStats.Location = new System.Drawing.Point(3, 58);
             this.txtTeamStats.Multiline = true;
             this.txtTeamStats.Name = "txtTeamStats";
+            this.txtTeamStats.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtTeamStats.Size = new System.Drawing.Size(209, 320);
             this.txtTeamStats.TabIndex = 1;
             // 
@@ -137,27 +148,18 @@
             this.txtTeamStatsOutput.Multiline = true;
             this.txtTeamStatsOutput.Name = "txtTeamStatsOutput";
             this.txtTeamStatsOutput.ReadOnly = true;
+            this.txtTeamStatsOutput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtTeamStatsOutput.Size = new System.Drawing.Size(209, 320);
             this.txtTeamStatsOutput.TabIndex = 2;
             // 
-            // btnAppend
-            // 
-            this.btnAppend.Location = new System.Drawing.Point(53, 3);
-            this.btnAppend.Name = "btnAppend";
-            this.btnAppend.Size = new System.Drawing.Size(53, 23);
-            this.btnAppend.TabIndex = 3;
-            this.btnAppend.Text = "Append";
-            this.btnAppend.UseVisualStyleBackColor = true;
-            this.btnAppend.Click += new System.EventHandler(this.btnAppend_Click);
-            // 
-            // StatParser
+            // StatParserForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(434, 381);
             this.Controls.Add(this.splitContainer1);
             this.MinimumSize = new System.Drawing.Size(450, 420);
-            this.Name = "StatParser";
+            this.Name = "StatParserForm";
             this.Text = "Battle Stat Parser";
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
