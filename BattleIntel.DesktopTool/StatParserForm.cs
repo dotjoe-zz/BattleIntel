@@ -88,8 +88,11 @@ namespace BattleIntel.DesktopTool
                 teamName = txtTeamName.Text.Trim() + "\r\n";
             }
 
-            Clipboard.SetText(teamName + txtTeamStatsOutput.Text);
-
+            var toClip = teamName + txtTeamStatsOutput.Text;
+            if (!string.IsNullOrEmpty(toClip))
+            {
+                Clipboard.SetText(toClip);
+            }
         }
 
         private void btnCopyForSheet_Click(object sender, EventArgs e)
@@ -104,7 +107,11 @@ namespace BattleIntel.DesktopTool
             var lines = txtTeamStatsOutput.Text.Split('\n')
                 .Select(x => teamName + x.Trim());
 
-            Clipboard.SetText(string.Join("\r\n", lines.ToArray()));
+            var toClip = string.Join("\r\n", lines.ToArray());
+            if (!string.IsNullOrEmpty(toClip))
+            {
+                Clipboard.SetText(toClip);
+            }
         }
     }
 }
