@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleIntel.Core", "BattleIntel.Core\BattleIntel.Core.csproj", "{5E51FB9E-79A2-44AA-9FEC-F3D5A13CFC81}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleIntel.DesktopTool", "BattleIntel.DesktopTool\BattleIntel.DesktopTool.csproj", "{8A52AE7B-DA19-493E-B715-8EEBDE79534B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleIntel.Core.Tests", "BattleIntel.Core.Tests\BattleIntel.Core.Tests.csproj", "{21C67963-C46C-48EB-A009-6CF7EE91EFA8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E9A282E6-1472-4FAE-BB84-16A86BB7BE08}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5E51FB9E-79A2-44AA-9FEC-F3D5A13CFC81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E51FB9E-79A2-44AA-9FEC-F3D5A13CFC81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E51FB9E-79A2-44AA-9FEC-F3D5A13CFC81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E51FB9E-79A2-44AA-9FEC-F3D5A13CFC81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A52AE7B-DA19-493E-B715-8EEBDE79534B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A52AE7B-DA19-493E-B715-8EEBDE79534B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A52AE7B-DA19-493E-B715-8EEBDE79534B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A52AE7B-DA19-493E-B715-8EEBDE79534B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21C67963-C46C-48EB-A009-6CF7EE91EFA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21C67963-C46C-48EB-A009-6CF7EE91EFA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21C67963-C46C-48EB-A009-6CF7EE91EFA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21C67963-C46C-48EB-A009-6CF7EE91EFA8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
