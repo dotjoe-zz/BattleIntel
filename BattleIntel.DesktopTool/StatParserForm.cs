@@ -11,9 +11,9 @@ using System.Windows.Forms;
 
 namespace BattleIntel.DesktopTool
 {
-    public partial class StatParser : Form
+    public partial class StatParserForm : Form
     {
-        public StatParser()
+        public StatParserForm()
         {
             InitializeComponent();
         }

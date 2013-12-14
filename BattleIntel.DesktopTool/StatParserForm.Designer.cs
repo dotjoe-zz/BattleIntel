@@ -1,6 +1,6 @@
 ﻿namespace BattleIntel.DesktopTool
 {
-    partial class StatParser
+    partial class StatParserForm
     {
         /// <summary>
         /// Required designer variable.

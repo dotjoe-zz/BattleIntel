@@ -16,7 +16,7 @@ namespace BattleIntel.DesktopTool
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new StatParser());
+            Application.Run(new StatParserForm());
         }
     }
 }
