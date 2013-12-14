@@ -44,7 +44,7 @@ namespace BattleIntel.Core
 
             for (int i = 0; i < tokens.Count(); ++i)
             {
-                var lvlMatch = Regex.Match(tokens[i], "^(?:l|L|lvl|Lvl)?([1-9][0-9]{0,2})$");
+                var lvlMatch = Regex.Match(tokens[i], "^(?:l|L|lvl|Lvl|lv|Lv)?([1-9][0-9]{0,2})$");
                 if (lvlMatch.Success)
                 {
                     stat.Level = int.Parse(lvlMatch.Groups[1].Value);
