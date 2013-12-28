@@ -14,6 +14,29 @@ namespace BattleIntel.Core
         public virtual string Defense { get; set; }
         //public virtual decimal DefenseValue { get; set; }
 
+        public override bool Equals(object obj)
+        {
+            var that = obj as BattleStat;
+            if (that == null) return false;
+            if (that == this) return true;
+
+            return Nullable<int>.Equals(that.Level, this.Level)
+                && string.Equals(that.Name, this.Name, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(that.Defense, this.Defense, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 37;
+                hash = hash * 23 + Level.GetHashCode();
+                hash = hash * 23 + (Name ?? string.Empty).GetHashCode();
+                hash = hash * 23 + (Defense ?? string.Empty).GetHashCode();
+                return hash;
+            }
+        }
+
         public override string ToString()
         {
             return ToString(" ");

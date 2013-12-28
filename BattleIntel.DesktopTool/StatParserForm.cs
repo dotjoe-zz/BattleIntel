@@ -69,6 +69,7 @@ namespace BattleIntel.DesktopTool
             var parsedStatLines = txtTeamStats.Lines
                     .Where(x => !string.IsNullOrWhiteSpace(x))
                     .Select(x => BattleStat.Parse(x.Trim()))
+                    .Distinct()
                     .OrderByDescending(x => x.Level)
                     .ThenBy(x => x.Name)
                     .ThenBy(x => x.Defense)
