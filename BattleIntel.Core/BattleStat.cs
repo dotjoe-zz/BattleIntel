@@ -35,7 +35,7 @@ namespace BattleIntel.Core
             s = Regex.Replace(s, @"(\s\d),(\d+\s?[Mm]?)", "$1.$2");
 
             var tokens = s.Split(new char[] { ' ', ',', '/', '-' }, StringSplitOptions.RemoveEmptyEntries)
-                .Where(x => new string[] { "l", "lvl", "d", "def" }.Contains(x.ToLower()) == false)
+                .Where(x => new string[] { "l", "lv", "lvl", "d", "def" }.Contains(x.ToLower()) == false)
                 .Select(x => x.Trim().Trim('.'))
                 .ToList();
 
@@ -44,7 +44,8 @@ namespace BattleIntel.Core
 
             for (int i = 0; i < tokens.Count(); ++i)
             {
-                var lvlMatch = Regex.Match(tokens[i], "^(?:l|L|lvl|Lvl|lv|Lv)?([1-9][0-9]{0,2})$");
+                //do not count any levels from 1-9
+                var lvlMatch = Regex.Match(tokens[i], "^(?:l|L|lvl|Lvl|lv|Lv)?([1-9][0-9]{1,2})$");
                 if (lvlMatch.Success)
                 {
                     stat.Level = int.Parse(lvlMatch.Groups[1].Value);
