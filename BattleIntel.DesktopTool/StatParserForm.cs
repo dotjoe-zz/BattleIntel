@@ -20,63 +20,61 @@ namespace BattleIntel.DesktopTool
 
         private void btnPaste_Click(object sender, EventArgs e)
         {
-            if (Clipboard.ContainsText())
+            if (!Clipboard.ContainsText()) return;
+
+            var lines = Clipboard.GetText(TextDataFormat.UnicodeText).Split('\n')
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => x.Trim());
+
+            if (!lines.Any()) return;
+
+            txtTeamName.Text = "";
+
+            //check if we copied from a spreadsheet having the team name on every line separated by a tab.
+            if (lines.Count() == lines.Where(x => x.Contains('\t')).Count())
             {
-                var t = Clipboard.GetText(TextDataFormat.UnicodeText);
-
-                //check for team name on the first line
-                var lines = t.Split('\n')
-                    .Where(x => !string.IsNullOrWhiteSpace(x))
-                    .Select(x => x.Trim());
-
-                if (!lines.Any()) return;
-
-                //check for a team name on every line separated with tab (i.e. copied from sheet)
-                if (lines.Count() == lines.Where(x => x.Contains('\t')).Count())
+                //use it if every line has the same team name
+                var teamNames = lines.Select(x => x.Split('\t').First().Trim()).Distinct(StringComparer.OrdinalIgnoreCase);
+                if (teamNames.Count() == 1)
                 {
-                    txtTeamName.Text = lines.First().Split('\t').First().Trim();
+                    txtTeamName.Text = teamNames.First();
+                    //remove the team name from all the lines
                     lines = lines.Select(x => string.Join(" ", x.Split('\t').Skip(1).ToArray()));
                 }
-                else
-                {
-                    //check for team name on the first line
-                    var firstLineStat = BattleStat.Parse(lines.First());
-                    if (firstLineStat.Level == null && firstLineStat.Defense == null)
-                    {
-                        txtTeamName.Text = firstLineStat.Name;
-                        lines = lines.Skip(1);
-                    }
-                    else
-                    {
-                        txtTeamName.Text = "";
-                    }
-                }
-                
-                txtTeamStats.Text = string.Join("\r\n", lines.ToArray());
             }
+            else
+            {
+                //check for team name on the first line
+                var firstLineStat = BattleStat.Parse(lines.First());
+                if (firstLineStat.Level == null && firstLineStat.Defense == null)
+                {
+                    txtTeamName.Text = firstLineStat.Name;
+                    lines = lines.Skip(1);
+                }
+            }
+
+            txtTeamStats.Text = string.Join(Environment.NewLine, lines.ToArray());
         }
 
         private void btnAppend_Click(object sender, EventArgs e)
         {
-            if (Clipboard.ContainsText())
-            {
-                //append to the stats
-                txtTeamStats.Text += "\r\n" + Clipboard.GetText(TextDataFormat.UnicodeText);
-            }
+            if (!Clipboard.ContainsText()) return;
+            
+            //append to the stats
+            txtTeamStats.Text += Environment.NewLine + Clipboard.GetText(TextDataFormat.UnicodeText);
         }
 
         private void btnParse_Click(object sender, EventArgs e)
         {
-            var t = txtTeamStats.Text;
-
-            var stats = t.Split('\n')
+            var parsedStatLines = txtTeamStats.Lines
                     .Where(x => !string.IsNullOrWhiteSpace(x))
                     .Select(x => BattleStat.Parse(x.Trim()))
                     .OrderByDescending(x => x.Level)
                     .ThenBy(x => x.Name)
-                    .ThenBy(x => x.Defense);
+                    .ThenBy(x => x.Defense)
+                    .Select(x => x.ToString());
 
-            txtTeamStatsOutput.Text = String.Join("\r\n", stats.Select(x => x.ToString()).ToArray());
+            txtTeamStatsOutput.Text = String.Join(Environment.NewLine, parsedStatLines.ToArray());
         }
 
         private void btnCopyForScout_Click(object sender, EventArgs e)
@@ -85,33 +83,31 @@ namespace BattleIntel.DesktopTool
             var teamName = "";
             if(!string.IsNullOrWhiteSpace(txtTeamName.Text))
             {
-                teamName = txtTeamName.Text.Trim() + "\r\n";
+                teamName = txtTeamName.Text.Trim() + Environment.NewLine;
             }
 
             var toClip = teamName + txtTeamStatsOutput.Text;
-            if (!string.IsNullOrEmpty(toClip))
-            {
-                Clipboard.SetText(toClip);
-            }
+            if (string.IsNullOrEmpty(toClip)) return;
+            
+            Clipboard.SetText(toClip);
         }
 
         private void btnCopyForSheet_Click(object sender, EventArgs e)
         {
+            //team name on every line with a tab separator
             var teamName = "";
             if(!string.IsNullOrWhiteSpace(txtTeamName.Text))
             {
                 teamName = txtTeamName.Text.Trim() + "\t";
             }
-
-            //team name on every line with a tab separator
-            var lines = txtTeamStatsOutput.Text.Split('\n')
+            
+            var lines = txtTeamStatsOutput.Lines
                 .Select(x => teamName + x.Trim());
 
-            var toClip = string.Join("\r\n", lines.ToArray());
-            if (!string.IsNullOrEmpty(toClip))
-            {
-                Clipboard.SetText(toClip);
-            }
+            var toClip = string.Join(Environment.NewLine, lines.ToArray());
+            if (string.IsNullOrEmpty(toClip)) return;
+            
+            Clipboard.SetText(toClip);
         }
     }
 }
