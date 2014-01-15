@@ -7,8 +7,16 @@ using System.Threading.Tasks;
 
 namespace BattleIntel.Core
 {
-    public class BattleStat
+    public class BattleStat : Entity, IAuditable
     {
+        public virtual Battle Battle { get; set; }
+        public virtual Team Team { get; set; }
+
+        public virtual DateTime CreatedUTC { get; set; }
+        public virtual User CreatedBy { get; set; }
+        public virtual DateTime? LastUpdatedUTC { get; set; }
+        public virtual User LastUpdatedBy { get; set; }
+
         public virtual int? Level { get; set; }
         public virtual string Name { get; set; }
         public virtual string Defense { get; set; }
@@ -47,6 +55,11 @@ namespace BattleIntel.Core
             return string.Format("{0}{3}{1}{3}{2}{3}", Level, Name, Defense, separator).Trim();
         }
 
+        /// <summary>
+        /// Parse the level, name, and defense from a single stat line
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         public static BattleStat Parse(string s)
         {
             if (s == null) throw new ArgumentNullException("s");
