@@ -31,8 +31,8 @@ namespace BattleIntel.Core
             {
                 int hash = 37;
                 hash = hash * 23 + Level.GetHashCode();
-                hash = hash * 23 + (Name ?? string.Empty).GetHashCode();
-                hash = hash * 23 + (Defense ?? string.Empty).GetHashCode();
+                hash = hash * 23 + (Name != null ? Name.ToLower() : string.Empty).GetHashCode();
+                hash = hash * 23 + (Defense != null ? Defense.ToLower() : string.Empty).GetHashCode();
                 return hash;
             }
         }
