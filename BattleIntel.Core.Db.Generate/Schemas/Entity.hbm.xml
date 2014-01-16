@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" namespace="BattleIntel.Core" assembly="BattleIntel.Core" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="Battle">
+    <id name="Id" type="Guid">
+      <generator class="guid.comb" />
+    </id>
+    <property name="Name" length="255" not-null="true" unique="true" />
+    <property name="StartDateUTC" not-null="true" />
+    <property name="EndDateUTC" not-null="true" />
+    <property name="CreatedUTC" not-null="true" />
+    <many-to-one name="CreatedBy" column="CreatedById" not-null="true" foreign-key="FK_Battle_CreatedBy" />
+    <property name="LastUpdatedUTC" />
+    <many-to-one name="LastUpdatedBy" column="LastUpdatedById" foreign-key="FK_Battle_LastUpdatedBy" />
+  </class>
+  <class name="BattleStat">
+    <id name="Id" type="Guid">
+      <generator class="guid.comb" />
+    </id>
+    <many-to-one name="Battle" column="BattleId" not-null="true" foreign-key="FK_BattleStat_Battle" />
+    <many-to-one name="Team" column="TeamId" not-null="true" foreign-key="FK_BattleStat_Team" />
+    <property name="Level" />
+    <property name="Name" />
+    <property name="Defense" />
+    <property name="CreatedUTC" not-null="true" />
+    <many-to-one name="CreatedBy" column="CreatedById" not-null="true" foreign-key="FK_BattleStat_CreatedBy" />
+    <property name="LastUpdatedUTC" />
+    <many-to-one name="LastUpdatedBy" column="LastUpdatedById" foreign-key="FK_BattleStat_LastUpdatedBy" />
+  </class>
+  <class name="Team">
+    <id name="Id" type="Guid">
+      <generator class="guid.comb" />
+    </id>
+    <property name="Name" length="255" not-null="true" unique="true" />
+    <property name="CreatedUTC" not-null="true" />
+    <many-to-one name="CreatedBy" column="CreatedById" not-null="true" foreign-key="FK_Team_CreatedBy" />
+    <property name="LastUpdatedUTC" />
+    <many-to-one name="LastUpdatedBy" column="LastUpdatedById" foreign-key="FK_Team_LastUpdatedBy" />
+  </class>
+  <class name="User">
+    <id name="Id" type="Guid">
+      <generator class="guid.comb" />
+    </id>
+    <property name="Username" length="100" not-null="true" unique="true" />
+    <property name="JoinDateUTC" not-null="true" />
+    <property name="LastSeenDateUTC" not-null="true" />
+  </class>
+</hibernate-mapping>
