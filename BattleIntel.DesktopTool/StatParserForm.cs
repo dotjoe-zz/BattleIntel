@@ -13,6 +13,8 @@ namespace BattleIntel.DesktopTool
 {
     public partial class StatParserForm : Form
     {
+        private IList<BattleStat> Stats;
+
         public StatParserForm()
         {
             InitializeComponent();
@@ -66,16 +68,16 @@ namespace BattleIntel.DesktopTool
 
         private void btnParse_Click(object sender, EventArgs e)
         {
-            var parsedStatLines = txtTeamStats.Lines
+            Stats = txtTeamStats.Lines
                     .Where(x => !string.IsNullOrWhiteSpace(x))
                     .Select(x => BattleStat.Parse(x.Trim()))
                     .Distinct()
                     .OrderByDescending(x => x.Level)
                     .ThenBy(x => x.Name)
                     .ThenBy(x => x.Defense)
-                    .Select(x => x.ToString());
+                    .ToList();
 
-            txtTeamStatsOutput.Text = String.Join(Environment.NewLine, parsedStatLines.ToArray());
+            txtTeamStatsOutput.Text = String.Join(Environment.NewLine, Stats.Select(x => x.ToString()).ToArray());
         }
 
         private void btnCopyForScout_Click(object sender, EventArgs e)
@@ -87,6 +89,7 @@ namespace BattleIntel.DesktopTool
                 teamName = txtTeamName.Text.Trim() + Environment.NewLine;
             }
 
+            //just use the stats ouput text
             var toClip = teamName + txtTeamStatsOutput.Text;
             if (string.IsNullOrEmpty(toClip)) return;
             
@@ -102,8 +105,7 @@ namespace BattleIntel.DesktopTool
                 teamName = txtTeamName.Text.Trim() + "\t";
             }
             
-            var lines = txtTeamStatsOutput.Lines
-                .Select(x => teamName + x.Trim());
+            var lines = Stats.Select(x => teamName + x.ToString(cbSheetCopy3Cols.Checked ? "\t" : " "));
 
             var toClip = string.Join(Environment.NewLine, lines.ToArray());
             if (string.IsNullOrEmpty(toClip)) return;

@@ -28,15 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.btnAppend = new System.Windows.Forms.Button();
             this.btnParse = new System.Windows.Forms.Button();
             this.txtTeamName = new System.Windows.Forms.TextBox();
             this.btnPaste = new System.Windows.Forms.Button();
             this.txtTeamStats = new System.Windows.Forms.TextBox();
+            this.cbSheetCopy3Cols = new System.Windows.Forms.CheckBox();
             this.btnCopyForSheet = new System.Windows.Forms.Button();
             this.btnCopyForScout = new System.Windows.Forms.Button();
             this.txtTeamStatsOutput = new System.Windows.Forms.TextBox();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -60,6 +63,7 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.cbSheetCopy3Cols);
             this.splitContainer1.Panel2.Controls.Add(this.btnCopyForSheet);
             this.splitContainer1.Panel2.Controls.Add(this.btnCopyForScout);
             this.splitContainer1.Panel2.Controls.Add(this.txtTeamStatsOutput);
@@ -92,10 +96,11 @@
             // 
             this.txtTeamName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtTeamName.Location = new System.Drawing.Point(3, 32);
+            this.txtTeamName.Location = new System.Drawing.Point(3, 31);
             this.txtTeamName.Name = "txtTeamName";
             this.txtTeamName.Size = new System.Drawing.Size(209, 20);
             this.txtTeamName.TabIndex = 0;
+            this.toolTip1.SetToolTip(this.txtTeamName, "Team Name (optional)");
             // 
             // btnPaste
             // 
@@ -118,6 +123,16 @@
             this.txtTeamStats.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtTeamStats.Size = new System.Drawing.Size(209, 320);
             this.txtTeamStats.TabIndex = 1;
+            // 
+            // cbSheetCopy3Cols
+            // 
+            this.cbSheetCopy3Cols.AutoSize = true;
+            this.cbSheetCopy3Cols.Location = new System.Drawing.Point(97, 33);
+            this.cbSheetCopy3Cols.Name = "cbSheetCopy3Cols";
+            this.cbSheetCopy3Cols.Size = new System.Drawing.Size(94, 17);
+            this.cbSheetCopy3Cols.TabIndex = 3;
+            this.cbSheetCopy3Cols.Text = "3 stat columns";
+            this.cbSheetCopy3Cols.UseVisualStyleBackColor = true;
             // 
             // btnCopyForSheet
             // 
@@ -160,7 +175,7 @@
             this.Controls.Add(this.splitContainer1);
             this.MinimumSize = new System.Drawing.Size(450, 420);
             this.Name = "StatParserForm";
-            this.Text = "Battle Stat Parser";
+            this.Text = "Stat Parser";
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
@@ -182,5 +197,7 @@
         private System.Windows.Forms.Button btnCopyForScout;
         private System.Windows.Forms.TextBox txtTeamStatsOutput;
         private System.Windows.Forms.Button btnAppend;
+        private System.Windows.Forms.CheckBox cbSheetCopy3Cols;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
