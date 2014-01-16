@@ -35,7 +35,7 @@
             this.txtTeamName = new System.Windows.Forms.TextBox();
             this.btnPaste = new System.Windows.Forms.Button();
             this.txtTeamStats = new System.Windows.Forms.TextBox();
-            this.cbSheetCopy3Cols = new System.Windows.Forms.CheckBox();
+            this.cbSLTQMode = new System.Windows.Forms.CheckBox();
             this.btnCopyForSheet = new System.Windows.Forms.Button();
             this.btnCopyForScout = new System.Windows.Forms.Button();
             this.txtTeamStatsOutput = new System.Windows.Forms.TextBox();
@@ -63,7 +63,7 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.cbSheetCopy3Cols);
+            this.splitContainer1.Panel2.Controls.Add(this.cbSLTQMode);
             this.splitContainer1.Panel2.Controls.Add(this.btnCopyForSheet);
             this.splitContainer1.Panel2.Controls.Add(this.btnCopyForScout);
             this.splitContainer1.Panel2.Controls.Add(this.txtTeamStatsOutput);
@@ -124,15 +124,16 @@
             this.txtTeamStats.Size = new System.Drawing.Size(209, 320);
             this.txtTeamStats.TabIndex = 1;
             // 
-            // cbSheetCopy3Cols
+            // cbSLTQMode
             // 
-            this.cbSheetCopy3Cols.AutoSize = true;
-            this.cbSheetCopy3Cols.Location = new System.Drawing.Point(97, 33);
-            this.cbSheetCopy3Cols.Name = "cbSheetCopy3Cols";
-            this.cbSheetCopy3Cols.Size = new System.Drawing.Size(94, 17);
-            this.cbSheetCopy3Cols.TabIndex = 3;
-            this.cbSheetCopy3Cols.Text = "3 stat columns";
-            this.cbSheetCopy3Cols.UseVisualStyleBackColor = true;
+            this.cbSLTQMode.AutoSize = true;
+            this.cbSLTQMode.Location = new System.Drawing.Point(97, 33);
+            this.cbSLTQMode.Name = "cbSLTQMode";
+            this.cbSLTQMode.Size = new System.Drawing.Size(84, 17);
+            this.cbSLTQMode.TabIndex = 3;
+            this.cbSLTQMode.Text = "SLTQ Mode";
+            this.toolTip1.SetToolTip(this.cbSLTQMode, "Output stats and team name into 4 columns with the team name last.");
+            this.cbSLTQMode.UseVisualStyleBackColor = true;
             // 
             // btnCopyForSheet
             // 
@@ -197,7 +198,7 @@
         private System.Windows.Forms.Button btnCopyForScout;
         private System.Windows.Forms.TextBox txtTeamStatsOutput;
         private System.Windows.Forms.Button btnAppend;
-        private System.Windows.Forms.CheckBox cbSheetCopy3Cols;
+        private System.Windows.Forms.CheckBox cbSLTQMode;
         private System.Windows.Forms.ToolTip toolTip1;
     }
 }

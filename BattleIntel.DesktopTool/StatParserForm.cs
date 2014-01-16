@@ -98,14 +98,33 @@ namespace BattleIntel.DesktopTool
 
         private void btnCopyForSheet_Click(object sender, EventArgs e)
         {
+            if (Stats == null || Stats.Count == 0) return;
+
             //team name on every line with a tab separator
             var teamName = "";
             if(!string.IsNullOrWhiteSpace(txtTeamName.Text))
             {
-                teamName = txtTeamName.Text.Trim() + "\t";
+                teamName = txtTeamName.Text.Trim();
+                if(cbSLTQMode.Checked)
+                {
+                    teamName = "\t" + teamName;
+                }
+                else
+                {
+                    teamName = teamName + "\t";
+                }
             }
-            
-            var lines = Stats.Select(x => teamName + x.ToString(cbSheetCopy3Cols.Checked ? "\t" : " "));
+
+            IEnumerable<string> lines;
+
+            if(cbSLTQMode.Checked)
+            {
+                lines = Stats.Select(x => x.ToString("\t") + teamName);
+            }
+            else
+            {
+                lines = Stats.Select(x => teamName + x.ToString());
+            }
 
             var toClip = string.Join(Environment.NewLine, lines.ToArray());
             if (string.IsNullOrEmpty(toClip)) return;
