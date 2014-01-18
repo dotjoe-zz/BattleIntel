@@ -74,8 +74,7 @@ namespace BattleIntel.Core.Db.Generate
                 var user = new User 
                 { 
                     Username = "system-generated",
-                    JoinDateUTC = DateTime.Now,
-                    LastSeenDateUTC = DateTime.Now
+                    JoinDateUTC = DateTime.Now
                 };
 
                 var battle = new Battle

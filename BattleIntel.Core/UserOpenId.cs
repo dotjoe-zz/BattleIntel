@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace BattleIntel.Core
 {
-    public class User : Entity
+    public class UserOpenId : Entity
     {
-        public virtual string Username { get; set; }
-        public virtual DateTime JoinDateUTC { get; set; }
+        public virtual User User { get; set; }
+        public virtual string OpenIdentifier { get; set; }
     }
 }

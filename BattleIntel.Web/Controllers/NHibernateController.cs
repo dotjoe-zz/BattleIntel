@@ -21,19 +21,15 @@ namespace BattleIntel.Web.Controllers
     public class NHibernateTransactionAttribute : FilterAttribute, IActionFilter
     {
         private static readonly ISessionFactory factory = NHibernateConfiguration.BuildSessionFactory();
-        private readonly ISession session;
+        private ISession session;
         private ITransaction transaction;
-
-        public NHibernateTransactionAttribute()
-        {
-            session = factory.OpenSession();
-        }
 
         public void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var nhController = filterContext.Controller as NHibernateController;
             if (nhController == null) throw new InvalidOperationException("NHibernateTransactionFilter can only be used with an NHibernateController.");
 
+            session = factory.OpenSession();
             session.FlushMode = FlushMode.Commit;
             transaction = session.BeginTransaction();
 

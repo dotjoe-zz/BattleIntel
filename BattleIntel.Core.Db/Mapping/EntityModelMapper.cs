@@ -26,7 +26,7 @@ namespace BattleIntel.Core.Db.Mapping
         {
             Class<Entity>(map =>
             {
-                map.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+                map.Id(x => x.Id, m => m.Generator(Generators.Identity));
             });
 
             this.BeforeMapManyToOne += (insp, prop, map) => 
@@ -37,7 +37,8 @@ namespace BattleIntel.Core.Db.Mapping
                 }
             };
 
-            this.UniqueColumn<User>(x => x.Username, 100);
+            this.UniqueColumn<User>(x => x.Username, 20);
+            this.UniqueColumn<UserOpenId>(x => x.OpenIdentifier, 255);
             this.UniqueColumn<Battle>(x => x.Name, 255);
             this.UniqueColumn<Team>(x => x.Name, 255);
 

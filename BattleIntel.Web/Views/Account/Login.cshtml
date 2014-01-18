@@ -2,6 +2,7 @@
 
 @{
     ViewBag.Title = "Log in";
+    Model.OpenId = "https://www.google.com/accounts/o8/id";
 }
 
 @section Header {
@@ -9,25 +10,15 @@
     <h1>@ViewBag.Title</h1>
 }
 
-<p>
-    Please enter your user name and password. @Html.ActionLink("Register", "Register") if you don't have an account.
-</p>
-
-@using (Html.BeginForm()) {
-    @Html.AntiForgeryToken()
-    @Html.ValidationSummary()
+@using (Html.BeginForm("Authenticate", "Account")) {
+    @Html.ValidationSummary(false)
 
     <ul data-role="listview" data-inset="true">
         <li data-role="list-divider">Details</li>
 
         <li data-role="fieldcontain">
-            @Html.LabelFor(m => m.UserName)
-            @Html.TextBoxFor(m => m.UserName)            
-        </li>
-
-        <li data-role="fieldcontain">
-            @Html.LabelFor(m => m.Password)
-            @Html.PasswordFor(m => m.Password)            
+            @Html.LabelFor(m => m.OpenId)
+            @Html.TextBoxFor(m => m.OpenId)            
         </li>
 
         <li data-role="fieldcontain">

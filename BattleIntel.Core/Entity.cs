@@ -8,7 +8,7 @@ namespace BattleIntel.Core
 {
     public class Entity
     {
-        public virtual Guid Id { get; protected set; }
+        public virtual int Id { get; protected set; }
 
         private int? requestedHashCode;
 
@@ -30,7 +30,7 @@ namespace BattleIntel.Core
 
         protected bool IsTransient(Entity entity)
         {
-            return Equals(entity.Id, default(Guid));
+            return Equals(entity.Id, default(int));
         }
 
         public override int GetHashCode()

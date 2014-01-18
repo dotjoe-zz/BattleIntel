@@ -6,60 +6,124 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.Security;
 using BattleIntel.Web.Models;
+using DotNetOpenAuth.OpenId.Extensions;
+using DotNetOpenAuth.OpenId.RelyingParty;
+using DotNetOpenAuth.OpenId;
+using DotNetOpenAuth.Messaging;
+using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
+using BattleIntel.Core;
 
 namespace BattleIntel.Web.Controllers
 {
 
     [Authorize]
-    public class AccountController : Controller
+    public class AccountController : NHibernateController
     {
-        //
-        // GET: /Account/Index
+        private static OpenIdRelyingParty openid = new OpenIdRelyingParty();
 
-        public ActionResult Index()
+       public ActionResult Index()
         {
             return View();
         }
-
-        //
-        // GET: /Account/Login
 
         [AllowAnonymous]
         public ActionResult Login()
         {
-            return View();
+            return View(new LoginModel());
         }
 
-        //
-        // POST: /Account/Login
-
         [AllowAnonymous]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Login(LoginModel model, string returnUrl)
+        public ActionResult Authenticate(LoginModel model, string returnUrl)
         {
-            if (ModelState.IsValid)
+            var response = openid.GetResponse();
+            if (response == null)
             {
-                if (Membership.ValidateUser(model.UserName, model.Password))
+                Identifier id;
+                //make sure your users openid identifier is valid.
+                if (Identifier.TryParse(model.OpenId, out id))
                 {
-                    FormsAuthentication.SetAuthCookie(model.UserName, model.RememberMe);
-                    if (Url.IsLocalUrl(returnUrl))
+                    try
                     {
-                        return Redirect(returnUrl);
+                        HttpSession["RememberMe"] = model.RememberMe;
+
+                        //request openid_identifier
+                        return openid.CreateRequest(id)
+                            .RedirectingResponse.AsActionResultMvc5();
                     }
-                    else
+                    catch (ProtocolException ex)
                     {
-                        return RedirectToAction("Index", "Home");
+                        ModelState.AddModelError("err", ex.Message);
+                        return View("Login", model);
                     }
                 }
                 else
                 {
-                    ModelState.AddModelError("", "The user name or password provided is incorrect.");
+                    ModelState.AddModelError("OpenId", "Invalid identifier");
+                    return View("Login", model);
                 }
             }
+            else
+            {
+                //check the response status
+                switch (response.Status)
+                {
+                    //success status
+                    case AuthenticationStatus.Authenticated:
 
-            // If we got this far, something failed, redisplay form
-            return View(model);
+
+                        bool rememberMe = HttpSession["RememberMe"] as bool? ?? false;
+                        HttpSession.Remove("RememberMe");
+
+                        var user = GetOrCreateRandomUserForOpenId(response.ClaimedIdentifier);
+
+                        FormsAuthentication.SetAuthCookie(user.Username, rememberMe);
+
+                        //TODO: lookup username or generate random username and redirect to an account creation page
+
+                        return RedirectToAction("Index", "Home");
+
+                    case AuthenticationStatus.Canceled:
+                        ModelState.AddModelError("err", "Canceled at provider");
+                        return View("Login", model);
+
+                    case AuthenticationStatus.Failed:
+                        ModelState.AddModelError("err", response.Exception.Message);
+                        return View("Login", model);
+                }
+            }
+            return new EmptyResult();
+        }
+
+        private User GetOrCreateRandomUserForOpenId(string claimedIdentifier)
+        {
+            var existing = Session.QueryOver<UserOpenId>()
+                .Where(x => x.OpenIdentifier == claimedIdentifier)
+                .Fetch(x => x.User).Eager
+                .SingleOrDefault();
+
+            if (existing != null) return existing.User;
+
+            //TODO generate a real random username
+            int lastUserId = Session.QueryOver<User>()
+                .OrderBy(x => x.Id).Desc
+                .Select(x => x.Id)
+                .Take(1)
+                .SingleOrDefault<int?>() ?? 0;
+
+            var newUser = new User
+            {
+                Username = "Anonymous-" + (lastUserId + 1),
+                JoinDateUTC = DateTime.UtcNow
+            };
+
+            Session.Save(newUser);
+            Session.Save(new UserOpenId
+            {
+                User = newUser,
+                OpenIdentifier = claimedIdentifier
+            });
+
+            return newUser;
         }
 
         //
@@ -89,118 +153,7 @@ namespace BattleIntel.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Register(RegisterModel model)
         {
-            if (ModelState.IsValid)
-            {
-                // Attempt to register the user
-                MembershipCreateStatus createStatus;
-                Membership.CreateUser(model.UserName, model.Password, model.Email, passwordQuestion: null, passwordAnswer: null, isApproved: true, providerUserKey: null, status: out createStatus);
-
-                if (createStatus == MembershipCreateStatus.Success)
-                {
-                    FormsAuthentication.SetAuthCookie(model.UserName, createPersistentCookie: false);
-                    return RedirectToAction("Index", "Home");
-                }
-                else
-                {
-                    ModelState.AddModelError("", ErrorCodeToString(createStatus));
-                }
-            }
-
-            // If we got this far, something failed, redisplay form
-            return View(model);
+            throw new NotImplementedException();
         }
-
-        //
-        // GET: /Account/ChangePassword
-
-        public ActionResult ChangePassword()
-        {
-            return View();
-        }
-
-        //
-        // POST: /Account/ChangePassword
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult ChangePassword(ChangePasswordModel model)
-        {
-            if (ModelState.IsValid)
-            {
-
-                // ChangePassword will throw an exception rather
-                // than return false in certain failure scenarios.
-                bool changePasswordSucceeded;
-                try
-                {
-                    MembershipUser currentUser = Membership.GetUser(User.Identity.Name, userIsOnline: true);
-                    changePasswordSucceeded = currentUser.ChangePassword(model.OldPassword, model.NewPassword);
-                }
-                catch (Exception)
-                {
-                    changePasswordSucceeded = false;
-                }
-
-                if (changePasswordSucceeded)
-                {
-                    return RedirectToAction("ChangePasswordSuccess");
-                }
-                else
-                {
-                    ModelState.AddModelError("", "The current password is incorrect or the new password is invalid.");
-                }
-            }
-
-            // If we got this far, something failed, redisplay form
-            return View(model);
-        }
-
-        //
-        // GET: /Account/ChangePasswordSuccess
-
-        public ActionResult ChangePasswordSuccess()
-        {
-            return View();
-        }
-
-        #region Status Codes
-        private static string ErrorCodeToString(MembershipCreateStatus createStatus)
-        {
-            // See http://go.microsoft.com/fwlink/?LinkID=177550 for
-            // a full list of status codes.
-            switch (createStatus)
-            {
-                case MembershipCreateStatus.DuplicateUserName:
-                    return "User name already exists. Please enter a different user name.";
-
-                case MembershipCreateStatus.DuplicateEmail:
-                    return "A user name for that e-mail address already exists. Please enter a different e-mail address.";
-
-                case MembershipCreateStatus.InvalidPassword:
-                    return "The password provided is invalid. Please enter a valid password value.";
-
-                case MembershipCreateStatus.InvalidEmail:
-                    return "The e-mail address provided is invalid. Please check the value and try again.";
-
-                case MembershipCreateStatus.InvalidAnswer:
-                    return "The password retrieval answer provided is invalid. Please check the value and try again.";
-
-                case MembershipCreateStatus.InvalidQuestion:
-                    return "The password retrieval question provided is invalid. Please check the value and try again.";
-
-                case MembershipCreateStatus.InvalidUserName:
-                    return "The user name provided is invalid. Please check the value and try again.";
-
-                case MembershipCreateStatus.ProviderError:
-                    return "The authentication provider returned an error. Please verify your entry and try again. If the problem persists, please contact your system administrator.";
-
-                case MembershipCreateStatus.UserRejected:
-                    return "The user creation request has been canceled. Please verify your entry and try again. If the problem persists, please contact your system administrator.";
-
-                default:
-                    return "An unknown error occurred. Please verify your entry and try again. If the problem persists, please contact your system administrator.";
-            }
-        }
-        #endregion
     }
 }

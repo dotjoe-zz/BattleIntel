@@ -31,6 +31,10 @@ alter table dbo.Team  drop constraint FK_Team_CreatedBy
 alter table dbo.Team  drop constraint FK_Team_LastUpdatedBy
 
 
+    if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'dbo.[FK_UserOpenId_User]') AND parent_object_id = OBJECT_ID('dbo.UserOpenId'))
+alter table dbo.UserOpenId  drop constraint FK_UserOpenId_User
+
+
     if exists (select * from dbo.sysobjects where id = object_id(N'dbo.Battle') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table dbo.Battle
 
     if exists (select * from dbo.sysobjects where id = object_id(N'dbo.BattleStat') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table dbo.BattleStat
@@ -39,47 +43,55 @@ alter table dbo.Team  drop constraint FK_Team_LastUpdatedBy
 
     if exists (select * from dbo.sysobjects where id = object_id(N'dbo.[User]') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table dbo.[User]
 
+    if exists (select * from dbo.sysobjects where id = object_id(N'dbo.UserOpenId') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table dbo.UserOpenId
+
     create table dbo.Battle (
-        Id UNIQUEIDENTIFIER not null,
+        Id INT IDENTITY NOT NULL,
        Name NVARCHAR(255) not null unique,
        StartDateUTC DATETIME not null,
        EndDateUTC DATETIME not null,
        CreatedUTC DATETIME not null,
-       CreatedById UNIQUEIDENTIFIER not null,
+       CreatedById INT not null,
        LastUpdatedUTC DATETIME null,
-       LastUpdatedById UNIQUEIDENTIFIER null,
+       LastUpdatedById INT null,
        primary key (Id)
     )
 
     create table dbo.BattleStat (
-        Id UNIQUEIDENTIFIER not null,
-       BattleId UNIQUEIDENTIFIER not null,
-       TeamId UNIQUEIDENTIFIER not null,
+        Id INT IDENTITY NOT NULL,
+       BattleId INT not null,
+       TeamId INT not null,
        [Level] INT null,
        Name NVARCHAR(255) null,
        Defense NVARCHAR(255) null,
        CreatedUTC DATETIME not null,
-       CreatedById UNIQUEIDENTIFIER not null,
+       CreatedById INT not null,
        LastUpdatedUTC DATETIME null,
-       LastUpdatedById UNIQUEIDENTIFIER null,
+       LastUpdatedById INT null,
        primary key (Id)
     )
 
     create table dbo.Team (
-        Id UNIQUEIDENTIFIER not null,
+        Id INT IDENTITY NOT NULL,
        Name NVARCHAR(255) not null unique,
        CreatedUTC DATETIME not null,
-       CreatedById UNIQUEIDENTIFIER not null,
+       CreatedById INT not null,
        LastUpdatedUTC DATETIME null,
-       LastUpdatedById UNIQUEIDENTIFIER null,
+       LastUpdatedById INT null,
        primary key (Id)
     )
 
     create table dbo.[User] (
-        Id UNIQUEIDENTIFIER not null,
-       Username NVARCHAR(100) not null unique,
+        Id INT IDENTITY NOT NULL,
+       Username NVARCHAR(20) not null unique,
        JoinDateUTC DATETIME not null,
-       LastSeenDateUTC DATETIME not null,
+       primary key (Id)
+    )
+
+    create table dbo.UserOpenId (
+        Id INT IDENTITY NOT NULL,
+       UserId INT not null,
+       OpenIdentifier NVARCHAR(255) not null unique,
        primary key (Id)
     )
 
@@ -121,4 +133,9 @@ alter table dbo.Team  drop constraint FK_Team_LastUpdatedBy
     alter table dbo.Team 
         add constraint FK_Team_LastUpdatedBy 
         foreign key (LastUpdatedById) 
+        references dbo.[User]
+
+    alter table dbo.UserOpenId 
+        add constraint FK_UserOpenId_User 
+        foreign key (UserId) 
         references dbo.[User]
