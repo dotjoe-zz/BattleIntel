@@ -8,7 +8,6 @@ using System.Web.Mvc;
 
 namespace BattleIntel.Web.Controllers
 {
-    [NHibernateTransaction]
     public class NHibernateController : Controller
     {
         public HttpSessionStateBase HttpSession { get { return base.Session; } }
@@ -18,18 +17,21 @@ namespace BattleIntel.Web.Controllers
     /// <summary>
     /// Wrap NHibernateController action methods in a Transaction. Rollback on exception.
     /// </summary>
-    public class NHibernateTransactionAttribute : FilterAttribute, IActionFilter
+    public class NHibernateTransactionFilter : IActionFilter
     {
-        private static readonly ISessionFactory factory = NHibernateConfiguration.BuildSessionFactory();
-        private ISession session;
+        private readonly ISession session;
         private ITransaction transaction;
+
+        public NHibernateTransactionFilter(ISession session)
+        {
+            this.session = session;
+        }
 
         public void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var nhController = filterContext.Controller as NHibernateController;
             if (nhController == null) throw new InvalidOperationException("NHibernateTransactionFilter can only be used with an NHibernateController.");
 
-            session = factory.OpenSession();
             session.FlushMode = FlushMode.Commit;
             transaction = session.BeginTransaction();
 
