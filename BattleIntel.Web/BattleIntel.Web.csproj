@@ -152,6 +152,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\NHibernateController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -276,11 +277,16 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\NHibernate\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BattleIntel.Core.Db\BattleIntel.Core.Db.csproj">
+      <Project>{c6eb8388-3888-4310-923b-a7350641cf1d}</Project>
+      <Name>BattleIntel.Core.Db</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BattleIntel.Core\BattleIntel.Core.csproj">
       <Project>{5e51fb9e-79a2-44aa-9fec-f3d5a13cfc81}</Project>
       <Name>BattleIntel.Core</Name>
