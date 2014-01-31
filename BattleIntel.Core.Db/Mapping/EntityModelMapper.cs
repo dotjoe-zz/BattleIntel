@@ -37,7 +37,6 @@ namespace BattleIntel.Core.Db.Mapping
                 }
             };
 
-            this.UniqueColumn<User>(x => x.Username, 20);
             this.UniqueColumn<UserOpenId>(x => x.OpenIdentifier, 255);
             this.UniqueColumn<Battle>(x => x.Name, 255);
             this.UniqueColumn<Team>(x => x.Name, 255);

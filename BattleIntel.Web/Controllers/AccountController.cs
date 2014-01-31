@@ -19,7 +19,7 @@ namespace BattleIntel.Web.Controllers
     [Authorize]
     public class AccountController : NHibernateController
     {
-        private static OpenIdRelyingParty openid = new OpenIdRelyingParty();
+       private static OpenIdRelyingParty openid = new OpenIdRelyingParty();
 
        public ActionResult Index()
         {
@@ -29,40 +29,8 @@ namespace BattleIntel.Web.Controllers
         [AllowAnonymous]
         public ActionResult Login()
         {
-            return View(new LoginModel());
-        }
-
-        [AllowAnonymous]
-        public ActionResult Authenticate(LoginModel model, string returnUrl)
-        {
             var response = openid.GetResponse();
-            if (response == null)
-            {
-                Identifier id;
-                //make sure your users openid identifier is valid.
-                if (Identifier.TryParse(model.OpenId, out id))
-                {
-                    try
-                    {
-                        HttpSession["RememberMe"] = model.RememberMe;
-
-                        //request openid_identifier
-                        return openid.CreateRequest(id)
-                            .RedirectingResponse.AsActionResultMvc5();
-                    }
-                    catch (ProtocolException ex)
-                    {
-                        ModelState.AddModelError("err", ex.Message);
-                        return View("Login", model);
-                    }
-                }
-                else
-                {
-                    ModelState.AddModelError("OpenId", "Invalid identifier");
-                    return View("Login", model);
-                }
-            }
-            else
+            if (response != null)
             {
                 //check the response status
                 switch (response.Status)
@@ -70,49 +38,96 @@ namespace BattleIntel.Web.Controllers
                     //success status
                     case AuthenticationStatus.Authenticated:
 
+                        string email = null;
+                        var claimsResponse = response.GetExtension<ClaimsResponse>();
+                        if (claimsResponse != null)
+                        {
+                            email = claimsResponse.Email;
+                        }
 
-                        bool rememberMe = HttpSession["RememberMe"] as bool? ?? false;
-                        HttpSession.Remove("RememberMe");
+                        var user = GetOrCreateUserForOpenId(response.ClaimedIdentifier, email);
 
-                        var user = GetOrCreateRandomUserForOpenId(response.ClaimedIdentifier);
+                        bool rememberMe;
+                        bool.TryParse(response.GetCallbackArgument("rememberMe"), out rememberMe);
 
-                        FormsAuthentication.SetAuthCookie(user.Username, rememberMe);
+                        SetUserAuthCookie(user, rememberMe);
 
-                        //TODO: lookup username or generate random username and redirect to an account creation page
-
-                        return RedirectToAction("Index", "Home");
+                        string authReturnUrl = response.GetCallbackArgument("returnUrl");
+                        if (Url.IsLocalUrl(authReturnUrl))
+                        {
+                            return Redirect(authReturnUrl);
+                        }
+                        else
+                        {
+                            return RedirectToAction("Index", "Home");
+                        }
 
                     case AuthenticationStatus.Canceled:
                         ModelState.AddModelError("err", "Canceled at provider");
-                        return View("Login", model);
+                        break;
 
                     case AuthenticationStatus.Failed:
                         ModelState.AddModelError("err", response.Exception.Message);
-                        return View("Login", model);
+                        break;
                 }
             }
-            return new EmptyResult();
+            
+            return View(new LoginModel());
         }
 
-        private User GetOrCreateRandomUserForOpenId(string claimedIdentifier)
+        [AllowAnonymous]
+        [HttpPost]
+        public ActionResult Login(LoginModel model, string returnUrl)
+        {
+            Identifier id;
+            if (!Identifier.TryParse(model.OpenIdProvider, out id))
+            {
+                ModelState.AddModelError("OpenId", "Invalid Open Id");
+                return View(model);
+            }
+
+            try
+            {
+                var authRequest = openid.CreateRequest(id);
+
+                if (!string.IsNullOrWhiteSpace(returnUrl))
+                {
+                    authRequest.AddCallbackArguments("returnUrl", returnUrl);
+                }
+
+                authRequest.AddCallbackArguments("rememberMe", model.RememberMe.ToString());
+
+                authRequest.AddExtension(new ClaimsRequest 
+                { 
+                    Email = DemandLevel.Require
+                });
+
+                return authRequest.RedirectingResponse.AsActionResultMvc5();
+            }
+            catch (ProtocolException ex)
+            {
+                ModelState.AddModelError("err", ex.Message);
+                return View(model);
+            }
+        }
+
+        private User GetOrCreateUserForOpenId(string claimedIdentifier, string email)
         {
             var existing = Session.QueryOver<UserOpenId>()
                 .Where(x => x.OpenIdentifier == claimedIdentifier)
                 .Fetch(x => x.User).Eager
                 .SingleOrDefault();
 
-            if (existing != null) return existing.User;
-
-            //TODO generate a real random username
-            int lastUserId = Session.QueryOver<User>()
-                .OrderBy(x => x.Id).Desc
-                .Select(x => x.Id)
-                .Take(1)
-                .SingleOrDefault<int?>() ?? 0;
+            if (existing != null)
+            {
+                existing.User.Email = email;
+                return existing.User;
+            }
 
             var newUser = new User
             {
-                Username = "Anonymous-" + (lastUserId + 1),
+                Name = "Anonymous",
+                Email = email,
                 JoinDateUTC = DateTime.UtcNow
             };
 
@@ -124,6 +139,23 @@ namespace BattleIntel.Web.Controllers
             });
 
             return newUser;
+        }
+
+        private void SetUserAuthCookie(User user, bool isPersistent)
+        {
+            FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(1,
+                user.Name,
+                DateTime.Now,
+                DateTime.Now.Add(FormsAuthentication.Timeout),
+                isPersistent,
+                user.Id.ToString(),
+                FormsAuthentication.FormsCookiePath);
+
+            // Encrypt the ticket.
+            string encTicket = FormsAuthentication.Encrypt(ticket);
+
+            // Create the cookie.
+            Response.Cookies.Add(new HttpCookie(FormsAuthentication.FormsCookieName, encTicket));
         }
 
         //

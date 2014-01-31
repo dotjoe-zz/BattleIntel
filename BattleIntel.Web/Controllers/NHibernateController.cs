@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Security;
 
 namespace BattleIntel.Web.Controllers
 {
@@ -12,6 +13,30 @@ namespace BattleIntel.Web.Controllers
     {
         public HttpSessionStateBase HttpSession { get { return base.Session; } }
         public new ISession Session { get; set; }
+
+        private int? _CurrentUserId = null;
+        public int CurrentUserId
+        {
+            get
+            {
+                if (_CurrentUserId.HasValue) return _CurrentUserId.Value;
+                if (!User.Identity.IsAuthenticated) return 0;
+                
+                int userId = 0;
+
+                if (User.Identity.IsAuthenticated &&
+                    int.TryParse(((FormsIdentity)User.Identity).Ticket.UserData, out userId))
+                {
+                    _CurrentUserId = userId;
+                }
+                else
+                {
+                    _CurrentUserId = 0;
+                }
+
+                return _CurrentUserId.Value;
+            }
+        }
 	}
 
     /// <summary>

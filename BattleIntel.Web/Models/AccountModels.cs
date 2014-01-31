@@ -30,10 +30,15 @@ namespace BattleIntel.Web.Models
     {
         [Required]
         [Display(Name = "Open ID")]
-        public string OpenId { get; set; }
+        public string OpenIdProvider { get; set; }
 
         [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
+
+        public LoginModel()
+        {
+            RememberMe = true;
+        }
     }
 
     public class RegisterModel

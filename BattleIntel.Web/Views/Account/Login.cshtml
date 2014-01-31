@@ -2,7 +2,7 @@
 
 @{
     ViewBag.Title = "Log in";
-    Model.OpenId = "https://www.google.com/accounts/o8/id";
+    Model.OpenIdProvider = "https://www.google.com/accounts/o8/id";
 }
 
 @section Header {
@@ -10,15 +10,15 @@
     <h1>@ViewBag.Title</h1>
 }
 
-@using (Html.BeginForm("Authenticate", "Account")) {
+@using (Html.BeginForm()) {
     @Html.ValidationSummary(false)
 
     <ul data-role="listview" data-inset="true">
         <li data-role="list-divider">Details</li>
 
         <li data-role="fieldcontain">
-            @Html.LabelFor(m => m.OpenId)
-            @Html.TextBoxFor(m => m.OpenId)            
+            @Html.LabelFor(m => m.OpenIdProvider)
+            @Html.TextBoxFor(m => m.OpenIdProvider)            
         </li>
 
         <li data-role="fieldcontain">
