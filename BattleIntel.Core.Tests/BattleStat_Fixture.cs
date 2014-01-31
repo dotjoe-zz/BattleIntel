@@ -13,13 +13,26 @@ namespace BattleIntel.Core.Tests
         [Test]
         public void Stat_Parsing()
         {
-            Assert.AreEqual("250 Name 1.23", BattleStat.Parse("Name lvl 250 1.23 m").ToString());
-            Assert.AreEqual("250 Name 1.23m", BattleStat.Parse("Name L250 1.23m").ToString());
-            Assert.AreEqual("250 Name 1.23m", BattleStat.Parse("Name/250/1.23m").ToString());
-            Assert.AreEqual("250 Name 1.23m", BattleStat.Parse("250 1,23m Name").ToString());
-            Assert.AreEqual("250 Name 1.23m", BattleStat.Parse("250,1.23m,Name").ToString());
-            Assert.AreEqual("250 Name 1.23m", BattleStat.Parse("250 - 1.23m - Name").ToString());
-            Assert.AreEqual("250 Name 1.23m", BattleStat.Parse("Name 250 1,23m").ToString());
+            AssertStatParse("Name lvl 250 1.23 m", 250, "Name", "1.23");
+
+            AssertStatParse("Name L250 1.23m", 250, "Name", "1.23m");
+            AssertStatParse("Name/250/1.23m", 250, "Name", "1.23m");
+            AssertStatParse("250 1,23m Name", 250, "Name", "1.23m");
+            AssertStatParse("250,1.23m,Name", 250, "Name", "1.23m");
+            AssertStatParse("250 - 1.23m - Name", 250, "Name", "1.23m");
+            AssertStatParse("Name 250 1,23m", 250, "Name", "1.23m");
+        }
+
+        private void AssertStatParse(string input, int level, string name, string defense)
+        {
+            var expected = new BattleStat
+            {
+                Level = level,
+                Name = name,
+                Defense = defense
+            };
+
+            Assert.AreEqual(expected.ToString(), BattleStat.Parse(input).ToString());
         }
     }
 }
