@@ -25,14 +25,14 @@ namespace BattleIntel.Core.Tests
 
         private void AssertStatParse(string input, int level, string name, string defense)
         {
-            var expected = new BattleStat
+            var expected = new Stat
             {
                 Level = level,
                 Name = name,
                 Defense = defense
             };
 
-            Assert.AreEqual(expected.ToString(), BattleStat.Parse(input).ToString());
+            Assert.AreEqual(expected.ToString(), Stat.Parse(input).ToString());
         }
     }
 }

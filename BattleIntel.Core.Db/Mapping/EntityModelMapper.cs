@@ -44,7 +44,7 @@ namespace BattleIntel.Core.Db.Mapping
 
             Class<BattleStat>(map =>
             {
-                map.Property(x => x.Name, m => m.NotNullable(false)); //overide the default Name not nullable convention
+                map.Component(x => x.Stat);
             });
         }
 

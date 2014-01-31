@@ -18,9 +18,12 @@
     </id>
     <many-to-one name="Battle" column="BattleId" not-null="true" foreign-key="FK_BattleStat_Battle" />
     <many-to-one name="Team" column="TeamId" not-null="true" foreign-key="FK_BattleStat_Team" />
-    <property name="Level" />
-    <property name="Name" />
-    <property name="Defense" />
+    <component class="Stat" name="Stat">
+      <property name="RawInput" column="Stat_RawInput" />
+      <property name="Level" column="Stat_Level" />
+      <property name="Name" column="Stat_Name" />
+      <property name="Defense" column="Stat_Defense" />
+    </component>
     <property name="CreatedUTC" not-null="true" />
     <many-to-one name="CreatedBy" column="CreatedById" not-null="true" foreign-key="FK_BattleStat_CreatedBy" />
     <property name="LastUpdatedUTC" />

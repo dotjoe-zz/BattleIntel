@@ -13,7 +13,7 @@ namespace BattleIntel.DesktopTool
 {
     public partial class StatParserForm : Form
     {
-        private IList<BattleStat> Stats;
+        private IList<Stat> Stats;
 
         public StatParserForm()
         {
@@ -47,7 +47,7 @@ namespace BattleIntel.DesktopTool
             else
             {
                 //check for team name on the first line
-                var firstLineStat = BattleStat.Parse(lines.First());
+                var firstLineStat = Stat.Parse(lines.First());
                 if (firstLineStat.Level == null && firstLineStat.Defense == null)
                 {
                     txtTeamName.Text = firstLineStat.Name;
@@ -70,7 +70,7 @@ namespace BattleIntel.DesktopTool
         {
             Stats = txtTeamStats.Lines
                     .Where(x => !string.IsNullOrWhiteSpace(x))
-                    .Select(x => BattleStat.Parse(x.Trim()))
+                    .Select(x => Stat.Parse(x.Trim()))
                     .Distinct()
                     .OrderByDescending(x => x.Level)
                     .ThenBy(x => x.Name)

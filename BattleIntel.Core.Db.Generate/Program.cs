@@ -103,9 +103,12 @@ namespace BattleIntel.Core.Db.Generate
                     {
                         Battle = battle,
                         Team = team,
-                        Level = i,
-                        Name = "Duck-" + i,
-                        Defense = (i * 10).ToString() + "k",
+                        Stat = new Stat 
+                        {
+                            Level = i,
+                            Name = "Duck-" + i,
+                            Defense = (i * 10).ToString() + "k"
+                        },
                         CreatedUTC = DateTime.Now,
                         CreatedBy = user
                     });
