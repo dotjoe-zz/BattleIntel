@@ -15,20 +15,23 @@ namespace BattleIntel.Web.Controllers
     {
         public HttpSessionStateBase HttpSession { get { return base.Session; } }
         public new ISession Session { get; set; }
-
-        private Lazy<UserDataModel> lazyUserData;
-        public UserDataModel UserData { get { return lazyUserData.Value; } }
+        public UserDataModel UserData { get; set; }
         
-        public NHibernateController ()
-	    {
-            lazyUserData = new Lazy<UserDataModel>(() =>
-            {
-                if (!User.Identity.IsAuthenticated) return new UserDataModel();
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            UserData = LoadUserData();
+            ViewBag.UserData = UserData;
 
-                //deserialize the forms ticket user data
-                return JsonConvert.DeserializeObject<UserDataModel>(((FormsIdentity)User.Identity).Ticket.UserData) ?? new UserDataModel();
-            });
-	    }
+            base.OnActionExecuting(filterContext);
+        }
+
+        private UserDataModel LoadUserData()
+        {
+            if (!User.Identity.IsAuthenticated) return new UserDataModel();
+
+            //deserialize the forms ticket user data
+            return JsonConvert.DeserializeObject<UserDataModel>(((FormsIdentity)User.Identity).Ticket.UserData) ?? new UserDataModel();
+        }
 	}
 
     /// <summary>
