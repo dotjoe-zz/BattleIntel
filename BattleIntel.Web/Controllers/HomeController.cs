@@ -12,7 +12,7 @@ namespace BattleIntel.Web.Controllers
         public ActionResult Index()
         {
             var statsCollected = Session.QueryOver<BattleStat>().RowCount();
-            ViewBag.Message = statsCollected + " total battle stats collected! Current User Id = " + CurrentUserId;
+            ViewBag.Message = statsCollected + " total battle stats collected! Your Email is " + UserData.Email;
 
             return View();
         }

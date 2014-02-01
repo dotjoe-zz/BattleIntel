@@ -41,6 +41,12 @@ namespace BattleIntel.Core.Db.Mapping
             this.UniqueColumn<Battle>(x => x.Name, 255);
             this.UniqueColumn<Team>(x => x.Name, 255);
 
+            Class<User>(map =>
+            {
+                map.Property(x => x.Email, m => m.NotNullable(true));
+                map.Property(x => x.DisplayName, m => m.NotNullable(true));
+            });
+
             Class<BattleStat>(map =>
             {
                 map.Component(x => x.Stat);

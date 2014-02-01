@@ -84,8 +84,8 @@ alter table dbo.UserOpenId  drop constraint FK_UserOpenId_User
 
     create table dbo.[User] (
         Id INT IDENTITY NOT NULL,
-       Name NVARCHAR(255) not null,
-       Email NVARCHAR(255) null,
+       Email NVARCHAR(255) not null,
+       DisplayName NVARCHAR(255) not null,
        JoinDateUTC DATETIME not null,
        primary key (Id)
     )

@@ -1,4 +1,6 @@
 ﻿using BattleIntel.Core.Db;
+using BattleIntel.Web.Models;
+using Newtonsoft.Json;
 using NHibernate;
 using System;
 using System.Collections.Generic;
@@ -14,29 +16,19 @@ namespace BattleIntel.Web.Controllers
         public HttpSessionStateBase HttpSession { get { return base.Session; } }
         public new ISession Session { get; set; }
 
-        private int? _CurrentUserId = null;
-        public int CurrentUserId
-        {
-            get
+        private Lazy<UserDataModel> lazyUserData;
+        public UserDataModel UserData { get { return lazyUserData.Value; } }
+        
+        public NHibernateController ()
+	    {
+            lazyUserData = new Lazy<UserDataModel>(() =>
             {
-                if (_CurrentUserId.HasValue) return _CurrentUserId.Value;
-                if (!User.Identity.IsAuthenticated) return 0;
-                
-                int userId = 0;
+                if (!User.Identity.IsAuthenticated) return new UserDataModel();
 
-                if (User.Identity.IsAuthenticated &&
-                    int.TryParse(((FormsIdentity)User.Identity).Ticket.UserData, out userId))
-                {
-                    _CurrentUserId = userId;
-                }
-                else
-                {
-                    _CurrentUserId = 0;
-                }
-
-                return _CurrentUserId.Value;
-            }
-        }
+                //deserialize the forms ticket user data
+                return JsonConvert.DeserializeObject<UserDataModel>(((FormsIdentity)User.Identity).Ticket.UserData) ?? new UserDataModel();
+            });
+	    }
 	}
 
     /// <summary>

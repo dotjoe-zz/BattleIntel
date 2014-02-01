@@ -8,15 +8,12 @@ namespace BattleIntel.Core
 {
     public class User : Entity
     {
+        public virtual string Email { get; set; }
+
         /// <summary>
         /// The displayed name of the user. NOT UNIQUE!
         /// </summary>
-        public virtual string Name { get; set; }
-
-        /// <summary>
-        /// Never shown to anyone but this User. Only used for system notifications.
-        /// </summary>
-        public virtual string Email { get; set; }
+        public virtual string DisplayName { get; set; }
 
         /// <summary>
         /// Date of the User's first Login

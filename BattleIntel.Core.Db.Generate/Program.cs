@@ -73,7 +73,8 @@ namespace BattleIntel.Core.Db.Generate
             {
                 var user = new User 
                 { 
-                    Name = "root",
+                    Email = "",
+                    DisplayName = "root",
                     JoinDateUTC = DateTime.Now
                 };
 

@@ -43,8 +43,8 @@
     <id name="Id" type="Int32">
       <generator class="identity" />
     </id>
-    <property name="Name" not-null="true" />
-    <property name="Email" />
+    <property name="Email" not-null="true" />
+    <property name="DisplayName" not-null="true" />
     <property name="JoinDateUTC" not-null="true" />
   </class>
   <class name="UserOpenId">

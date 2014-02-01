@@ -38,19 +38,18 @@ namespace BattleIntel.Web.Controllers
                     //success status
                     case AuthenticationStatus.Authenticated:
 
-                        string email = null;
-                        var claimsResponse = response.GetExtension<ClaimsResponse>();
-                        if (claimsResponse != null)
-                        {
-                            email = claimsResponse.Email;
-                        }
-
-                        var user = GetOrCreateUserForOpenId(response.ClaimedIdentifier, email);
+                        var userData = OpenIdUserData.CreateFromResponse(response);
+                        var user = GetOrCreateUserForOpenId(response.ClaimedIdentifier, userData);
 
                         bool rememberMe;
                         bool.TryParse(response.GetCallbackArgument("rememberMe"), out rememberMe);
 
-                        SetUserAuthCookie(user, rememberMe);
+                        Response.SetAuthCookie<UserDataModel>(user.Id.ToString(), rememberMe, new UserDataModel
+                        {
+                            Id = user.Id,
+                            Email = user.Email,
+                            DisplayName = user.DisplayName
+                        });
 
                         string authReturnUrl = response.GetCallbackArgument("returnUrl");
                         if (Url.IsLocalUrl(authReturnUrl))
@@ -97,10 +96,7 @@ namespace BattleIntel.Web.Controllers
 
                 authRequest.AddCallbackArguments("rememberMe", model.RememberMe.ToString());
 
-                authRequest.AddExtension(new ClaimsRequest 
-                { 
-                    Email = DemandLevel.Require
-                });
+                OpenIdUserData.AddClaimsRequest(authRequest);
 
                 return authRequest.RedirectingResponse.AsActionResultMvc5();
             }
@@ -111,7 +107,37 @@ namespace BattleIntel.Web.Controllers
             }
         }
 
-        private User GetOrCreateUserForOpenId(string claimedIdentifier, string email)
+        private class OpenIdUserData
+        {
+            public string DisplayName { get; private set; }
+            public string Email { get; private set; }
+
+            public static void AddClaimsRequest(IAuthenticationRequest r)
+            {
+                r.AddExtension(new ClaimsRequest
+                {
+                    Email = DemandLevel.Require,
+                    Nickname = DemandLevel.Require,
+                    FullName = DemandLevel.Require,
+                });
+            }
+
+            public static OpenIdUserData CreateFromResponse(IAuthenticationResponse r)
+            {
+                var userData = new OpenIdUserData();
+
+                var claimsResponse = r.GetExtension<ClaimsResponse>();
+                if (claimsResponse != null)
+                {
+                    userData.Email = claimsResponse.Email;
+                    userData.DisplayName = claimsResponse.Nickname ?? claimsResponse.FullName;
+                }
+                
+                return userData;
+            }
+        }
+
+        private User GetOrCreateUserForOpenId(string claimedIdentifier, OpenIdUserData u)
         {
             var existing = Session.QueryOver<UserOpenId>()
                 .Where(x => x.OpenIdentifier == claimedIdentifier)
@@ -120,14 +146,13 @@ namespace BattleIntel.Web.Controllers
 
             if (existing != null)
             {
-                existing.User.Email = email;
                 return existing.User;
             }
 
             var newUser = new User
             {
-                Name = "Anonymous",
-                Email = email,
+                DisplayName = u.DisplayName ?? "Anonymous",
+                Email = u.Email,
                 JoinDateUTC = DateTime.UtcNow
             };
 
@@ -141,23 +166,6 @@ namespace BattleIntel.Web.Controllers
             return newUser;
         }
 
-        private void SetUserAuthCookie(User user, bool isPersistent)
-        {
-            FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(1,
-                user.Name,
-                DateTime.Now,
-                DateTime.Now.Add(FormsAuthentication.Timeout),
-                isPersistent,
-                user.Id.ToString(),
-                FormsAuthentication.FormsCookiePath);
-
-            // Encrypt the ticket.
-            string encTicket = FormsAuthentication.Encrypt(ticket);
-
-            // Create the cookie.
-            Response.Cookies.Add(new HttpCookie(FormsAuthentication.FormsCookieName, encTicket));
-        }
-
         //
         // GET: /Account/LogOff
 
@@ -166,26 +174,6 @@ namespace BattleIntel.Web.Controllers
             FormsAuthentication.SignOut();
 
             return RedirectToAction("Index", "Home");
-        }
-
-        //
-        // GET: /Account/Register
-
-        [AllowAnonymous]
-        public ActionResult Register()
-        {
-            return View();
-        }
-
-        //
-        // POST: /Account/Register
-
-        [AllowAnonymous]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Register(RegisterModel model)
-        {
-            throw new NotImplementedException();
         }
     }
 }
