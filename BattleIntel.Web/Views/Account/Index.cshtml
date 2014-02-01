@@ -10,7 +10,7 @@
 }
 
 <p>
-    Logged in as <strong>@Model.User.Email</strong>. Joined @Html.DisplayFor(x => x.User.JoinDateUTC)
+    <strong>@Model.User.DisplayName</strong> (@Model.User.Email) joined @Html.DisplayFor(x => x.User.JoinDateUTC)
 </p>
 
 <ul data-role="listview" data-inset="true">
