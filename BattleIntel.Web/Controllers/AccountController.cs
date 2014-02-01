@@ -23,7 +23,7 @@ namespace BattleIntel.Web.Controllers
         private static OpenIdRelyingParty openid = new OpenIdRelyingParty();
 
         [AllowAnonymous]
-        public ActionResult Login()
+        public ActionResult Login(string returnUrl)
         {
             var response = openid.GetResponse();
             if (response == null) return View(new LoginModel());
@@ -42,10 +42,9 @@ namespace BattleIntel.Web.Controllers
 
                     SetUserAuthCookie(user, rememberMe);
 
-                    string authReturnUrl = response.GetCallbackArgument("returnUrl");
-                    if (Url.IsLocalUrl(authReturnUrl))
+                    if (Url.IsLocalUrl(returnUrl))
                     {
-                        return Redirect(authReturnUrl);
+                        return Redirect(returnUrl);
                     }
                     else
                     {
@@ -78,12 +77,7 @@ namespace BattleIntel.Web.Controllers
             try
             {
                 var authRequest = openid.CreateRequest(id);
-
-                if (!string.IsNullOrWhiteSpace(returnUrl))
-                {
-                    authRequest.AddCallbackArguments("returnUrl", returnUrl);
-                }
-
+                
                 authRequest.AddCallbackArguments("rememberMe", model.RememberMe.ToString());
 
                 OpenIdUserData.AddClaimsRequest(authRequest);
