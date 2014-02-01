@@ -12,6 +12,7 @@ using DotNetOpenAuth.OpenId;
 using DotNetOpenAuth.Messaging;
 using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 using BattleIntel.Core;
+using AutoMapper;
 
 namespace BattleIntel.Web.Controllers
 {
@@ -19,58 +20,47 @@ namespace BattleIntel.Web.Controllers
     [Authorize]
     public class AccountController : NHibernateController
     {
-       private static OpenIdRelyingParty openid = new OpenIdRelyingParty();
-
-       public ActionResult Index()
-        {
-            return View();
-        }
+        private static OpenIdRelyingParty openid = new OpenIdRelyingParty();
 
         [AllowAnonymous]
         public ActionResult Login()
         {
             var response = openid.GetResponse();
-            if (response != null)
-            {
-                //check the response status
-                switch (response.Status)
-                {
-                    //success status
-                    case AuthenticationStatus.Authenticated:
-
-                        var userData = OpenIdUserData.CreateFromResponse(response);
-                        var user = GetOrCreateUserForOpenId(response.ClaimedIdentifier, userData);
-
-                        bool rememberMe;
-                        bool.TryParse(response.GetCallbackArgument("rememberMe"), out rememberMe);
-
-                        Response.SetAuthCookie<UserDataModel>(user.Id.ToString(), rememberMe, new UserDataModel
-                        {
-                            Id = user.Id,
-                            Email = user.Email,
-                            DisplayName = user.DisplayName
-                        });
-
-                        string authReturnUrl = response.GetCallbackArgument("returnUrl");
-                        if (Url.IsLocalUrl(authReturnUrl))
-                        {
-                            return Redirect(authReturnUrl);
-                        }
-                        else
-                        {
-                            return RedirectToAction("Index", "Home");
-                        }
-
-                    case AuthenticationStatus.Canceled:
-                        ModelState.AddModelError("err", "Canceled at provider");
-                        break;
-
-                    case AuthenticationStatus.Failed:
-                        ModelState.AddModelError("err", response.Exception.Message);
-                        break;
-                }
-            }
+            if (response == null) return View(new LoginModel());
             
+            //check the response status
+            switch (response.Status)
+            {
+                //success status
+                case AuthenticationStatus.Authenticated:
+
+                    var userData = OpenIdUserData.CreateFromResponse(response);
+                    var user = GetOrCreateUserForOpenId(response.ClaimedIdentifier, userData);
+
+                    bool rememberMe;
+                    bool.TryParse(response.GetCallbackArgument("rememberMe"), out rememberMe);
+
+                    SetUserAuthCookie(user, rememberMe);
+
+                    string authReturnUrl = response.GetCallbackArgument("returnUrl");
+                    if (Url.IsLocalUrl(authReturnUrl))
+                    {
+                        return Redirect(authReturnUrl);
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+
+                case AuthenticationStatus.Canceled:
+                    ModelState.AddModelError("err", "Canceled at provider");
+                    break;
+
+                case AuthenticationStatus.Failed:
+                    ModelState.AddModelError("err", response.Exception.Message);
+                    break;
+            }
+
             return View(new LoginModel());
         }
 
@@ -107,6 +97,50 @@ namespace BattleIntel.Web.Controllers
             }
         }
 
+        public ActionResult LogOff()
+        {
+            FormsAuthentication.SignOut();
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        public ActionResult Index()
+        {
+            var user = Session.Get<User>(UserData.Id);
+            if (user == null) return HttpNotFound();
+
+            var model = new UserIndexModel
+            {
+                User = Mapper.Map<UserModel>(user)
+            };
+            return View(model);
+        }
+
+        public ActionResult Edit()
+        {
+            var user = Session.Get<User>(UserData.Id);
+            if (user == null) return HttpNotFound();
+
+            var model = new UserEditModel
+            {
+                DisplayName = user.DisplayName
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult Edit(UserEditModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var user = Session.Get<User>(UserData.Id);
+            if (user == null) return HttpNotFound();
+
+            user.DisplayName = model.DisplayName;
+
+            return RedirectToAction("Index");
+        }
+
         private class OpenIdUserData
         {
             public string DisplayName { get; private set; }
@@ -118,7 +152,7 @@ namespace BattleIntel.Web.Controllers
                 {
                     Email = DemandLevel.Require,
                     Nickname = DemandLevel.Require,
-                    FullName = DemandLevel.Require,
+                    FullName = DemandLevel.Require
                 });
             }
 
@@ -166,14 +200,16 @@ namespace BattleIntel.Web.Controllers
             return newUser;
         }
 
-        //
-        // GET: /Account/LogOff
-
-        public ActionResult LogOff()
+        private void SetUserAuthCookie(User user, bool rememberMe)
         {
-            FormsAuthentication.SignOut();
-
-            return RedirectToAction("Index", "Home");
+            Response.SetAuthCookie<UserDataModel>(user.Id.ToString(), rememberMe, new UserDataModel
+            {
+                Id = user.Id,
+                Email = user.Email,
+                DisplayName = user.DisplayName
+            });
         }
+
+        
     }
 }

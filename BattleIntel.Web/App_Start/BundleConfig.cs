@@ -9,7 +9,8 @@ namespace BattleIntel.Web
         public static void RegisterBundles(BundleCollection bundles)
         {
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
-                        "~/Scripts/jquery-2.*"));
+                        "~/Scripts/jquery-2.*",
+                        "~/Scripts/jquery.timeago.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include(
                         "~/Scripts/jquery-ui*"));
@@ -21,6 +22,9 @@ namespace BattleIntel.Web
                         "~/Scripts/modernizr-*"));
 
             bundles.Add(new ScriptBundle("~/bundles/jquerymobile").Include("~/Scripts/jquery.mobile*"));
+
+            bundles.Add(new ScriptBundle("~/bundles/master").Include(
+                        "~/Scripts/master.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include("~/Content/site.css"));
 
@@ -39,6 +43,8 @@ namespace BattleIntel.Web
                         "~/Content/themes/base/jquery.ui.datepicker.css",
                         "~/Content/themes/base/jquery.ui.progressbar.css",
                         "~/Content/themes/base/jquery.ui.theme.css"));
+            
+            BundleTable.EnableOptimizations = true;
         }
     }
 }

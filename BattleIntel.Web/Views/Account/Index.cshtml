@@ -1,4 +1,4 @@
-﻿@model BattleIntel.Web.Models.LoginModel
+﻿@model BattleIntel.Web.Models.UserIndexModel
 
 @{
     ViewBag.Title = "Your Account";
@@ -10,7 +10,7 @@
 }
 
 <p>
-    Logged in as <strong>@User.Identity.Name</strong>.
+    Logged in as <strong>@Model.User.Email</strong>. Joined @Html.DisplayFor(x => x.User.JoinDateUTC)
 </p>
 
 <ul data-role="listview" data-inset="true">

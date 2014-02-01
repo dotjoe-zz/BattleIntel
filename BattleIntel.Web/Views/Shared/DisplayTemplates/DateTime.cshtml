@@ -1,0 +1,2 @@
+﻿@model DateTime
+<time class="timeago" datetime="@Model.ToString("o")">@Model.ToLocalTime().ToString()</time>
