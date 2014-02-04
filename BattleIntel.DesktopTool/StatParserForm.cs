@@ -23,11 +23,7 @@ namespace BattleIntel.DesktopTool
         private void btnPaste_Click(object sender, EventArgs e)
         {
             if (!Clipboard.ContainsText()) return;
-
-            var lines = Clipboard.GetText(TextDataFormat.UnicodeText).Split('\n')
-                .Where(x => !string.IsNullOrWhiteSpace(x))
-                .Select(x => x.Trim());
-
+            var lines = GetClipboardLines();
             if (!lines.Any()) return;
 
             txtTeamName.Text = "";
@@ -61,9 +57,19 @@ namespace BattleIntel.DesktopTool
         private void btnAppend_Click(object sender, EventArgs e)
         {
             if (!Clipboard.ContainsText()) return;
+            var lines = GetClipboardLines();
+            if (!lines.Any()) return;
             
             //append to the stats
-            txtTeamStats.Text += Environment.NewLine + Clipboard.GetText(TextDataFormat.UnicodeText);
+            txtTeamStats.Text += Environment.NewLine + string.Join(Environment.NewLine, lines.ToArray());
+        }
+
+        private IEnumerable<string> GetClipboardLines()
+        {
+            return Clipboard.GetText(TextDataFormat.UnicodeText)
+                .Split('\n')
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => x.Trim());
         }
 
         private void btnParse_Click(object sender, EventArgs e)
