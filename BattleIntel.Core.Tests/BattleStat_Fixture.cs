@@ -13,23 +13,27 @@ namespace BattleIntel.Core.Tests
         [Test]
         public void Stat_Parsing()
         {
-            AssertStatParse("Name lvl 250 1.23 m", 250, "Name", "1.23");
+            AssertStatParse("Name lvl 250 1.23 m", 250, "Name", "1.23", "m");
 
-            AssertStatParse("Name L250 1.23m", 250, "Name", "1.23m");
+            AssertStatParse("\"Name L250 1.23m", 250, "Name", "1.23m");
             AssertStatParse("Name/250/1.23m", 250, "Name", "1.23m");
             AssertStatParse("250 1,23m Name", 250, "Name", "1.23m");
             AssertStatParse("250,1.23m,Name", 250, "Name", "1.23m");
             AssertStatParse("250 - 1.23m - Name", 250, "Name", "1.23m");
             AssertStatParse("Name 250 1,23m", 250, "Name", "1.23m");
+
+            AssertStatParse("DL 245 BossHogg 3.7 duck!", 245, "DL BossHogg", "3.7", "duck!");
         }
 
-        private void AssertStatParse(string input, int level, string name, string defense)
+        private void AssertStatParse(string input, int level, string name, string defense, string additionalInfo = null)
         {
             var expected = new Stat
             {
+                RawInput = input,
                 Level = level,
                 Name = name,
-                Defense = defense
+                Defense = defense,
+                AdditionalInfo = additionalInfo
             };
 
             Assert.AreEqual(expected.ToString(), Stat.Parse(input).ToString());

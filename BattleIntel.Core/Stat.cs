@@ -15,6 +15,11 @@ namespace BattleIntel.Core
         public virtual string Defense { get; set; }
         //public virtual decimal DefenseValue { get; set; }
 
+        /// <summary>
+        /// When the stat is parsed from lvl-name-def format, this will contain any text that is found AFTER the def value.
+        /// </summary>
+        public virtual string AdditionalInfo { get; set; }
+
         public override bool Equals(object obj)
         {
             var that = obj as Stat;
@@ -45,7 +50,7 @@ namespace BattleIntel.Core
 
         public virtual string ToString(string separator)
         {
-            return string.Format("{0}{3}{1}{3}{2}{3}", Level, Name, Defense, separator).Trim();
+            return string.Join(separator, new string[] { Level.ToString(), Name, Defense, AdditionalInfo }).Trim();
         }
 
         /// <summary>
@@ -57,28 +62,34 @@ namespace BattleIntel.Core
         {
             if (s == null) throw new ArgumentNullException("s");
 
+            var stat = new Stat { RawInput = s };
+
             //trim and remove any internal multi whitespace
             s = Regex.Replace(s.Trim(), @"\s+", " ");
 
-            //fix a defense number using a comma as decimal separator for million value like 1,23m
-            s = Regex.Replace(s, @"(\s\d),(\d+\s?[Mm]?)", "$1.$2");
+            //trim any quotation marks from erronious copy/paste
+            s = s.Trim(new char[] { '"', '\'' });
 
+            //fix a defense number using a comma as decimal separator for value like 1,23m or 1,230k
+            s = Regex.Replace(s, @"(\s\d),(\d+\s?[MmKk]?)", "$1.$2");
+
+            //split on some common separators and remove common lvl and def value indicator noise
             var tokens = s.Split(new char[] { ' ', ',', '/', '-' }, StringSplitOptions.RemoveEmptyEntries)
-                .Where(x => new string[] { "l", "lv", "lvl", "d", "def" }.Contains(x.ToLower()) == false)
+                .Where(x => new string[] { "l", "lv", "lvl", "d", "def"}.Contains(x.ToLower()) == false)
                 .Select(x => x.Trim().Trim('.'))
                 .ToList();
 
-            var stat = new Stat { RawInput = s };
-            char tokenPlaceholder = '/'; //some char we've already removed (i.e. split on)
+            int levelIndex = -1;
+            int defenseIndex = -1;
 
             for (int i = 0; i < tokens.Count(); ++i)
             {
-                //do not count any levels from 1-9
-                var lvlMatch = Regex.Match(tokens[i], "^(?:l|L|lvl|Lvl|lv|Lv)?([1-9][0-9]{1,2})$");
+                //levels are any number from 1 to infinity with an optional "Lvl" prefix
+                var lvlMatch = Regex.Match(tokens[i], "^(?:l|L|lvl|Lvl|lv|Lv)?([1-9][0-9]*)$");
                 if (lvlMatch.Success)
                 {
                     stat.Level = int.Parse(lvlMatch.Groups[1].Value);
-                    tokens[i] = tokenPlaceholder.ToString();
+                    levelIndex = i;
 
                     //def is always AFTER the level
                     for (int j = i + 1; j < tokens.Count(); ++j)
@@ -87,20 +98,55 @@ namespace BattleIntel.Core
                         if (defMatch.Captures.Count > 0)
                         {
                             stat.Defense = defMatch.Captures[0].Value;
-                            tokens[j] = tokenPlaceholder.ToString();
-                            break;
+                            defenseIndex = j;
+                            break; //Success!!
                         }
                     }
-                    break;
+                    break; //No Defense found
                 }
             }
 
-            //the name is the largest remaining continuous string not separated by the lvl or def tokenPlaceholders
-            var tokenMash = string.Join(" ", tokens.ToArray());
-            stat.Name = tokenMash.Split(tokenPlaceholder)
-                .OrderByDescending(x => x.Length)
-                .FirstOrDefault()
-                .Trim();
+            //the name depends on the position of the levelIndex and defenseIndex
+            if (levelIndex >= 0 && defenseIndex >= 0)
+            {
+                if (levelIndex + 1 == defenseIndex) 
+                {
+                    //lvl-def format, look for leading or trailing name
+                    if (levelIndex == 0)
+                    {
+                        //trailing name, cannot distinguish additional info
+                        stat.Name = string.Join(" ", tokens.Skip(defenseIndex+1).ToArray());
+                    }
+                    else 
+                    {
+                        //leading name
+                        stat.Name = string.Join(" ", tokens.Take(levelIndex).ToArray());
+
+                        //and rest is additional info
+                        stat.AdditionalInfo = string.Join(" ", tokens.Skip(defenseIndex + 1).ToArray());
+                    }
+                }
+                else 
+                {
+                    //preName-lvl-name-def-additionalInfo format
+
+                    //all tokens before the defense are merged to make the name
+                    stat.Name = string.Join(" ", tokens.Where((x, i) => i != levelIndex && i < defenseIndex).ToArray());
+                
+                    //tokens after the defense go to additional info
+                    stat.AdditionalInfo = string.Join(" ", tokens.Skip(defenseIndex + 1).ToArray());
+                }
+            }
+            else if (levelIndex >= 0)
+            {
+                //no defense, use all tokens except the level
+                stat.Name = string.Join(" ", tokens.Where((x, i) => i != levelIndex).ToArray());
+            }
+            else
+            {
+                //no level or defense, use the whole string :(
+                stat.Name = string.Join(" ", tokens.ToArray());
+            }
 
             return stat;
         }
