@@ -35,11 +35,11 @@
             this.txtTeamName = new System.Windows.Forms.TextBox();
             this.btnPaste = new System.Windows.Forms.Button();
             this.txtTeamStats = new System.Windows.Forms.TextBox();
-            this.cbSLTQMode = new System.Windows.Forms.CheckBox();
             this.btnCopyForSheet = new System.Windows.Forms.Button();
             this.btnCopyForScout = new System.Windows.Forms.Button();
             this.txtTeamStatsOutput = new System.Windows.Forms.TextBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.cbCopyForSheetMode = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -63,7 +63,7 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.cbSLTQMode);
+            this.splitContainer1.Panel2.Controls.Add(this.cbCopyForSheetMode);
             this.splitContainer1.Panel2.Controls.Add(this.btnCopyForSheet);
             this.splitContainer1.Panel2.Controls.Add(this.btnCopyForScout);
             this.splitContainer1.Panel2.Controls.Add(this.txtTeamStatsOutput);
@@ -124,17 +124,6 @@
             this.txtTeamStats.Size = new System.Drawing.Size(209, 320);
             this.txtTeamStats.TabIndex = 1;
             // 
-            // cbSLTQMode
-            // 
-            this.cbSLTQMode.AutoSize = true;
-            this.cbSLTQMode.Location = new System.Drawing.Point(97, 33);
-            this.cbSLTQMode.Name = "cbSLTQMode";
-            this.cbSLTQMode.Size = new System.Drawing.Size(84, 17);
-            this.cbSLTQMode.TabIndex = 3;
-            this.cbSLTQMode.Text = "SLTQ Mode";
-            this.toolTip1.SetToolTip(this.cbSLTQMode, "Output stats and team name into 4 columns with the team name last.");
-            this.cbSLTQMode.UseVisualStyleBackColor = true;
-            // 
             // btnCopyForSheet
             // 
             this.btnCopyForSheet.Location = new System.Drawing.Point(3, 29);
@@ -168,6 +157,19 @@
             this.txtTeamStatsOutput.Size = new System.Drawing.Size(209, 320);
             this.txtTeamStatsOutput.TabIndex = 2;
             // 
+            // cbCopyForSheetMode
+            // 
+            this.cbCopyForSheetMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbCopyForSheetMode.FormattingEnabled = true;
+            this.cbCopyForSheetMode.Items.AddRange(new object[] {
+            "1 cell",
+            "2 columns",
+            "multi-columns"});
+            this.cbCopyForSheetMode.Location = new System.Drawing.Point(98, 31);
+            this.cbCopyForSheetMode.Name = "cbCopyForSheetMode";
+            this.cbCopyForSheetMode.Size = new System.Drawing.Size(114, 21);
+            this.cbCopyForSheetMode.TabIndex = 3;
+            // 
             // StatParserForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -198,7 +200,7 @@
         private System.Windows.Forms.Button btnCopyForScout;
         private System.Windows.Forms.TextBox txtTeamStatsOutput;
         private System.Windows.Forms.Button btnAppend;
-        private System.Windows.Forms.CheckBox cbSLTQMode;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.ComboBox cbCopyForSheetMode;
     }
 }

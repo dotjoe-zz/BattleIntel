@@ -18,6 +18,8 @@ namespace BattleIntel.DesktopTool
         public StatParserForm()
         {
             InitializeComponent();
+
+            cbCopyForSheetMode.SelectedIndex = 0;
         }
 
         private void btnPaste_Click(object sender, EventArgs e)
@@ -106,36 +108,47 @@ namespace BattleIntel.DesktopTool
         {
             if (Stats == null || Stats.Count == 0) return;
 
+            
+
             //team name on every line with a tab separator
             var teamName = "";
             if(!string.IsNullOrWhiteSpace(txtTeamName.Text))
             {
-                teamName = txtTeamName.Text.Trim();
-                if(cbSLTQMode.Checked)
-                {
-                    teamName = "\t" + teamName;
-                }
-                else
-                {
-                    teamName = teamName + "\t";
-                }
+                teamName = txtTeamName.Text.Trim() + "\t";
             }
 
-            IEnumerable<string> lines;
+            string toClip = null;
+            var copyMode = GetCopyForSheetMode();
 
-            if(cbSLTQMode.Checked)
+            if (copyMode == CopyForSheetMode.Cell)
             {
-                lines = Stats.Select(x => x.ToString("\t") + teamName);
+                //repeat the teamName above the stats for easy copy
+                toClip = teamName + "\"" + teamName + "\n" + string.Join("\n", Stats.Select(x => x.ToString())) + "\"";
             }
-            else
+            else if (copyMode == CopyForSheetMode.TwoColumns)
             {
-                lines = Stats.Select(x => teamName + x.ToString());
+                toClip = string.Join(Environment.NewLine, Stats.Select(x => teamName + x.ToString()));
+            }
+            else if (copyMode == CopyForSheetMode.MultiColumns)
+            {
+                toClip = string.Join(Environment.NewLine, Stats.Select(x => teamName + x.ToString("\t")));
             }
 
-            var toClip = string.Join(Environment.NewLine, lines.ToArray());
             if (string.IsNullOrEmpty(toClip)) return;
             
             Clipboard.SetText(toClip);
+        }
+
+        private CopyForSheetMode GetCopyForSheetMode()
+        {
+            return (CopyForSheetMode)cbCopyForSheetMode.SelectedIndex;
+        }
+
+        private enum CopyForSheetMode
+        {
+            Cell = 0,
+            TwoColumns = 1,
+            MultiColumns = 2
         }
     }
 }
