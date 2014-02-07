@@ -69,6 +69,7 @@ namespace BattleIntel.DesktopTool
         private IEnumerable<string> GetClipboardLines()
         {
             return Clipboard.GetText(TextDataFormat.UnicodeText)
+                .Trim('"') //trim the quotations from a possible cell copy
                 .Split('\n')
                 .Where(x => !string.IsNullOrWhiteSpace(x))
                 .Select(x => x.Trim());
@@ -108,10 +109,8 @@ namespace BattleIntel.DesktopTool
         {
             if (Stats == null || Stats.Count == 0) return;
 
-            
-
-            //team name on every line with a tab separator
-            var teamName = "";
+            //default team name to a single space
+            var teamName = " \t"; 
             if(!string.IsNullOrWhiteSpace(txtTeamName.Text))
             {
                 teamName = txtTeamName.Text.Trim() + "\t";
