@@ -82,8 +82,8 @@ namespace BattleIntel.DesktopTool
                     .Select(x => Stat.Parse(x.Trim()))
                     .Distinct()
                     .OrderByDescending(x => x.Level)
+                    .ThenByDescending(x => x.DefenseValue)
                     .ThenBy(x => x.Name)
-                    .ThenBy(x => x.Defense)
                     .ToList();
 
             txtTeamStatsOutput.Text = String.Join(Environment.NewLine, Stats.Select(x => x.ToString()).ToArray());

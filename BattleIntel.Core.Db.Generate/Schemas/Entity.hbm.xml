@@ -20,9 +20,12 @@
     <many-to-one name="Team" column="TeamId" not-null="true" foreign-key="FK_BattleStat_Team" />
     <component class="Stat" name="Stat">
       <property name="RawInput" column="Stat_RawInput" />
+      <property name="ScrubbedInput" column="Stat_ScrubbedInput" />
       <property name="Level" column="Stat_Level" />
       <property name="Name" column="Stat_Name" />
       <property name="Defense" column="Stat_Defense" />
+      <property name="DefenseValue" column="Stat_DefenseValue" />
+      <property name="AdditionalInfo" column="Stat_AdditionalInfo" />
     </component>
     <property name="CreatedUTC" not-null="true" />
     <many-to-one name="CreatedBy" column="CreatedById" not-null="true" foreign-key="FK_BattleStat_CreatedBy" />

@@ -9,15 +9,15 @@ namespace BattleIntel.Core
 {
     public class Stat
     {
-        public virtual string RawInput { get; set; }
-        public virtual string ScrubbedInput { get; set; }
+        public virtual string RawInput { get; private set; }
+        public virtual string ScrubbedInput { get; private set; }
         public virtual int? Level { get; set; }
         public virtual string Name { get; set; }
         public virtual string Defense { get; set; }
-        //public virtual decimal DefenseValue { get; set; }
+        public virtual decimal? DefenseValue { get; set; }
 
         /// <summary>
-        /// When the stat is parsed from lvl-name-def format, this will contain any text that is found AFTER the def value.
+        /// Any text that is found AFTER the Defense value.
         /// </summary>
         public virtual string AdditionalInfo { get; set; }
 
@@ -115,6 +115,7 @@ namespace BattleIntel.Core
                 MatchDefense(stat, tokens, 0, out defenseIndex);
             }
 
+            SetDefenseValue(stat);
             SetNameAndAdditonalInfo(stat, tokens, defenseIndex, levelIndex);
 
             return stat;
@@ -157,6 +158,32 @@ namespace BattleIntel.Core
             defenseIndex = matches[0].Item1;
             stat.Defense = matches[0].Item2;
             return true;
+        }
+
+        private static void SetDefenseValue(Stat stat)
+        {
+            stat.DefenseValue = null;
+            if (string.IsNullOrEmpty(stat.Defense)) return;
+
+            var m = Regex.Match(stat.Defense, @"\d+\.?\d*");
+            if (m.Captures.Count == 0) return;
+
+            decimal d;
+            if (!decimal.TryParse(m.Captures[0].Value, out d)) return;
+            
+            decimal multiplier = 1;
+            string defenseLowered = stat.Defense.ToLower();
+
+            if (defenseLowered.EndsWith("m"))
+            {
+                multiplier = 1000000;
+            }
+            else if (defenseLowered.EndsWith("k"))
+            {
+                multiplier = 1000;
+            }
+
+            stat.DefenseValue = d * multiplier;
         }
 
         private static void SetNameAndAdditonalInfo(Stat stat, IList<string> tokens, int defenseIndex, int levelIndex)
