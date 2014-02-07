@@ -10,6 +10,7 @@ namespace BattleIntel.Core
     public class Stat
     {
         public virtual string RawInput { get; set; }
+        public virtual string ScrubbedInput { get; set; }
         public virtual int? Level { get; set; }
         public virtual string Name { get; set; }
         public virtual string Defense { get; set; }
@@ -27,8 +28,9 @@ namespace BattleIntel.Core
             if (that == this) return true;
 
             return Nullable<int>.Equals(that.Level, this.Level)
-                && string.Equals(that.Name, this.Name, StringComparison.OrdinalIgnoreCase)
-                && string.Equals(that.Defense, this.Defense, StringComparison.OrdinalIgnoreCase);
+                && string.Equals(that.Name, this.Name)
+                && string.Equals(that.Defense, this.Defense)
+                && string.Equals(that.AdditionalInfo, this.AdditionalInfo);
         }
 
         public override int GetHashCode()
@@ -37,8 +39,9 @@ namespace BattleIntel.Core
             {
                 int hash = 37;
                 hash = hash * 23 + Level.GetHashCode();
-                hash = hash * 23 + (Name != null ? Name.ToLower() : string.Empty).GetHashCode();
-                hash = hash * 23 + (Defense != null ? Defense.ToLower() : string.Empty).GetHashCode();
+                hash = hash * 23 + (Name ?? string.Empty).GetHashCode();
+                hash = hash * 23 + (Defense ?? string.Empty).GetHashCode();
+                hash = hash * 23 + (AdditionalInfo ?? string.Empty).GetHashCode();
                 return hash;
             }
         }
@@ -54,7 +57,8 @@ namespace BattleIntel.Core
         }
 
         /// <summary>
-        /// Parse the level, name, and defense from a single stat line
+        /// Parse the level, name, and defense from a single stat line.
+        /// Level MUST come before the defense!
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
@@ -70,8 +74,14 @@ namespace BattleIntel.Core
             //trim any quotation marks from erronious copy/paste
             s = s.Trim(new char[] { '"', '\'' });
 
-            //fix a defense number using a comma as decimal separator for value like 1,23m or 1,230k
-            s = Regex.Replace(s, @"(\s\d),(\d+\s?[MmKk]?)", "$1.$2");
+            //fix a defense number using a comma as decimal separator for value like 1,23m
+            s = Regex.Replace(s, @"((?<!\d)\d),(\d{1,2}(?!\d)[\smM]?)", "$1.$2");
+
+            //now remove any comma thousandths separators so we do not split on them next
+            s = Regex.Replace(s, @"((?<!\d)\d),(\d{3}(?!\d))", "$1$2");
+
+            //help catch parsing differences in the scrubbing vs. token capturing
+            stat.ScrubbedInput = s;
 
             //split on some common separators and remove common lvl and def value indicator noise
             var tokens = s.Split(new char[] { ' ', ',', '/', '-' }, StringSplitOptions.RemoveEmptyEntries)
@@ -92,63 +102,94 @@ namespace BattleIntel.Core
                     levelIndex = i;
 
                     //def is always AFTER the level
-                    for (int j = i + 1; j < tokens.Count(); ++j)
+                    if (MatchDefense(stat, tokens, i + 1, out defenseIndex))
                     {
-                        var defMatch = Regex.Match(tokens[j], @"^(?:D|d|Def|def)?[1-9][0-9]*\.?[0-9]*\w*$");
-                        if (defMatch.Captures.Count > 0)
-                        {
-                            stat.Defense = defMatch.Captures[0].Value;
-                            defenseIndex = j;
-                            break; //Success!!
-                        }
+                        break; //success!
                     }
-                    break; //No Defense found
                 }
             }
 
+            if (levelIndex < 0)
+            {
+                //we never found a level, which we never looked for a defense
+                MatchDefense(stat, tokens, 0, out defenseIndex);
+            }
+
+            SetNameAndAdditonalInfo(stat, tokens, defenseIndex, levelIndex);
+
+            return stat;
+        }
+
+        private static bool MatchDefense(Stat stat, IList<string> tokens, int startingIndex, out int defenseIndex)
+        {
+            defenseIndex = -1;
+
+            for (int j = startingIndex; j < tokens.Count(); ++j)
+            {
+                var defMatch = Regex.Match(tokens[j], @"^(?:D|d|Def|def)?([1-9][0-9]*\.?[0-9]*\w*)$");
+                if (defMatch.Groups.Count > 1)
+                {
+                    stat.Defense = defMatch.Groups[1].Value;
+                    defenseIndex = j;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static void SetNameAndAdditonalInfo(Stat stat, IList<string> tokens, int defenseIndex, int levelIndex)
+        {
             //the name depends on the position of the levelIndex and defenseIndex
             if (levelIndex >= 0 && defenseIndex >= 0)
             {
-                if (levelIndex + 1 == defenseIndex) 
+                if (levelIndex + 1 == defenseIndex)
                 {
                     //lvl-def format, look for leading or trailing name
                     if (levelIndex == 0)
                     {
                         //trailing name, cannot distinguish additional info
-                        stat.Name = string.Join(" ", tokens.Skip(defenseIndex+1).ToArray());
+                        stat.Name = string.Join(" ", tokens.Skip(defenseIndex + 1));
                     }
-                    else 
+                    else
                     {
                         //leading name
                         stat.Name = string.Join(" ", tokens.Take(levelIndex).ToArray());
 
                         //and rest is additional info
-                        stat.AdditionalInfo = string.Join(" ", tokens.Skip(defenseIndex + 1).ToArray());
+                        stat.AdditionalInfo = string.Join(" ", tokens.Skip(defenseIndex + 1));
                     }
                 }
-                else 
+                else
                 {
                     //preName-lvl-name-def-additionalInfo format
 
                     //all tokens before the defense are merged to make the name
-                    stat.Name = string.Join(" ", tokens.Where((x, i) => i != levelIndex && i < defenseIndex).ToArray());
-                
+                    stat.Name = string.Join(" ", tokens.Where((x, i) => i != levelIndex && i < defenseIndex));
+
                     //tokens after the defense go to additional info
-                    stat.AdditionalInfo = string.Join(" ", tokens.Skip(defenseIndex + 1).ToArray());
+                    stat.AdditionalInfo = string.Join(" ", tokens.Skip(defenseIndex + 1));
                 }
             }
             else if (levelIndex >= 0)
             {
-                //no defense, use all tokens except the level
-                stat.Name = string.Join(" ", tokens.Where((x, i) => i != levelIndex).ToArray());
+                //level with no defense, use all tokens except the level
+                stat.Name = string.Join(" ", tokens.Where((x, i) => i != levelIndex));
+            }
+            else if (defenseIndex >= 0)
+            {
+                //defense with no level
+                stat.Name = string.Join(" ", tokens.Take(defenseIndex));
+                stat.AdditionalInfo = string.Join(" ", tokens.Skip(defenseIndex+1));
             }
             else
             {
                 //no level or defense, use the whole string :(
-                stat.Name = string.Join(" ", tokens.ToArray());
+                stat.Name = string.Join(" ", tokens);
             }
 
-            return stat;
+            if (string.IsNullOrWhiteSpace(stat.Name)) stat.Name = null;
+            if (string.IsNullOrWhiteSpace(stat.AdditionalInfo)) stat.AdditionalInfo = null;
         }
     }
 }
