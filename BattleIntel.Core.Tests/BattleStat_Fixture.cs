@@ -74,13 +74,24 @@ namespace BattleIntel.Core.Tests
             AssertStatParse("DL 245 BossHogg 3.7", 245, "DL BossHogg", "3.7");
             AssertStatParse("DL 245 BossHogg 3.7 duck!", 245, "DL BossHogg", "3.7", "duck!");
             AssertStatParse("245 BossHogg 3.7 super duck dawg!", 245, "BossHogg", "3.7", "super duck dawg!");
+
+            //Legends style
+            AssertStatParse("Dragon Slayer 120 200k (52k)", 120, "Dragon Slayer", "200k", "(52k)");
+            AssertStatParse("Dragon Slayer 120 (52k) 200k ", 120, "Dragon Slayer (52k)", "200k"); //number in parens is not matched for def
         }
 
         [Test]
         public void StatParse_NamesWithNumbers()
         {
             AssertStatParse("250 Tical2000 1.23m", 250, "Tical2000", "1.23m");
-            AssertStatParse("250 Tical 2000 1.23m", 250, "Tical 2000", "1.23m");
+            AssertStatParse("250 Tical2.0 1.23m", 250, "Tical2.0", "1.23m");
+
+            AssertStatParse("250 Tical 2000 1.23m", 250, "Tical 2000", "1.23m"); //picks defense number with m indicator
+            AssertStatParse("250 Tical 2.0 1.23m", 250, "Tical 2.0", "1.23m"); //picks defense number with m indicator
+            AssertStatParse("250 Tical 2.0 1234k", 250, "Tical 2.0", "1234k"); //picks defense number with k indicator
+
+            AssertStatParse("250 Tical 1.23m 2.0", 250, "Tical", "1.23m", "2.0"); //uses first number due to m indicator
+            AssertStatParse("250 Tical 1.23 2.0", 250, "Tical", "1.23", "2.0"); //uses first number by default
         }
 
         private void AssertStatParse(string input, int? level, string name, string defense, string additionalInfo = null)

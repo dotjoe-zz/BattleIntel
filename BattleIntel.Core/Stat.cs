@@ -124,18 +124,39 @@ namespace BattleIntel.Core
         {
             defenseIndex = -1;
 
+            var matches = new List<Tuple<int, string>>();
+
             for (int j = startingIndex; j < tokens.Count(); ++j)
             {
-                var defMatch = Regex.Match(tokens[j], @"^(?:D|d|Def|def)?([1-9][0-9]*\.?[0-9]*\w*)$");
-                if (defMatch.Groups.Count > 1)
+                var m = Regex.Match(tokens[j], @"^(?:D|d|Def|def)?([1-9][0-9]*\.?[0-9]*\w*)$");
+                if (m.Groups.Count > 1)
                 {
-                    stat.Defense = defMatch.Groups[1].Value;
-                    defenseIndex = j;
+                    matches.Add(new Tuple<int, string>(j, m.Groups[1].Value));
+                }
+            }
+
+            if (matches.Count == 0) return false;
+            if (matches.Count == 1)
+            {
+                defenseIndex = matches[0].Item1;
+                stat.Defense = matches[0].Item2;
+            }
+
+            //find the best match, give precednce to number with a m(million) or k(thousandths) indicator
+            for (int i = 0; i < matches.Count(); ++i)
+            {
+                if (Regex.IsMatch(matches[i].Item2, @"^.*[mMkK]$"))
+                {
+                    defenseIndex = matches[i].Item1;
+                    stat.Defense = matches[i].Item2;
                     return true;
                 }
             }
 
-            return false;
+            //couldn't find a winner, just use the first match
+            defenseIndex = matches[0].Item1;
+            stat.Defense = matches[0].Item2;
+            return true;
         }
 
         private static void SetNameAndAdditonalInfo(Stat stat, IList<string> tokens, int defenseIndex, int levelIndex)
