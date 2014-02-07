@@ -145,7 +145,7 @@ namespace BattleIntel.Core
             //find the best match, give precednce to number with a m(million) or k(thousandths) indicator
             for (int i = 0; i < matches.Count(); ++i)
             {
-                if (Regex.IsMatch(matches[i].Item2, @"^.*[mMkK]$"))
+                if (Regex.IsMatch(matches[i].Item2, @"[mMkK]$"))
                 {
                     defenseIndex = matches[i].Item1;
                     stat.Defense = matches[i].Item2;
