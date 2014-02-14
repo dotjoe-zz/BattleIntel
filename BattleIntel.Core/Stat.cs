@@ -30,6 +30,7 @@ namespace BattleIntel.Core
             return Nullable<int>.Equals(that.Level, this.Level)
                 && string.Equals(that.Name, this.Name)
                 && string.Equals(that.Defense, this.Defense)
+                && Nullable<decimal>.Equals(that.DefenseValue, this.DefenseValue)
                 && string.Equals(that.AdditionalInfo, this.AdditionalInfo);
         }
 
@@ -41,17 +42,24 @@ namespace BattleIntel.Core
                 hash = hash * 23 + Level.GetHashCode();
                 hash = hash * 23 + (Name ?? string.Empty).GetHashCode();
                 hash = hash * 23 + (Defense ?? string.Empty).GetHashCode();
+                hash = hash * 23 + DefenseValue.GetHashCode();
                 hash = hash * 23 + (AdditionalInfo ?? string.Empty).GetHashCode();
+                
                 return hash;
             }
         }
 
         public override string ToString()
         {
-            return ToString(" ");
+            return string.Format("L:{0}, N:{1}, D:{2}, DV:{3}, AI:{4}", Level, Name, Defense, DefenseValue, AdditionalInfo);
         }
 
-        public virtual string ToString(string separator)
+        /// <summary>
+        /// Output as a single Stat Line in `Lvl Name Def` format
+        /// </summary>
+        /// <param name="separator"></param>
+        /// <returns></returns>
+        public virtual string ToLine(string separator = " ")
         {
             return string.Join(separator, new string[] { Level.ToString(), Name, Defense, AdditionalInfo }).Trim();
         }
@@ -130,7 +138,7 @@ namespace BattleIntel.Core
             for (int j = startingIndex; j < tokens.Count(); ++j)
             {
                 var m = Regex.Match(tokens[j], @"^(?:D|d|Def|def)?([1-9][0-9]*\.?[0-9]*\w*)$");
-                if (m.Groups.Count > 1)
+                if (m.Groups[1].Success)
                 {
                     matches.Add(new Tuple<int, string>(j, m.Groups[1].Value));
                 }
@@ -143,7 +151,7 @@ namespace BattleIntel.Core
                 stat.Defense = matches[0].Item2;
             }
 
-            //find the best match, give precednce to number with a m(million) or k(thousandths) indicator
+            //find the best match, give precedence to number with a m(million) or k(thousandths) indicator
             for (int i = 0; i < matches.Count(); ++i)
             {
                 if (Regex.IsMatch(matches[i].Item2, @"[mMkK]$"))
@@ -165,24 +173,39 @@ namespace BattleIntel.Core
             stat.DefenseValue = null;
             if (string.IsNullOrEmpty(stat.Defense)) return;
 
-            var m = Regex.Match(stat.Defense, @"\d+\.?\d*");
-            if (m.Captures.Count == 0) return;
+            var m = Regex.Match(stat.Defense, @"(\d+\.?\d*)([mMkK])?");
+            if (!m.Groups[1].Success) return;
 
             decimal d;
-            if (!decimal.TryParse(m.Captures[0].Value, out d)) return;
-            
+            if (!decimal.TryParse(m.Groups[1].Value, out d)) return;
+
             decimal multiplier = 1;
-            string defenseLowered = stat.Defense.ToLower();
-
-            if (defenseLowered.EndsWith("m"))
+            if (m.Groups[2].Success)
             {
-                multiplier = 1000000;
+                string s = m.Groups[2].Value.ToLower();
+                if (s == "m")
+                {
+                    multiplier = 1000000;
+                }
+                else if (s == "k")
+                {
+                    multiplier = 1000;
+                }
             }
-            else if (defenseLowered.EndsWith("k"))
+            else
             {
-                multiplier = 1000;
-            }
+                //assume m or k for certain value ranges
+                if (d < 40)
+                {
+                    multiplier = 1000000;
+                }
+                else if(d < 10000)
+                {
+                    multiplier = 1000;
+                }
 
+            }
+            
             stat.DefenseValue = d * multiplier;
         }
 

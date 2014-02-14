@@ -91,7 +91,7 @@ namespace BattleIntel.DesktopTool
                     .ThenBy(x => x.Name)
                     .ToList();
 
-            txtTeamStatsOutput.Text = String.Join(Environment.NewLine, Stats.Select(x => x.ToString()).ToArray());
+            txtTeamStatsOutput.Text = String.Join(Environment.NewLine, Stats.Select(x => x.ToLine()).ToArray());
         }
 
         private void btnCopyForScout_Click(object sender, EventArgs e)
@@ -129,15 +129,15 @@ namespace BattleIntel.DesktopTool
                 //repeat the teamName above the stats
                 toClip = string.Format("{0}\t\"{0}\n{1}\"", 
                     teamName,  
-                    string.Join("\n", Stats.Select(x => x.ToString())));
+                    string.Join("\n", Stats.Select(x => x.ToLine())));
             }
             else if (copyMode == CopyForSheetMode.TwoColumns)
             {
-                toClip = string.Join(Environment.NewLine, Stats.Select(x => teamName + "\t" + x.ToString()));
+                toClip = string.Join(Environment.NewLine, Stats.Select(x => teamName + "\t" + x.ToLine()));
             }
             else if (copyMode == CopyForSheetMode.MultiColumns)
             {
-                toClip = string.Join(Environment.NewLine, Stats.Select(x => teamName + "\t" + x.ToString("\t")));
+                toClip = string.Join(Environment.NewLine, Stats.Select(x => teamName + "\t" + x.ToLine("\t")));
             }
 
             if (string.IsNullOrEmpty(toClip)) return;
