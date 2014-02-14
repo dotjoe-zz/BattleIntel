@@ -138,7 +138,7 @@ namespace BattleIntel.Core
             for (int j = startingIndex; j < tokens.Count(); ++j)
             {
                 var m = Regex.Match(tokens[j], @"^(?:D|d|Def|def)?([1-9][0-9]*\.?[0-9]*\w*)$");
-                if (m.Groups[1].Success)
+                if (m.Success)
                 {
                     matches.Add(new Tuple<int, string>(j, m.Groups[1].Value));
                 }
