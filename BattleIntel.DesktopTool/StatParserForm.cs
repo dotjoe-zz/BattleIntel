@@ -19,7 +19,12 @@ namespace BattleIntel.DesktopTool
         {
             InitializeComponent();
 
-            cbCopyForSheetMode.SelectedIndex = 0;
+            cbCopyForSheetMode.DataSource = Enum.GetValues(typeof(CopyForSheetMode)).Cast<CopyForSheetMode>()
+                .Select(x => new { id = (int)x, description = x.ToString() })
+                .ToList();
+            cbCopyForSheetMode.DisplayMember = "description";
+            cbCopyForSheetMode.ValueMember = "id";
+            cbCopyForSheetMode.SelectedValue = (int)CopyForSheetMode.Cell;
         }
 
         private void btnPaste_Click(object sender, EventArgs e)
@@ -46,9 +51,9 @@ namespace BattleIntel.DesktopTool
             {
                 //check for team name on the first line
                 var firstLineStat = Stat.Parse(lines.First());
-                if (firstLineStat.Level == null && firstLineStat.Defense == null)
+                if (firstLineStat.Defense == null)
                 {
-                    txtTeamName.Text = firstLineStat.Name;
+                    txtTeamName.Text = firstLineStat.RawInput;
                     lines = lines.Skip(1);
                 }
             }
@@ -110,10 +115,10 @@ namespace BattleIntel.DesktopTool
             if (Stats == null || Stats.Count == 0) return;
 
             //default team name to a single space
-            var teamName = " \t"; 
+            var teamName = " "; 
             if(!string.IsNullOrWhiteSpace(txtTeamName.Text))
             {
-                teamName = txtTeamName.Text.Trim() + "\t";
+                teamName = txtTeamName.Text.Trim();
             }
 
             string toClip = null;
@@ -121,16 +126,18 @@ namespace BattleIntel.DesktopTool
 
             if (copyMode == CopyForSheetMode.Cell)
             {
-                //repeat the teamName above the stats for easy copy
-                toClip = teamName + "\"" + teamName + "\n" + string.Join("\n", Stats.Select(x => x.ToString())) + "\"";
+                //repeat the teamName above the stats
+                toClip = string.Format("{0}\t\"{0}\n{1}\"", 
+                    teamName,  
+                    string.Join("\n", Stats.Select(x => x.ToString())));
             }
             else if (copyMode == CopyForSheetMode.TwoColumns)
             {
-                toClip = string.Join(Environment.NewLine, Stats.Select(x => teamName + x.ToString()));
+                toClip = string.Join(Environment.NewLine, Stats.Select(x => teamName + "\t" + x.ToString()));
             }
             else if (copyMode == CopyForSheetMode.MultiColumns)
             {
-                toClip = string.Join(Environment.NewLine, Stats.Select(x => teamName + x.ToString("\t")));
+                toClip = string.Join(Environment.NewLine, Stats.Select(x => teamName + "\t" + x.ToString("\t")));
             }
 
             if (string.IsNullOrEmpty(toClip)) return;
@@ -140,7 +147,7 @@ namespace BattleIntel.DesktopTool
 
         private CopyForSheetMode GetCopyForSheetMode()
         {
-            return (CopyForSheetMode)cbCopyForSheetMode.SelectedIndex;
+            return (CopyForSheetMode)cbCopyForSheetMode.SelectedValue;
         }
 
         private enum CopyForSheetMode

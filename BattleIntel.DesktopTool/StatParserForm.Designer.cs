@@ -128,11 +128,7 @@
             // 
             this.cbCopyForSheetMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbCopyForSheetMode.FormattingEnabled = true;
-            this.cbCopyForSheetMode.Items.AddRange(new object[] {
-            "1 Cell",
-            "2 Columns",
-            "Multi Columns"});
-            this.cbCopyForSheetMode.Location = new System.Drawing.Point(98, 31);
+            this.cbCopyForSheetMode.Location = new System.Drawing.Point(97, 31);
             this.cbCopyForSheetMode.Name = "cbCopyForSheetMode";
             this.cbCopyForSheetMode.Size = new System.Drawing.Size(114, 21);
             this.cbCopyForSheetMode.TabIndex = 3;
