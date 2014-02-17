@@ -31,10 +31,22 @@ namespace BattleIntel.Core.Tests
         {
             AssertStatParse("Name lvl 250 def 1.23", 250, "Name", "1.23", 1230000);
             AssertStatParse("Name lv 250 d 1.23", 250, "Name", "1.23", 1230000);
+            AssertStatParse("Name l 250 d 1.23", 250, "Name", "1.23", 1230000);
+
+            AssertStatParse("Name LVL 250 def 1.23", 250, "Name", "1.23", 1230000);
+            AssertStatParse("Name LV 250 d 1.23", 250, "Name", "1.23", 1230000);
+            AssertStatParse("Name L 250 d 1.23", 250, "Name", "1.23", 1230000);
+
             AssertStatParse("Name l250 d1.23", 250, "Name", "1.23", 1230000);
+            AssertStatParse("Name lv250 d1.23", 250, "Name", "1.23", 1230000);
+            AssertStatParse("Name lvl250 d1.23", 250, "Name", "1.23", 1230000);
+            AssertStatParse("Name L250 d1.23", 250, "Name", "1.23", 1230000);
+            AssertStatParse("Name LV250 d1.23", 250, "Name", "1.23", 1230000);
+            AssertStatParse("Name LVL250 d1.23", 250, "Name", "1.23", 1230000);
+
             AssertStatParse("Name L250 D1.23", 250, "Name", "1.23", 1230000);
-            AssertStatParse("Name Lvl250 Def1.23", 250, "Name", "1.23", 1230000);
-            AssertStatParse("Name Lv250 def1.23", 250, "Name", "1.23", 1230000);
+            AssertStatParse("Name Lv250 DEF1.23", 250, "Name", "1.23", 1230000);
+            AssertStatParse("Name LvL250 def1.23", 250, "Name", "1.23", 1230000);
         }
 
         [Test]

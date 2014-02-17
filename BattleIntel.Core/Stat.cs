@@ -103,7 +103,7 @@ namespace BattleIntel.Core
             for (int i = 0; i < tokens.Count(); ++i)
             {
                 //levels are any number from 1 to infinity with an optional "Lvl" prefix
-                var lvlMatch = Regex.Match(tokens[i], "^(?:l|L|lvl|Lvl|lv|Lv)?([1-9][0-9]*)$");
+                var lvlMatch = Regex.Match(tokens[i], "^(?:l|lv|lvl)?([1-9][0-9]*)$", RegexOptions.IgnoreCase);
                 if (lvlMatch.Success)
                 {
                     stat.Level = int.Parse(lvlMatch.Groups[1].Value);
@@ -137,7 +137,7 @@ namespace BattleIntel.Core
 
             for (int j = startingIndex; j < tokens.Count(); ++j)
             {
-                var m = Regex.Match(tokens[j], @"^(?:D|d|Def|def)?([1-9][0-9]*\.?[0-9]*[a-zA-Z]*)$");
+                var m = Regex.Match(tokens[j], @"^(?:d|def)?([1-9][0-9]*\.?[0-9]*[a-zA-Z]*)$", RegexOptions.IgnoreCase);
                 if (m.Success)
                 {
                     matches.Add(new Tuple<int, string>(j, m.Groups[1].Value));
