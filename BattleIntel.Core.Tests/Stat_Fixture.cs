@@ -92,6 +92,8 @@ namespace BattleIntel.Core.Tests
 
             AssertStatParse("250 Tical 1.23m 2.0", 250, "Tical", "1.23m", 1230000, "2.0"); //uses first number due to m indicator
             AssertStatParse("250 Tical 1.23 2.0", 250, "Tical", "1.23", 1230000, "2.0"); //uses first number by default
+
+            AssertStatParse("136 2nutty4u 7.3", 136, "2nutty4u", "7.3", 7300000);
         }
 
         [Test]

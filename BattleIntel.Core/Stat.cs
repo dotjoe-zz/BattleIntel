@@ -137,7 +137,7 @@ namespace BattleIntel.Core
 
             for (int j = startingIndex; j < tokens.Count(); ++j)
             {
-                var m = Regex.Match(tokens[j], @"^(?:D|d|Def|def)?([1-9][0-9]*\.?[0-9]*\w*)$");
+                var m = Regex.Match(tokens[j], @"^(?:D|d|Def|def)?([1-9][0-9]*\.?[0-9]*[a-zA-Z]*)$");
                 if (m.Success)
                 {
                     matches.Add(new Tuple<int, string>(j, m.Groups[1].Value));
@@ -151,10 +151,21 @@ namespace BattleIntel.Core
                 stat.Defense = matches[0].Item2;
             }
 
-            //find the best match, give precedence to number with a m(million) or k(thousandths) indicator
+            //give precedence to number with a m(million) or k(thousandths) indicator
             for (int i = 0; i < matches.Count(); ++i)
             {
                 if (Regex.IsMatch(matches[i].Item2, @"[mMkK]$"))
+                {
+                    defenseIndex = matches[i].Item1;
+                    stat.Defense = matches[i].Item2;
+                    return true;
+                }
+            }
+
+            //or give it to the number with a decimal separator
+            for (int i = 0; i < matches.Count(); ++i)
+            {
+                if (Regex.IsMatch(matches[i].Item2, @"\d\.\d"))
                 {
                     defenseIndex = matches[i].Item1;
                     stat.Defense = matches[i].Item2;
