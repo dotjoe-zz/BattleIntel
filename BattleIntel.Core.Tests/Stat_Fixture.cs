@@ -52,24 +52,42 @@ namespace BattleIntel.Core.Tests
         [Test]
         public void StatParse_Canadian()
         {
+            AssertStatParse("Name 250 1,2", 250, "Name", "1.2", 1200000);
+            AssertStatParse("Name 250 1,23", 250, "Name", "1.23", 1230000);
+            AssertStatParse("Name 250 1,234", 250, "Name", "1.234", 1234000);
+            AssertStatParse("Name 250 1,2345", 250, "Name", "1.2345", 1234500);
+
+            AssertStatParse("Name 250 10,2", 250, "Name", "10.2", 10200000);
+            AssertStatParse("Name 250 11,23", 250, "Name", "11.23", 11230000);
+            AssertStatParse("Name 250 12,234", 250, "Name", "12.234", 12234000);
+            AssertStatParse("Name 250 13,2345", 250, "Name", "13.2345", 13234500);
+
+            AssertStatParse("250 1,2 Name", 250, "Name", "1.2", 1200000);
+            AssertStatParse("250 1,23 Name", 250, "Name", "1.23", 1230000);
+            AssertStatParse("250 1,23 Name", 250, "Name", "1.23", 1230000);
+
             AssertStatParse("Name 250 1,2m", 250, "Name", "1.2m", 1200000);
             AssertStatParse("Name 250 1,23m", 250, "Name", "1.23m", 1230000);
-            AssertStatParse("Name 250 1,23M", 250, "Name", "1.23M", 1230000);
+            AssertStatParse("Name 250 1,234M", 250, "Name", "1.234M", 1234000);
+            AssertStatParse("Name 250 1,2345M", 250, "Name", "1.2345M", 1234500);
 
             AssertStatParse("250 1,2m Name", 250, "Name", "1.2m", 1200000);
             AssertStatParse("250 1,23m Name", 250, "Name", "1.23m", 1230000);
             AssertStatParse("250 1,23M Name", 250, "Name", "1.23M", 1230000);
 
             AssertStatParse("Name 250 1,234k", 250, "Name", "1234k", 1234000); //not really Canadian, we just removed the thousandth's separator
+            AssertStatParse("Name 250 10,234k", 250, "Name", "10234k", 10234000); //not really Canadian, we just removed the thousandth's separator
         }
 
         [Test]
         public void StatParse_Compressed()
         {
-            AssertStatParse("Name/250/1.23m", 250, "Name", "1.23m", 1230000);
-            AssertStatParse("250,1.23m,Name", 250, "Name", "1.23m", 1230000);
-            AssertStatParse("250-1.23m-Name", 250, "Name", "1.23m", 1230000);
-            AssertStatParse("250-1,23m-Name", 250, "Name", "1.23m", 1230000); //compressed Canadian
+            AssertStatParse("Name1/250/1.23m", 250, "Name1", "1.23m", 1230000);
+            AssertStatParse("250,1.23m,Name2", 250, "Name2", "1.23m", 1230000);
+            AssertStatParse("250-1.23m-Name3", 250, "Name3", "1.23m", 1230000);
+            AssertStatParse("250-1,23m-Name4", 250, "Name4", "1.23m", 1230000); //compressed Canadian
+            AssertStatParse("250,10.0m,Name5", 250, "Name5", "10.0m", 10000000);
+            AssertStatParse("250,25m,Name6", 250, "Name6", "25m", 25000000);
         }
 
         [Test]

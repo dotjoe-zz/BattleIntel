@@ -79,14 +79,19 @@ namespace BattleIntel.Core
             //trim and remove any internal multi whitespace
             s = Regex.Replace(s.Trim(), @"\s+", " ");
 
-            //trim any quotation marks from erronious copy/paste
-            s = s.Trim(new char[] { '"', '\'' });
+            //trim any quotation marks from erronious copy/paste and other duck indicators like "<----"
+            s = s.Trim(new char[] { '"', '\'', '-', '<', '>' });
 
-            //fix a defense number using a comma as decimal separator for value like 1,23m
-            s = Regex.Replace(s, @"((?<!\d)\d),(\d{1,2}(?!\d)[\smM]?)", "$1.$2");
+            //we only check for a Canadian decimal separator if there is a single comma in the input
+            if (Regex.Matches(s, ",").Count == 1) 
+            {
+                //fix a defense number using a comma as decimal separator (aka Canadian) 
+                //as long as it's not a K indicator like 1,23k
+                s = Regex.Replace(s, @"((?<!\d)\d+),(\d+(?![\d\.kK])[\smM]?)", "$1.$2");
+            }
 
             //now remove any comma thousandths separators so we do not split on them next
-            s = Regex.Replace(s, @"((?<!\d)\d),(\d{3}(?!\d))", "$1$2");
+            s = Regex.Replace(s, @"((?<!\d)\d{1,3}),(\d{3}(?!\d))", "$1$2");
 
             //help catch parsing differences in the scrubbing vs. token capturing
             stat.ScrubbedInput = s;
