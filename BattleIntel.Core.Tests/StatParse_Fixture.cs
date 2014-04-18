@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace BattleIntel.Core.Tests
 {
     [TestFixture]
-    public class Stat_Fixture
+    public class StatParse_Fixture
     {
         [Test]
         public void StatParse_Standard()

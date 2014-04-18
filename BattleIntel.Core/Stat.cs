@@ -29,9 +29,8 @@ namespace BattleIntel.Core
 
             return Nullable<int>.Equals(that.Level, this.Level)
                 && string.Equals(that.Name, this.Name)
-                && string.Equals(that.Defense, this.Defense)
                 && Nullable<decimal>.Equals(that.DefenseValue, this.DefenseValue)
-                && string.Equals(that.AdditionalInfo, this.AdditionalInfo);
+                && string.Equals(that.AdditionalInfo, this.AdditionalInfo, StringComparison.OrdinalIgnoreCase);
         }
 
         public override int GetHashCode()
