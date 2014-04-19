@@ -31,7 +31,6 @@
             this.components = new System.ComponentModel.Container();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.btnAppend = new System.Windows.Forms.Button();
-            this.btnParse = new System.Windows.Forms.Button();
             this.txtTeamName = new System.Windows.Forms.TextBox();
             this.btnPaste = new System.Windows.Forms.Button();
             this.txtTeamStats = new System.Windows.Forms.TextBox();
@@ -56,7 +55,6 @@
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.Controls.Add(this.btnAppend);
-            this.splitContainer1.Panel1.Controls.Add(this.btnParse);
             this.splitContainer1.Panel1.Controls.Add(this.txtTeamName);
             this.splitContainer1.Panel1.Controls.Add(this.btnPaste);
             this.splitContainer1.Panel1.Controls.Add(this.txtTeamStats);
@@ -80,17 +78,6 @@
             this.btnAppend.Text = "Append";
             this.btnAppend.UseVisualStyleBackColor = true;
             this.btnAppend.Click += new System.EventHandler(this.btnAppend_Click);
-            // 
-            // btnParse
-            // 
-            this.btnParse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnParse.Location = new System.Drawing.Point(158, 3);
-            this.btnParse.Name = "btnParse";
-            this.btnParse.Size = new System.Drawing.Size(54, 23);
-            this.btnParse.TabIndex = 4;
-            this.btnParse.Text = "Parse";
-            this.btnParse.UseVisualStyleBackColor = true;
-            this.btnParse.Click += new System.EventHandler(this.btnParse_Click);
             // 
             // txtTeamName
             // 
@@ -123,6 +110,7 @@
             this.txtTeamStats.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtTeamStats.Size = new System.Drawing.Size(209, 320);
             this.txtTeamStats.TabIndex = 1;
+            this.txtTeamStats.TextChanged += new System.EventHandler(this.txtTeamStats_TextChanged);
             // 
             // cbCopyForSheetMode
             // 
@@ -174,7 +162,7 @@
             this.Controls.Add(this.splitContainer1);
             this.MinimumSize = new System.Drawing.Size(450, 420);
             this.Name = "StatParserForm";
-            this.Text = "Stat Parser";
+            this.Text = "Stat Parser v0.4";
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
@@ -188,7 +176,6 @@
         #endregion
 
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.Button btnParse;
         private System.Windows.Forms.TextBox txtTeamName;
         private System.Windows.Forms.Button btnPaste;
         private System.Windows.Forms.TextBox txtTeamStats;
