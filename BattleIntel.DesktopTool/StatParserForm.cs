@@ -1,7 +1,11 @@
 ﻿using BattleIntel.Core;
+using BattleIntel.DesktopTool.GroupMeForms;
+using GroupMe;
+using GroupMe.Responses;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -14,6 +18,8 @@ namespace BattleIntel.DesktopTool
     public partial class StatParserForm : Form
     {
         private IList<Stat> Stats;
+        private GroupMeService groupMe;
+        private Group intelSourceGroup;
 
         public StatParserForm()
         {
@@ -25,6 +31,8 @@ namespace BattleIntel.DesktopTool
             cbCopyForSheetMode.DisplayMember = "description";
             cbCopyForSheetMode.ValueMember = "id";
             cbCopyForSheetMode.SelectedValue = (int)CopyForSheetMode.Cell;
+
+            groupMe = new GroupMeService(ConfigurationManager.AppSettings.Get("GroupMe-AccessToken"));
         }
 
         private void btnPaste_Click(object sender, EventArgs e)
@@ -162,6 +170,28 @@ namespace BattleIntel.DesktopTool
             Cell = 0,
             TwoColumns = 1,
             MultiColumns = 2
+        }
+
+        private void groupmeRoomToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var gs = new GroupSelector(groupMe))
+            {
+                if (gs.ShowDialog() == DialogResult.OK)
+                {
+                    intelSourceGroup = gs.SelectedGroup;
+                }
+            }
+            UpdateConnectStatusLabel();
+        }
+
+        private void googleSheetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void UpdateConnectStatusLabel()
+        {
+            connectStatus.Text = "Listening: " + intelSourceGroup.name;
         }
     }
 }
