@@ -28,6 +28,25 @@ namespace GroupMe
         }
 
         /// <summary>
+        /// Returns the last 20 messages, ordered by created_at descending. 
+        /// Use the before_message_id param to page back in time.
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="before_message_id">get 20 message before this message</param>
+        /// <returns></returns>
+        public IList<Message> GroupMessages(string groupId, int? before_message_id = null)
+        {
+            string url = GetApiUrl(string.Format("groups/{0}/messages", groupId));
+
+            if (before_message_id.HasValue)
+            {
+                url += "&before_id=" + before_message_id.Value;
+            }
+
+            return GET<GroupMessages>(url).messages;
+        }
+
+        /// <summary>
         /// concatenates the base api url, the action, and the token query string param.
         /// Append additional query string with a leading ampersand "&" delimiter
         /// </summary>

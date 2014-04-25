@@ -182,6 +182,13 @@ namespace BattleIntel.DesktopTool
                 }
             }
             UpdateConnectStatusLabel();
+
+            if (intelSourceGroup != null)
+            {
+                var messages = groupMe.GroupMessages(intelSourceGroup.id);
+                MessageBox.Show(string.Join("\n", messages.Select(x => x.name + ": " + x.text)));
+            }
+
         }
 
         private void googleSheetToolStripMenuItem_Click(object sender, EventArgs e)
