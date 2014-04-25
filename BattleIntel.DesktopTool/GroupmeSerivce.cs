@@ -46,6 +46,22 @@ namespace GroupMe
             return GET<GroupMessages>(url).messages;
         }
 
+        public Message PostGroupMessage(string groupId, string text)
+        {
+            //TODO split up text greater than 450 chars
+
+            string url = GetApiUrl(string.Format("groups/{0}/messages", groupId));
+
+            var data = new PostMessageContainer { 
+                message = new PostMessage { 
+                    source_guid = Guid.NewGuid().ToString(), 
+                    text = text 
+                } 
+            };
+
+            return POST<MessageContainer>(url, data).message;
+        }
+
         /// <summary>
         /// concatenates the base api url, the action, and the token query string param.
         /// Append additional query string with a leading ampersand "&" delimiter
@@ -152,6 +168,22 @@ namespace GroupMe.Responses {
         public string text { get; set; }
         public bool system { get; set; }
         //public List<Attachment> attachments { get; set; }
+    }
+
+    public class PostMessageContainer
+    {
+        public PostMessage message { get; set; }
+    }
+
+    public class PostMessage
+    {
+        public string source_guid { get; set; }
+        public string text { get; set; }
+    }
+
+    public class MessageContainer
+    {
+        public Message message { get; set; }
     }
 }
 

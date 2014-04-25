@@ -185,6 +185,9 @@ namespace BattleIntel.DesktopTool
 
             if (intelSourceGroup != null)
             {
+                var m = groupMe.PostGroupMessage(intelSourceGroup.id, "Arms Bot say Hi! lol");
+                MessageBox.Show(m.name + ": " + m.text);
+
                 var messages = groupMe.GroupMessages(intelSourceGroup.id);
                 MessageBox.Show(string.Join("\n", messages.Select(x => x.name + ": " + x.text)));
             }
