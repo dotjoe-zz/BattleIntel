@@ -11,7 +11,7 @@ namespace BattleIntel.Core.Db.Generate
 {
     class Program
     {
-        static readonly string connectionString = @"Server=localhost\SQLEXPRESS;Initial Catalog=BattleIntel;Integrated Security=SSPI;";
+        static readonly string connectionString = @"Server=localhost;Initial Catalog=BattleIntel;Integrated Security=SSPI;";
 
         static void Main(string[] args)
         {
