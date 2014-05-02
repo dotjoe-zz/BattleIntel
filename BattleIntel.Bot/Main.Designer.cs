@@ -43,6 +43,7 @@
             // 
             // btnStart
             // 
+            this.btnStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnStart.Location = new System.Drawing.Point(12, 459);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(75, 23);
@@ -53,6 +54,7 @@
             // 
             // btnStop
             // 
+            this.btnStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnStop.Location = new System.Drawing.Point(93, 459);
             this.btnStop.Name = "btnStop";
             this.btnStop.Size = new System.Drawing.Size(75, 23);
@@ -90,6 +92,9 @@
             // 
             // txtConsole
             // 
+            this.txtConsole.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtConsole.Location = new System.Drawing.Point(12, 27);
             this.txtConsole.Multiline = true;
             this.txtConsole.Name = "txtConsole";

@@ -9,15 +9,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace BattleIntel.Bot
+namespace GSheet
 {
-    class GoogleSheetService
+    using BattleIntel.Bot;
+    using GSheet.Models;
+
+    class GSheetService
     {
         private SpreadsheetsService service;
 
-        private GoogleSheetService() {}
+        private GSheetService() {}
 
-        public static GoogleSheetService Init()
+        public static GSheetService Init()
         {
             var parameters = new OAuth2Parameters
             {
@@ -44,7 +47,7 @@ namespace BattleIntel.Bot
                 return null;
             }
 
-            var instance = new GoogleSheetService();
+            var instance = new GSheetService();
             instance.service = new SpreadsheetsService("BattleIntel");
             instance.service.RequestFactory = new GOAuth2RequestFactory(null, "BattleIntel", parameters);
 
@@ -62,6 +65,7 @@ namespace BattleIntel.Bot
                 results.Add(new SpreadsheetModel
                 {
                     Title = entry.Title.Text,
+                    Url = entry.AlternateUri.Content,
                     WorksheetsFeedURI = wsLink.HRef.Content
                 });
             }
@@ -94,23 +98,14 @@ namespace BattleIntel.Bot
             throw new NotImplementedException();
         }
     }
+}
 
-    /// <summary>
-    /// Where a list of stats came from.
-    /// </summary>
-    class StatContext
-    {
-        public string spreadsheetTitle { get; set; }
-        public string spreadsheetHref { get; set; }
-        public string sheetTitle { get; set; }
-        public string sheetHref { get; set; }
-        public string teamName { get; set; }
-        public IList<Stat> stats { get; set; }
-    }
-
+namespace GSheet.Models
+{
     class SpreadsheetModel
     {
         public string Title { get; set; }
+        public string Url { get; set; }
         public string WorksheetsFeedURI { get; set; }
     }
 

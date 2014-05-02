@@ -99,7 +99,7 @@
     <Compile Include="NH.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\GoogleSheetService.cs" />
+    <Compile Include="Services\GSheetService.cs" />
     <Compile Include="Services\GroupMeSerivce.cs" />
     <EmbeddedResource Include="BattleSelector.resx">
       <DependentUpon>BattleSelector.cs</DependentUpon>

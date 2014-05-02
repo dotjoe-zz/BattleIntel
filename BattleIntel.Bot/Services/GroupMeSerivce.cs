@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace GroupMe
 {
-    using GroupMe.Responses;
-using Newtonsoft.Json;
-using System.Collections.Specialized;
-using System.IO;
-using System.Net;
+    using GroupMe.Models;
+    using Newtonsoft.Json;
+    using System.Collections.Specialized;
+    using System.IO;
+    using System.Net;
 
     public class GroupMeService
     {
@@ -158,7 +158,7 @@ using System.Net;
 
 }
 
-namespace GroupMe.Responses { 
+namespace GroupMe.Models { 
 
     class ResponseEnvelope<T> 
     {

@@ -1,5 +1,5 @@
 ﻿using GroupMe;
-using GroupMe.Responses;
+using GroupMe.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -52,7 +52,7 @@ namespace BattleIntel.Bot
 
         private void btnOk_Click(object sender, EventArgs e)
         {
-            SelectedGroup = listBox1.SelectedItem as GroupMe.Responses.Group;
+            SelectedGroup = listBox1.SelectedItem as Group;
 
             if (SelectedGroup == null)
             {

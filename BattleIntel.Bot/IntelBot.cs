@@ -1,13 +1,9 @@
-﻿using BattleIntel.Core.Db;
+﻿using GSheet;
 using GroupMe;
-using GroupMe.Responses;
+using GroupMe.Models;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BattleIntel.Bot
@@ -20,7 +16,7 @@ namespace BattleIntel.Bot
         private int? battleId;
         private GroupMeService groupMe;
         private Group intelRoom;
-        private GoogleSheetService google;
+        private GSheetService google;
         
 
         public bool IsRunning { get; private set; }
@@ -68,13 +64,13 @@ namespace BattleIntel.Bot
 
         public bool ConnectToGoogleSheet(IWin32Window owner)
         {
-            google = GoogleSheetService.Init();
+            google = GSheetService.Init();
             if (google == null) return false;
 
             var ss = google.ListSpreadsheets();
             foreach (var s in ss)
             {
-                console.AppendLine(s.Title + ":" + s.WorksheetsFeedURI);
+                console.AppendLine(s.Title + ": " + s.Url);
             }
 
             return false;
