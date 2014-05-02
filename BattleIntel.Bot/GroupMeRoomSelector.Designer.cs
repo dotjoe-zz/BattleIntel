@@ -1,6 +1,6 @@
 ﻿namespace BattleIntel.Bot
 {
-    partial class GroupSelector
+    partial class GroupMeRoomSelector
     {
         /// <summary>
         /// Required designer variable.

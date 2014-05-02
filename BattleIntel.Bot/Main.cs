@@ -18,7 +18,7 @@ namespace BattleIntel.Bot
         {
             InitializeComponent();
 
-            Bot = IntelBot.Init(this);
+            Bot = new IntelBot(this);
         }
 
         private void groupMeRoomToolStripMenuItem_Click(object sender, EventArgs e)
@@ -26,9 +26,31 @@ namespace BattleIntel.Bot
             Bot.ConnectToIntelRoom();
         }
 
-        public void AppendMessage(string s)
+        public void AppendLine(string s)
         {
-            txtConsole.AppendText(s);
+           Append(s + Environment.NewLine);
+        }
+
+        public void Append(string s)
+        {
+            if (txtConsole.InvokeRequired)
+            {
+                txtConsole.Invoke((MethodInvoker)(() => txtConsole.AppendText(s)));
+            }
+            else 
+            { 
+                txtConsole.AppendText(s);
+            }
+        }
+
+        private void btnStart_Click(object sender, EventArgs e)
+        {
+            Bot.Start();
+        }
+
+        private void btnStop_Click(object sender, EventArgs e)
+        {
+            Bot.Stop();
         }
     }
 }

@@ -12,7 +12,7 @@ using System.Windows.Forms;
 
 namespace BattleIntel.Bot
 {
-    public partial class GroupSelector : Form
+    public partial class GroupMeRoomSelector : Form
     {
         private GroupMeService service;
         private int page = 1;
@@ -20,7 +20,7 @@ namespace BattleIntel.Bot
 
         public Group SelectedGroup { get; private set; }
 
-        public GroupSelector(GroupMeService service)
+        public GroupMeRoomSelector(GroupMeService service)
         {
             this.service = service;
             InitializeComponent();
