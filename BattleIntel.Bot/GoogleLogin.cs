@@ -8,10 +8,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace BattleIntel.DesktopTool
+namespace BattleIntel.Bot
 {
     /// <summary>
-    /// Navigate to the google oath2 auth url and wait for a page with the Access Code in the title.
+    /// Navigate to the google oath2 auth url and wait for a page title starting with 'Success code' and parse out the access code.
     /// </summary>
     public partial class GoogleLogin : Form
     {
@@ -33,7 +33,7 @@ namespace BattleIntel.DesktopTool
         private void Navigated(object sender, WebBrowserNavigatedEventArgs e)
         {
             string title = webBrowser1.DocumentTitle;
-            if (title.StartsWith("Source code="))
+            if (title.StartsWith("Success code="))
             {
                 AccessCode = title.Split('=').Skip(1).First();
                 DialogResult = AccessCode != null ? DialogResult.OK : DialogResult.Cancel;

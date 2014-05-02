@@ -17,9 +17,11 @@ namespace BattleIntel.Bot
         private IIntelMessagingConsole console;
         private System.Timers.Timer timer;
 
+        private int? battleId;
         private GroupMeService groupMe;
         private Group intelRoom;
-        private int? battleId;
+        private GoogleSheetService google;
+        
 
         public bool IsRunning { get; private set; }
 
@@ -66,6 +68,15 @@ namespace BattleIntel.Bot
 
         public bool ConnectToGoogleSheet(IWin32Window owner)
         {
+            google = GoogleSheetService.Init();
+            if (google == null) return false;
+
+            var ss = google.ListSpreadsheets();
+            foreach (var s in ss)
+            {
+                console.AppendLine(s.Title + ":" + s.WorksheetsFeedURI);
+            }
+
             return false;
         }
 

@@ -1,4 +1,4 @@
-﻿namespace BattleIntel.DesktopTool
+﻿namespace BattleIntel.Bot
 {
     partial class GoogleLogin
     {
