@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 namespace GroupMe
 {
     using GroupMe.Responses;
-    using Newtonsoft.Json;
-    using System.IO;
-    using System.Net;
+using Newtonsoft.Json;
+using System.Collections.Specialized;
+using System.IO;
+using System.Net;
 
     public class GroupMeService
     {
@@ -23,8 +24,8 @@ namespace GroupMe
 
         public IList<Group> GroupsIndex(int page = 1, int per_page = 10)
         {
-            string url = GetApiUrl("groups") + string.Format("&page={0}&per_page={1}", page, per_page);
-            return GET<IList<Group>>(url);
+            string action = string.Format("groups?page={0}&per_page={1}", page, per_page);
+            return GET<IList<Group>>(action);
         }
 
         /// <summary>
@@ -36,14 +37,14 @@ namespace GroupMe
         /// <returns></returns>
         public IList<Message> GroupMessages(string groupId, string before_message_id = null)
         {
-            string url = GetApiUrl(string.Format("groups/{0}/messages", groupId));
+            string action = string.Format("groups/{0}/messages", groupId);
 
             if (before_message_id != null)
             {
-                url += "&before_id=" + WebUtility.UrlEncode(before_message_id);
+                action += "?before_id=" + WebUtility.UrlEncode(before_message_id);
             }
 
-            return GET<GroupMessages>(url).messages;
+            return GET<GroupMessages>(action).messages;
         }
 
         /// <summary>
@@ -83,8 +84,7 @@ namespace GroupMe
         public Message PostGroupMessage(string groupId, string text)
         {
             //TODO split up text greater than 450 chars
-
-            string url = GetApiUrl(string.Format("groups/{0}/messages", groupId));
+            string action = string.Format("groups/{0}/messages", groupId);
 
             var data = new PostMessageContainer { 
                 message = new PostMessage { 
@@ -93,26 +93,17 @@ namespace GroupMe
                 } 
             };
 
-            return POST<MessageContainer>(url, data).message;
+            return POST<MessageContainer>(action, data).message;
         }
 
-        /// <summary>
-        /// concatenates the base api url, the action, and the token query string param.
-        /// Append additional query string with a leading ampersand "&" delimiter
-        /// </summary>
-        /// <param name="action">the action to hit, does not need leading / </param>
-        /// <returns></returns>
-        private string GetApiUrl(string action)
+        private T GET<T>(string action)
         {
-            return string.Format("{0}/{1}?token={2}", apiBaseUrl, action.TrimStart('/'), accessToken);
-        }
-
-        private T GET<T>(string url)
-        {
+            var url = string.Format("{0}/{1}", apiBaseUrl, action.TrimStart('/'));
             var request = (HttpWebRequest)WebRequest.Create(url);
             
             request.Method = "GET";
             request.Accept = "application/json";
+            request.Headers.Add("X-Access-Token", accessToken);
 
             ResponseEnvelope<T> envelope;
 
@@ -128,12 +119,14 @@ namespace GroupMe
                 return envelope.response;
         }
 
-        private T POST<T>(string url, object data)
+        private T POST<T>(string action, object data)
         {
+            var url = string.Format("{0}/{1}", apiBaseUrl, action.TrimStart('/'));
             var request = (HttpWebRequest)WebRequest.Create(url);
 
             request.Method = "POST";
             request.Accept = "application/json";
+            request.Headers.Add("X-Access-Token", accessToken);
 
             if (data != null)
             {
