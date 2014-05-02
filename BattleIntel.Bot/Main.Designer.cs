@@ -36,6 +36,8 @@
             this.groupMeRoomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.txtConsole = new System.Windows.Forms.TextBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.battleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.googleSheetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -72,7 +74,9 @@
             // connectToolStripMenuItem
             // 
             this.connectToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.groupMeRoomToolStripMenuItem});
+            this.battleToolStripMenuItem,
+            this.groupMeRoomToolStripMenuItem,
+            this.googleSheetToolStripMenuItem});
             this.connectToolStripMenuItem.Name = "connectToolStripMenuItem";
             this.connectToolStripMenuItem.Size = new System.Drawing.Size(64, 20);
             this.connectToolStripMenuItem.Text = "Connect";
@@ -93,6 +97,20 @@
             this.txtConsole.Size = new System.Drawing.Size(524, 426);
             this.txtConsole.TabIndex = 3;
             // 
+            // battleToolStripMenuItem
+            // 
+            this.battleToolStripMenuItem.Name = "battleToolStripMenuItem";
+            this.battleToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.battleToolStripMenuItem.Text = "Battle";
+            this.battleToolStripMenuItem.Click += new System.EventHandler(this.battleToolStripMenuItem_Click);
+            // 
+            // googleSheetToolStripMenuItem
+            // 
+            this.googleSheetToolStripMenuItem.Name = "googleSheetToolStripMenuItem";
+            this.googleSheetToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.googleSheetToolStripMenuItem.Text = "Google Sheet";
+            this.googleSheetToolStripMenuItem.Click += new System.EventHandler(this.googleSheetToolStripMenuItem_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -105,6 +123,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Main";
             this.Text = "Intel Bot";
+            this.Load += new System.EventHandler(this.Main_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -121,6 +140,8 @@
         private System.Windows.Forms.ToolStripMenuItem groupMeRoomToolStripMenuItem;
         private System.Windows.Forms.TextBox txtConsole;
         private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.ToolStripMenuItem battleToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem googleSheetToolStripMenuItem;
     }
 }
 

@@ -19,7 +19,7 @@ namespace BattleIntel.Bot
 
         private GroupMeService groupMe;
         private Group intelRoom;
-        private int? BattleId;
+        private int? battleId;
 
         public bool IsRunning { get; private set; }
 
@@ -31,20 +31,17 @@ namespace BattleIntel.Bot
             this.timer.Elapsed += timer_Elapsed;
 
             this.groupMe = new GroupMeService(ConfigurationManager.AppSettings.Get("GroupMe-AccessToken"));
-
-            ConnectToBattle();
-            ConnectToIntelRoom();
-            ConnectToGoogleSheet();
+            this.IsRunning = false;
         }
 
-        private bool ConnectToBattle()
+        public bool ConnectToBattle(IWin32Window owner)
         {
             using (var bs = new BattleSelector())
             {
-                if (bs.ShowDialog() == DialogResult.OK)
+                if (bs.ShowDialog(owner) == DialogResult.OK)
                 {
-                    BattleId = bs.SelectedBattleId;
-                    console.AppendLine(string.Format("Connected to BattleId: {0}", BattleId));
+                    battleId = bs.SelectedBattleId;
+                    console.AppendLine(string.Format("Connected to BattleId: {0}", battleId));
                     return true;
                 }
             }
@@ -52,11 +49,11 @@ namespace BattleIntel.Bot
             return false;
         }
 
-        public bool ConnectToIntelRoom()
+        public bool ConnectToIntelRoom(IWin32Window owner)
         {
             using (var gs = new GroupMeRoomSelector(groupMe))
             {
-                if (gs.ShowDialog() == DialogResult.OK)
+                if (gs.ShowDialog(owner) == DialogResult.OK)
                 {
                     intelRoom = gs.SelectedGroup;
                     console.AppendLine(string.Format("Connected to Intel Room: {0} (id:{1})", intelRoom.name, intelRoom.id));
@@ -67,7 +64,7 @@ namespace BattleIntel.Bot
             return false;
         }
 
-        public bool ConnectToGoogleSheet()
+        public bool ConnectToGoogleSheet(IWin32Window owner)
         {
             return false;
         }
@@ -76,13 +73,27 @@ namespace BattleIntel.Bot
         {
             console.Append(string.Format("{0:G} checking for new intel...", DateTime.Now));
 
+            Thread.Sleep(1000);
             //console.Append(string.Format("{0:G} parsing new intel...", DateTime.Now));
 
             //console.Append(string.Format("{0:G} writing new intel to sheet...", DateTime.Now));
+            
+            console.AppendLine("done");
+        }
+
+        private bool IsReadyToRun()
+        {
+            return intelRoom != null && battleId.HasValue;
         }
 
         public void Start()
         {
+            if (!IsReadyToRun())
+            {
+                console.AppendLine(string.Format("{0:G} Cannot start Bot until you connect to a battle AND intel room.", DateTime.Now));
+                return;
+            }
+
             console.AppendLine(string.Format("{0:G} Bot Starting", DateTime.Now));
             IsRunning = true;
             ProcessIntel(); //process intel right away, don't wait for first interval

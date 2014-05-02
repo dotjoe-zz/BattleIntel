@@ -21,14 +21,61 @@ namespace BattleIntel.Bot
             Bot = new IntelBot(this);
         }
 
+        private void Main_Load(object sender, EventArgs e)
+        {
+            Bot.ConnectToBattle(this);
+            Bot.ConnectToIntelRoom(this);
+            Bot.ConnectToGoogleSheet(this);
+
+            SetBotControlsStatus();
+        }
+
+        #region "Menu Items"
+
+        private void battleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Bot.ConnectToBattle(this);
+        }
+
         private void groupMeRoomToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Bot.ConnectToIntelRoom();
+            Bot.ConnectToIntelRoom(this);
         }
+
+        private void googleSheetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Bot.ConnectToGoogleSheet(this);
+        }
+
+        #endregion
+
+        #region "Bot Controls"
+
+        private void btnStart_Click(object sender, EventArgs e)
+        {
+            Bot.Start();
+            SetBotControlsStatus();
+        }
+
+        private void btnStop_Click(object sender, EventArgs e)
+        {
+            Bot.Stop();
+            SetBotControlsStatus();
+        }
+
+        private void SetBotControlsStatus()
+        {
+            btnStart.Enabled = !Bot.IsRunning;
+            btnStop.Enabled = Bot.IsRunning;
+        }
+
+        #endregion
+
+        #region "IIntelMessagingConsole"
 
         public void AppendLine(string s)
         {
-           Append(s + Environment.NewLine);
+            Append(s + Environment.NewLine);
         }
 
         public void Append(string s)
@@ -37,20 +84,12 @@ namespace BattleIntel.Bot
             {
                 txtConsole.Invoke((MethodInvoker)(() => txtConsole.AppendText(s)));
             }
-            else 
-            { 
+            else
+            {
                 txtConsole.AppendText(s);
             }
         }
 
-        private void btnStart_Click(object sender, EventArgs e)
-        {
-            Bot.Start();
-        }
-
-        private void btnStop_Click(object sender, EventArgs e)
-        {
-            Bot.Stop();
-        }
+        #endregion
     }
 }
