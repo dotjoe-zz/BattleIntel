@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.btnAppend = new System.Windows.Forms.Button();
             this.txtTeamName = new System.Windows.Forms.TextBox();
@@ -38,24 +37,15 @@
             this.btnCopyForSheet = new System.Windows.Forms.Button();
             this.btnCopyForScout = new System.Windows.Forms.Button();
             this.txtTeamStatsOutput = new System.Windows.Forms.TextBox();
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
-            this.groupmeRoomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.googleSheetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.connectStatus = new System.Windows.Forms.ToolStripStatusLabel();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
             // 
-            this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.IsSplitterFixed = true;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
             this.splitContainer1.Name = "splitContainer1";
@@ -73,7 +63,7 @@
             this.splitContainer1.Panel2.Controls.Add(this.btnCopyForSheet);
             this.splitContainer1.Panel2.Controls.Add(this.btnCopyForScout);
             this.splitContainer1.Panel2.Controls.Add(this.txtTeamStatsOutput);
-            this.splitContainer1.Size = new System.Drawing.Size(434, 403);
+            this.splitContainer1.Size = new System.Drawing.Size(434, 428);
             this.splitContainer1.SplitterDistance = 215;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -95,7 +85,6 @@
             this.txtTeamName.Name = "txtTeamName";
             this.txtTeamName.Size = new System.Drawing.Size(209, 20);
             this.txtTeamName.TabIndex = 0;
-            this.toolTip1.SetToolTip(this.txtTeamName, "Team Name (optional)");
             // 
             // btnPaste
             // 
@@ -116,7 +105,7 @@
             this.txtTeamStats.Multiline = true;
             this.txtTeamStats.Name = "txtTeamStats";
             this.txtTeamStats.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtTeamStats.Size = new System.Drawing.Size(209, 342);
+            this.txtTeamStats.Size = new System.Drawing.Size(209, 367);
             this.txtTeamStats.TabIndex = 1;
             this.txtTeamStats.TextChanged += new System.EventHandler(this.txtTeamStats_TextChanged);
             // 
@@ -159,57 +148,14 @@
             this.txtTeamStatsOutput.Name = "txtTeamStatsOutput";
             this.txtTeamStatsOutput.ReadOnly = true;
             this.txtTeamStatsOutput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtTeamStatsOutput.Size = new System.Drawing.Size(209, 342);
+            this.txtTeamStatsOutput.Size = new System.Drawing.Size(209, 367);
             this.txtTeamStatsOutput.TabIndex = 2;
-            // 
-            // statusStrip1
-            // 
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripDropDownButton1,
-            this.connectStatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 406);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(434, 22);
-            this.statusStrip1.TabIndex = 1;
-            this.statusStrip1.Text = "statusStrip1";
-            // 
-            // toolStripDropDownButton1
-            // 
-            this.toolStripDropDownButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.googleSheetToolStripMenuItem,
-            this.groupmeRoomToolStripMenuItem});
-            this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
-            this.toolStripDropDownButton1.Size = new System.Drawing.Size(65, 20);
-            this.toolStripDropDownButton1.Text = "Connect";
-            // 
-            // groupmeRoomToolStripMenuItem
-            // 
-            this.groupmeRoomToolStripMenuItem.Name = "groupmeRoomToolStripMenuItem";
-            this.groupmeRoomToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
-            this.groupmeRoomToolStripMenuItem.Text = "Groupme Room";
-            this.groupmeRoomToolStripMenuItem.Click += new System.EventHandler(this.groupmeRoomToolStripMenuItem_Click);
-            // 
-            // googleSheetToolStripMenuItem
-            // 
-            this.googleSheetToolStripMenuItem.Name = "googleSheetToolStripMenuItem";
-            this.googleSheetToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
-            this.googleSheetToolStripMenuItem.Text = "Google Sheet";
-            this.googleSheetToolStripMenuItem.Click += new System.EventHandler(this.googleSheetToolStripMenuItem_Click);
-            // 
-            // connectStatus
-            // 
-            this.connectStatus.Name = "connectStatus";
-            this.connectStatus.Size = new System.Drawing.Size(88, 17);
-            this.connectStatus.Text = "Not Connected";
             // 
             // StatParserForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(434, 428);
-            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.splitContainer1);
             this.MinimumSize = new System.Drawing.Size(450, 420);
             this.Name = "StatParserForm";
@@ -220,10 +166,7 @@
             this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -237,12 +180,6 @@
         private System.Windows.Forms.Button btnCopyForScout;
         private System.Windows.Forms.TextBox txtTeamStatsOutput;
         private System.Windows.Forms.Button btnAppend;
-        private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.ComboBox cbCopyForSheetMode;
-        private System.Windows.Forms.StatusStrip statusStrip1;
-        private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton1;
-        private System.Windows.Forms.ToolStripMenuItem googleSheetToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem groupmeRoomToolStripMenuItem;
-        private System.Windows.Forms.ToolStripStatusLabel connectStatus;
     }
 }

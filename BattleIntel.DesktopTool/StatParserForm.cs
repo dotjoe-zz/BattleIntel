@@ -1,7 +1,4 @@
 ﻿using BattleIntel.Core;
-using BattleIntel.DesktopTool.GroupMeForms;
-using GroupMe;
-using GroupMe.Responses;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,8 +15,6 @@ namespace BattleIntel.DesktopTool
     public partial class StatParserForm : Form
     {
         private IList<Stat> Stats;
-        private GroupMeService groupMe;
-        private Group intelSourceGroup;
 
         public StatParserForm()
         {
@@ -31,8 +26,6 @@ namespace BattleIntel.DesktopTool
             cbCopyForSheetMode.DisplayMember = "description";
             cbCopyForSheetMode.ValueMember = "id";
             cbCopyForSheetMode.SelectedValue = (int)CopyForSheetMode.Cell;
-
-            groupMe = new GroupMeService(ConfigurationManager.AppSettings.Get("GroupMe-AccessToken"));
         }
 
         private void btnPaste_Click(object sender, EventArgs e)
@@ -170,42 +163,6 @@ namespace BattleIntel.DesktopTool
             Cell = 0,
             TwoColumns = 1,
             MultiColumns = 2
-        }
-
-        private void groupmeRoomToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (var gs = new GroupSelector(groupMe))
-            {
-                if (gs.ShowDialog() == DialogResult.OK)
-                {
-                    intelSourceGroup = gs.SelectedGroup;
-                }
-            }
-            UpdateConnectStatusLabel();
-
-            if (intelSourceGroup != null)
-            {
-                var m = groupMe.PostGroupMessage(intelSourceGroup.id, "Arms Bot say Hi! lol");
-                MessageBox.Show(m.name + ": " + m.text);
-
-                var messages = groupMe.GroupMessages(intelSourceGroup.id);
-                MessageBox.Show(string.Join("\n", messages.Select(x => x.name + ": " + x.text)));
-
-                var secondToLast = messages.Reverse().Skip(1).First();
-                var messagesAfter = groupMe.GroupMessagesAfter(intelSourceGroup.id, secondToLast.id);
-                MessageBox.Show(string.Join("\n", messagesAfter.Select(x => x.name + ": " + x.text)));
-            }
-
-        }
-
-        private void googleSheetToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void UpdateConnectStatusLabel()
-        {
-            connectStatus.Text = "Listening: " + intelSourceGroup.name;
         }
     }
 }

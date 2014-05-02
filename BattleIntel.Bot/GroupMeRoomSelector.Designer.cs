@@ -1,4 +1,4 @@
-﻿namespace BattleIntel.DesktopTool.GroupMeForms
+﻿namespace BattleIntel.Bot
 {
     partial class GroupSelector
     {
@@ -99,7 +99,7 @@
             this.Controls.Add(this.btnLoadMore);
             this.Controls.Add(this.statusLabel);
             this.Name = "GroupSelector";
-            this.Text = "Select Group";
+            this.Text = "GroupMe Intel Room";
             this.Load += new System.EventHandler(this.GroupSelector_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

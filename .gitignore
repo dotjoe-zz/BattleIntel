@@ -155,4 +155,4 @@ $RECYCLE.BIN/
 # Mac desktop service store files
 .DS_Store
 /BattleIntel.Core.Db.Generate/Schemas/Alter-db.sql
-/BattleIntel.DesktopTool/App.Debug.config
+/BattleIntel.Bot/App.Debug.config
