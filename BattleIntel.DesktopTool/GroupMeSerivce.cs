@@ -34,16 +34,50 @@ namespace GroupMe
         /// <param name="groupId"></param>
         /// <param name="before_message_id">get 20 message before this message</param>
         /// <returns></returns>
-        public IList<Message> GroupMessages(string groupId, int? before_message_id = null)
+        public IList<Message> GroupMessages(string groupId, string before_message_id = null)
         {
             string url = GetApiUrl(string.Format("groups/{0}/messages", groupId));
 
-            if (before_message_id.HasValue)
+            if (before_message_id != null)
             {
-                url += "&before_id=" + before_message_id.Value;
+                url += "&before_id=" + WebUtility.UrlEncode(before_message_id);
             }
 
             return GET<GroupMessages>(url).messages;
+        }
+
+        /// <summary>
+        /// Returns ALL messages after the message_id, order by created_at ascending.
+        /// This is not part of the GroupMe API, it is many calls to the GroupMessages()
+        /// function using the before_message_id parameter.
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="afterMessageId">Want to get all message AFTER this id.</param>
+        /// <returns></returns>
+        public IList<Message> GroupMessagesAfter(string groupId, string afterMessageId)
+        {
+            //have to page back in time until we hit our after_message_id
+            var results = new List<Message>();
+            string beforeMessageId = null;
+            
+            while(true)
+            {
+                var page = GroupMessages(groupId, beforeMessageId);
+                if(page.Count() == 0) break; //reached the start of the group
+                
+                var newMessages = page.TakeWhile(x => x.id != afterMessageId);
+                if (newMessages.Count() == 0) break; //no more new messages
+
+                results.AddRange(newMessages);
+                if (newMessages.Count() != page.Count()) break; //we hit our message in this page
+
+                beforeMessageId = newMessages.Last().id;
+            }
+
+            //reverse the list to sort by created_at ascending
+            results.Reverse();
+
+            return results;
         }
 
         public Message PostGroupMessage(string groupId, string text)

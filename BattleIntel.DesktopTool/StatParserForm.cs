@@ -190,6 +190,10 @@ namespace BattleIntel.DesktopTool
 
                 var messages = groupMe.GroupMessages(intelSourceGroup.id);
                 MessageBox.Show(string.Join("\n", messages.Select(x => x.name + ": " + x.text)));
+
+                var secondToLast = messages.Reverse().Skip(1).First();
+                var messagesAfter = groupMe.GroupMessagesAfter(intelSourceGroup.id, secondToLast.id);
+                MessageBox.Show(string.Join("\n", messagesAfter.Select(x => x.name + ": " + x.text)));
             }
 
         }
