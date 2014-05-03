@@ -19,6 +19,8 @@ namespace BattleIntel.Bot
             InitializeComponent();
 
             Bot = new IntelBot(this);
+            SetBotControlsStatus();
+            SetBotTimerInterval();
         }
 
         private void Main_Load(object sender, EventArgs e)
@@ -65,13 +67,18 @@ namespace BattleIntel.Bot
 
         private void nupIntervalSeconds_ValueChanged(object sender, EventArgs e)
         {
-            Bot.TimerInterval = (double)(nupIntervalSeconds.Value * 1000);
+            SetBotTimerInterval();
         }
 
         private void SetBotControlsStatus()
         {
             btnStart.Enabled = !Bot.IsRunning;
             btnStop.Enabled = Bot.IsRunning;
+        }
+
+        private void SetBotTimerInterval()
+        {
+            Bot.TimerInterval = (double)(nupIntervalSeconds.Value * 1000);
         }
 
         #endregion

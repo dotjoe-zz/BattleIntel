@@ -34,11 +34,9 @@ namespace BattleIntel.Bot
         public IntelBot(IIntelMessagingConsole console) 
         { 
             this.console = console;
-
-            this.TimerInterval = 60000;
             this.IsRunning = false;
 
-            this.timer = new System.Timers.Timer(TimerInterval);
+            this.timer = new System.Timers.Timer(60000);
             this.timer.SynchronizingObject = console;
             this.timer.Elapsed += timer_Elapsed;
 
