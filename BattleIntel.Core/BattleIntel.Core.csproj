@@ -32,6 +32,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Iesi.Collections">
+      <HintPath>..\packages\Iesi.Collections.3.2.0.4000\lib\Net35\Iesi.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate">
+      <HintPath>..\packages\NHibernate.3.3.3.4001\lib\Net35\NHibernate.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,6 +49,10 @@
   <ItemGroup>
     <Compile Include="Battle.cs" />
     <Compile Include="BattleStat.cs" />
+    <Compile Include="Db\Mapping\EntityModelMapper.cs" />
+    <Compile Include="Db\Mapping\ModelMapperExtensions.cs" />
+    <Compile Include="Db\NHibernateConfiguration.cs" />
+    <Compile Include="Db\UtcDateTimeInterceptor.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="IAuditable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -50,6 +60,9 @@
     <Compile Include="Team.cs" />
     <Compile Include="User.cs" />
     <Compile Include="UserOpenId.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

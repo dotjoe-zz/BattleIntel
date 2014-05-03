@@ -144,10 +144,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BattleIntel.Core.Db\BattleIntel.Core.Db.csproj">
-      <Project>{c6eb8388-3888-4310-923b-a7350641cf1d}</Project>
-      <Name>BattleIntel.Core.Db</Name>
-    </ProjectReference>
     <ProjectReference Include="..\BattleIntel.Core\BattleIntel.Core.csproj">
       <Project>{5e51fb9e-79a2-44aa-9fec-f3d5a13cfc81}</Project>
       <Name>BattleIntel.Core</Name>

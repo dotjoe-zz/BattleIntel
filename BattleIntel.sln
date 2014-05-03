@@ -18,8 +18,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E9A282
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleIntel.Web", "BattleIntel.Web\BattleIntel.Web.csproj", "{2F8CEF19-8BF6-4724-BA80-2B85051A00D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleIntel.Core.Db", "BattleIntel.Core.Db\BattleIntel.Core.Db.csproj", "{C6EB8388-3888-4310-923B-A7350641CF1D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleIntel.Core.Db.Generate", "BattleIntel.Core.Db.Generate\BattleIntel.Core.Db.Generate.csproj", "{2B64B5A0-50B6-4895-9B87-16A2F56E4908}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleIntel.Bot", "BattleIntel.Bot\BattleIntel.Bot.csproj", "{732F2F00-D48B-4933-A0FF-233E5B00C87D}"
@@ -46,10 +44,6 @@ Global
 		{2F8CEF19-8BF6-4724-BA80-2B85051A00D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F8CEF19-8BF6-4724-BA80-2B85051A00D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F8CEF19-8BF6-4724-BA80-2B85051A00D0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C6EB8388-3888-4310-923B-A7350641CF1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C6EB8388-3888-4310-923B-A7350641CF1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C6EB8388-3888-4310-923B-A7350641CF1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C6EB8388-3888-4310-923B-A7350641CF1D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2B64B5A0-50B6-4895-9B87-16A2F56E4908}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2B64B5A0-50B6-4895-9B87-16A2F56E4908}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B64B5A0-50B6-4895-9B87-16A2F56E4908}.Release|Any CPU.ActiveCfg = Release|Any CPU
