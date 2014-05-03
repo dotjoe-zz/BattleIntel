@@ -17,18 +17,32 @@ namespace BattleIntel.Bot
         private GroupMeService groupMe;
         private Group intelRoom;
         private GSheetService google;
-        
+
+        public double TimerInterval
+        {
+            get
+            {
+                return timer.Interval;
+            }
+            set
+            {
+                timer.Interval = value;
+            }
+        }
         public bool IsRunning { get; private set; }
 
         public IntelBot(IIntelMessagingConsole console) 
         { 
             this.console = console;
 
-            this.timer = new System.Timers.Timer(10000);
+            this.TimerInterval = 60000;
+            this.IsRunning = false;
+
+            this.timer = new System.Timers.Timer(TimerInterval);
+            this.timer.SynchronizingObject = console;
             this.timer.Elapsed += timer_Elapsed;
 
             this.groupMe = new GroupMeService(ConfigurationManager.AppSettings.Get("GroupMe-AccessToken"));
-            this.IsRunning = false;
         }
 
         public bool ConnectToBattle(IWin32Window owner)
@@ -131,7 +145,10 @@ namespace BattleIntel.Bot
         }
     }
 
-    interface IIntelMessagingConsole
+    /// <summary>
+    /// Used to send messages to the UI and also sync the timer workerthread to the UI thread.
+    /// </summary>
+    interface IIntelMessagingConsole : System.ComponentModel.ISynchronizeInvoke
     {
         void AppendLine(string s);
         void Append(string s);

@@ -15,7 +15,7 @@ namespace GroupMe
     public class GroupMeService
     {
         private const string apiBaseUrl = @"https://api.groupme.com/v3";
-        private string accessToken;
+        private readonly string accessToken;
 
         public GroupMeService(string accessToken)
         {

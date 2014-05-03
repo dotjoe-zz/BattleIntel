@@ -63,6 +63,11 @@ namespace BattleIntel.Bot
             SetBotControlsStatus();
         }
 
+        private void nupIntervalSeconds_ValueChanged(object sender, EventArgs e)
+        {
+            Bot.TimerInterval = (double)(nupIntervalSeconds.Value * 1000);
+        }
+
         private void SetBotControlsStatus()
         {
             btnStart.Enabled = !Bot.IsRunning;
@@ -80,14 +85,7 @@ namespace BattleIntel.Bot
 
         public void Append(string s)
         {
-            if (txtConsole.InvokeRequired)
-            {
-                txtConsole.Invoke((MethodInvoker)(() => txtConsole.AppendText(s)));
-            }
-            else
-            {
-                txtConsole.AppendText(s);
-            }
+            txtConsole.AppendText(s);
         }
 
         #endregion

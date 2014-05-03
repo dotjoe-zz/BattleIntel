@@ -28,17 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.btnStart = new System.Windows.Forms.Button();
             this.btnStop = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.connectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.groupMeRoomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.txtConsole = new System.Windows.Forms.TextBox();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.battleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.groupMeRoomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.googleSheetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.txtConsole = new System.Windows.Forms.TextBox();
+            this.nupIntervalSeconds = new System.Windows.Forms.NumericUpDown();
+            this.label1 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nupIntervalSeconds)).BeginInit();
             this.SuspendLayout();
             // 
             // btnStart
@@ -83,12 +84,26 @@
             this.connectToolStripMenuItem.Size = new System.Drawing.Size(64, 20);
             this.connectToolStripMenuItem.Text = "Connect";
             // 
+            // battleToolStripMenuItem
+            // 
+            this.battleToolStripMenuItem.Name = "battleToolStripMenuItem";
+            this.battleToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.battleToolStripMenuItem.Text = "Battle";
+            this.battleToolStripMenuItem.Click += new System.EventHandler(this.battleToolStripMenuItem_Click);
+            // 
             // groupMeRoomToolStripMenuItem
             // 
             this.groupMeRoomToolStripMenuItem.Name = "groupMeRoomToolStripMenuItem";
             this.groupMeRoomToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.groupMeRoomToolStripMenuItem.Text = "GroupMe Room";
             this.groupMeRoomToolStripMenuItem.Click += new System.EventHandler(this.groupMeRoomToolStripMenuItem_Click);
+            // 
+            // googleSheetToolStripMenuItem
+            // 
+            this.googleSheetToolStripMenuItem.Name = "googleSheetToolStripMenuItem";
+            this.googleSheetToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.googleSheetToolStripMenuItem.Text = "Google Sheet";
+            this.googleSheetToolStripMenuItem.Click += new System.EventHandler(this.googleSheetToolStripMenuItem_Click);
             // 
             // txtConsole
             // 
@@ -102,25 +117,45 @@
             this.txtConsole.Size = new System.Drawing.Size(524, 426);
             this.txtConsole.TabIndex = 3;
             // 
-            // battleToolStripMenuItem
+            // nupIntervalSeconds
             // 
-            this.battleToolStripMenuItem.Name = "battleToolStripMenuItem";
-            this.battleToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
-            this.battleToolStripMenuItem.Text = "Battle";
-            this.battleToolStripMenuItem.Click += new System.EventHandler(this.battleToolStripMenuItem_Click);
+            this.nupIntervalSeconds.Location = new System.Drawing.Point(482, 462);
+            this.nupIntervalSeconds.Maximum = new decimal(new int[] {
+            7200,
+            0,
+            0,
+            0});
+            this.nupIntervalSeconds.Minimum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            this.nupIntervalSeconds.Name = "nupIntervalSeconds";
+            this.nupIntervalSeconds.Size = new System.Drawing.Size(54, 20);
+            this.nupIntervalSeconds.TabIndex = 4;
+            this.nupIntervalSeconds.Value = new decimal(new int[] {
+            300,
+            0,
+            0,
+            0});
+            this.nupIntervalSeconds.ValueChanged += new System.EventHandler(this.nupIntervalSeconds_ValueChanged);
             // 
-            // googleSheetToolStripMenuItem
+            // label1
             // 
-            this.googleSheetToolStripMenuItem.Name = "googleSheetToolStripMenuItem";
-            this.googleSheetToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
-            this.googleSheetToolStripMenuItem.Text = "Google Sheet";
-            this.googleSheetToolStripMenuItem.Click += new System.EventHandler(this.googleSheetToolStripMenuItem_Click);
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(379, 464);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(97, 13);
+            this.label1.TabIndex = 5;
+            this.label1.Text = "Processing Interval";
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(548, 494);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.nupIntervalSeconds);
             this.Controls.Add(this.txtConsole);
             this.Controls.Add(this.btnStop);
             this.Controls.Add(this.btnStart);
@@ -131,6 +166,7 @@
             this.Load += new System.EventHandler(this.Main_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nupIntervalSeconds)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -144,9 +180,10 @@
         private System.Windows.Forms.ToolStripMenuItem connectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem groupMeRoomToolStripMenuItem;
         private System.Windows.Forms.TextBox txtConsole;
-        private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.ToolStripMenuItem battleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem googleSheetToolStripMenuItem;
+        private System.Windows.Forms.NumericUpDown nupIntervalSeconds;
+        private System.Windows.Forms.Label label1;
     }
 }
 
