@@ -18,7 +18,6 @@ namespace BattleIntel.Bot
         private Group intelRoom;
         private GSheetService google;
         
-
         public bool IsRunning { get; private set; }
 
         public IntelBot(IIntelMessagingConsole console) 
@@ -64,8 +63,12 @@ namespace BattleIntel.Bot
 
         public bool ConnectToGoogleSheet(IWin32Window owner)
         {
-            google = GSheetService.Init();
-            if (google == null) return false;
+            if (google == null)
+            {
+                var auth = GoogleOAuth.Authorize();
+                if (auth == null) return false;
+                google = new GSheetService(auth);
+            }
 
             var ss = google.ListSpreadsheets();
             foreach (var s in ss)

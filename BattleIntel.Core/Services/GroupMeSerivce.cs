@@ -114,9 +114,7 @@ namespace GroupMe
                 envelope = JsonConvert.DeserializeObject<ResponseEnvelope<T>>(obj);
             }
 
-            //TODO handle response status codes
-            //if (envelope.meta.code == 200) 
-                return envelope.response;
+            return envelope.response;
         }
 
         private T POST<T>(string action, object data)
@@ -150,8 +148,6 @@ namespace GroupMe
                 envelope = JsonConvert.DeserializeObject<ResponseEnvelope<T>>(obj);
             }
 
-            //TODO handle response status codes
-            //if (envelope.meta.code == 200) 
             return envelope.response;
         }
     }
