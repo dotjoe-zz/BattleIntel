@@ -5,6 +5,7 @@ using System;
 using System.Configuration;
 using System.Threading;
 using System.Windows.Forms;
+using GSheet.Models;
 
 namespace BattleIntel.Bot
 {
@@ -14,8 +15,11 @@ namespace BattleIntel.Bot
         private System.Timers.Timer timer;
 
         private int? battleId;
-        private GroupMeService groupMe;
         private Group intelRoom;
+        private SpreadsheetModel spreadsheet;
+        private WorksheetModel worksheet;
+
+        private GroupMeService groupMe;
         private GSheetService google;
 
         public double TimerInterval
@@ -39,8 +43,6 @@ namespace BattleIntel.Bot
             this.timer = new System.Timers.Timer(60000);
             this.timer.SynchronizingObject = console;
             this.timer.Elapsed += timer_Elapsed;
-
-            this.groupMe = new GroupMeService(ConfigurationManager.AppSettings.Get("GroupMe-AccessToken"));
         }
 
         public bool ConnectToBattle(IWin32Window owner)
@@ -60,6 +62,11 @@ namespace BattleIntel.Bot
 
         public bool ConnectToIntelRoom(IWin32Window owner)
         {
+            if (groupMe == null)
+            {
+                groupMe = new GroupMeService(ConfigurationManager.AppSettings.Get("GroupMe-AccessToken"));
+            }
+
             using (var gs = new GroupMeRoomSelector(groupMe))
             {
                 if (gs.ShowDialog(owner) == DialogResult.OK)
@@ -82,10 +89,14 @@ namespace BattleIntel.Bot
                 google = new GSheetService(auth);
             }
 
-            var ss = google.ListSpreadsheets();
-            foreach (var s in ss)
+            using (var ws = new WorksheetSelector(google))
             {
-                console.AppendLine(s.Title + ": " + s.Url);
+                if (ws.ShowDialog() == DialogResult.OK)
+                {
+                    spreadsheet = ws.SelectedSpreadsheet;
+                    worksheet = ws.SelectedWorksheet;
+                    console.AppendLine(string.Format("Connected to Spreadsheet: {0}:{1} {2}", spreadsheet.Title, worksheet.Title, spreadsheet.Url));
+                }
             }
 
             return false;
