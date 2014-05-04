@@ -36,9 +36,7 @@ namespace BattleIntel.Bot
                 {
                     Name = txtBattleName.Text,
                     StartDateUTC = dtpBattleStarts.Value.ToUniversalTime(),
-                    EndDateUTC = dtpBattleEnds.Value.ToUniversalTime(),
-                    CreatedUTC = DateTime.UtcNow,
-                    CreatedBy = NH.GetBotUser(s)
+                    EndDateUTC = dtpBattleEnds.Value.ToUniversalTime()
                 };
                 s.Save(b);
 

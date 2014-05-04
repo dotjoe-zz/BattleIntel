@@ -32,33 +32,34 @@ namespace BattleIntel.Core.Tests
             return id;
         }
 
-        protected int SaveTeam(DateTime? lastUpdated)
-        {
-            int id = 0;
+        //TODO test UTC Nullable DateTime once we have a nullable datetime property
+        //protected int SaveTeam(DateTime? lastUpdated)
+        //{
+        //    int id = 0;
 
-            UsingSession(s =>
-            {
-                var u = s.Load<User>(SaveUser(DateTime.Now));
+        //    UsingSession(s =>
+        //    {
+        //        var u = s.Load<User>(SaveUser(DateTime.Now));
 
-                var t = new Team
-                {
-                    Name = "test",
-                    CreatedBy = u,
-                    CreatedUTC = DateTime.UtcNow
-                };
+        //        var t = new Team
+        //        {
+        //            Name = "test",
+        //            CreatedBy = u,
+        //            CreatedUTC = DateTime.UtcNow
+        //        };
 
-                if(lastUpdated.HasValue)
-                {
-                    t.LastUpdatedBy = u;
-                    t.LastUpdatedUTC = lastUpdated;
-                }
+        //        if(lastUpdated.HasValue)
+        //        {
+        //            t.LastUpdatedBy = u;
+        //            t.LastUpdatedUTC = lastUpdated;
+        //        }
 
-                s.Save(t);
-                id = t.Id;
-            });
+        //        s.Save(t);
+        //        id = t.Id;
+        //    });
 
-            return id;
-        }
+        //    return id;
+        //}
 
         [Test]
         public void UTC_InsertUTCDate()
@@ -178,123 +179,123 @@ namespace BattleIntel.Core.Tests
             });
         }
 
-        [Test]
-        public void UTCNullable_InsertUTCDate()
-        {
-            var utcNow = DateTime.UtcNow.TruncateMilliseconds();
-            var id = SaveTeam(utcNow);
+        //[Test]
+        //public void UTCNullable_InsertUTCDate()
+        //{
+        //    var utcNow = DateTime.UtcNow.TruncateMilliseconds();
+        //    var id = SaveTeam(utcNow);
 
-            UsingSession(s =>
-            {
-                var t = s.Get<Team>(id);
-                Assert.AreEqual(DateTimeKind.Utc, t.LastUpdatedUTC.Value.Kind);
-                Assert.AreEqual(utcNow, t.LastUpdatedUTC);
-            });
-        }
+        //    UsingSession(s =>
+        //    {
+        //        var t = s.Get<Team>(id);
+        //        Assert.AreEqual(DateTimeKind.Utc, t.LastUpdatedUTC.Value.Kind);
+        //        Assert.AreEqual(utcNow, t.LastUpdatedUTC);
+        //    });
+        //}
 
-        [Test]
-        public void UTCNullable_InsertLocalDate()
-        {
-            var now = DateTime.Now.TruncateMilliseconds();
-            var id = SaveTeam(now);
+        //[Test]
+        //public void UTCNullable_InsertLocalDate()
+        //{
+        //    var now = DateTime.Now.TruncateMilliseconds();
+        //    var id = SaveTeam(now);
 
-            UsingSession(s =>
-            {
-                var t = s.Get<Team>(id);
-                Assert.AreEqual(DateTimeKind.Utc, t.LastUpdatedUTC.Value.Kind);
-                Assert.AreNotEqual(now, t.LastUpdatedUTC.Value);
-                Assert.AreNotEqual(now, now.ToUniversalTime());
-                Assert.AreEqual(now.ToUniversalTime(), t.LastUpdatedUTC.Value);
-            });
-        }
+        //    UsingSession(s =>
+        //    {
+        //        var t = s.Get<Team>(id);
+        //        Assert.AreEqual(DateTimeKind.Utc, t.LastUpdatedUTC.Value.Kind);
+        //        Assert.AreNotEqual(now, t.LastUpdatedUTC.Value);
+        //        Assert.AreNotEqual(now, now.ToUniversalTime());
+        //        Assert.AreEqual(now.ToUniversalTime(), t.LastUpdatedUTC.Value);
+        //    });
+        //}
 
-        [Test]
-        public void UTCNullable_InsertUTCThenUpdateUTC()
-        {
-            var utcNow = DateTime.UtcNow.TruncateMilliseconds();
-            var id = SaveTeam(utcNow);
+        //[Test]
+        //public void UTCNullable_InsertUTCThenUpdateUTC()
+        //{
+        //    var utcNow = DateTime.UtcNow.TruncateMilliseconds();
+        //    var id = SaveTeam(utcNow);
 
-            var utcJoinDate = utcNow.AddDays(-10).AddHours(-1);
+        //    var utcJoinDate = utcNow.AddDays(-10).AddHours(-1);
 
-            UsingSession(s =>
-            {
-                var t = s.Get<Team>(id);
-                t.LastUpdatedUTC = utcJoinDate;
-            });
+        //    UsingSession(s =>
+        //    {
+        //        var t = s.Get<Team>(id);
+        //        t.LastUpdatedUTC = utcJoinDate;
+        //    });
 
-            UsingSession(s =>
-            {
-                var t = s.Get<Team>(id);
-                Assert.AreEqual(DateTimeKind.Utc, t.LastUpdatedUTC.Value.Kind);
-                Assert.AreEqual(utcJoinDate, t.LastUpdatedUTC.Value);
-            });
-        }
+        //    UsingSession(s =>
+        //    {
+        //        var t = s.Get<Team>(id);
+        //        Assert.AreEqual(DateTimeKind.Utc, t.LastUpdatedUTC.Value.Kind);
+        //        Assert.AreEqual(utcJoinDate, t.LastUpdatedUTC.Value);
+        //    });
+        //}
 
-        [Test]
-        public void UTCNullable_InsertUTCThenUpdateLocal()
-        {
-            var utcNow = DateTime.UtcNow.TruncateMilliseconds();
-            var id = SaveTeam(utcNow);
+        //[Test]
+        //public void UTCNullable_InsertUTCThenUpdateLocal()
+        //{
+        //    var utcNow = DateTime.UtcNow.TruncateMilliseconds();
+        //    var id = SaveTeam(utcNow);
 
-            var joinDate = utcNow.AddDays(-10).AddHours(-1).ToLocalTime();
+        //    var joinDate = utcNow.AddDays(-10).AddHours(-1).ToLocalTime();
 
-            UsingSession(s =>
-            {
-                var t = s.Get<Team>(id);
-                t.LastUpdatedUTC = joinDate;
-            });
+        //    UsingSession(s =>
+        //    {
+        //        var t = s.Get<Team>(id);
+        //        t.LastUpdatedUTC = joinDate;
+        //    });
 
-            UsingSession(s =>
-            {
-                var t = s.Get<Team>(id);
-                Assert.AreEqual(DateTimeKind.Utc, t.LastUpdatedUTC.Value.Kind);
-                Assert.AreEqual(joinDate.ToUniversalTime(), t.LastUpdatedUTC.Value);
-            });
-        }
+        //    UsingSession(s =>
+        //    {
+        //        var t = s.Get<Team>(id);
+        //        Assert.AreEqual(DateTimeKind.Utc, t.LastUpdatedUTC.Value.Kind);
+        //        Assert.AreEqual(joinDate.ToUniversalTime(), t.LastUpdatedUTC.Value);
+        //    });
+        //}
 
-        [Test]
-        public void UTCNullable_InsertLocalThenUpdateUTC()
-        {
-            var now = DateTime.Now.TruncateMilliseconds();
-            var id = SaveTeam(now);
+        //[Test]
+        //public void UTCNullable_InsertLocalThenUpdateUTC()
+        //{
+        //    var now = DateTime.Now.TruncateMilliseconds();
+        //    var id = SaveTeam(now);
 
-            var utcJoinDate = now.AddDays(-10).AddHours(-1).ToUniversalTime();
+        //    var utcJoinDate = now.AddDays(-10).AddHours(-1).ToUniversalTime();
 
-            UsingSession(s =>
-            {
-                var t = s.Get<Team>(id);
-                t.LastUpdatedUTC = utcJoinDate;
-            });
+        //    UsingSession(s =>
+        //    {
+        //        var t = s.Get<Team>(id);
+        //        t.LastUpdatedUTC = utcJoinDate;
+        //    });
 
-            UsingSession(s =>
-            {
-                var t = s.Get<Team>(id);
-                Assert.AreEqual(DateTimeKind.Utc, t.LastUpdatedUTC.Value.Kind);
-                Assert.AreEqual(utcJoinDate, t.LastUpdatedUTC.Value);
-            });
-        }
+        //    UsingSession(s =>
+        //    {
+        //        var t = s.Get<Team>(id);
+        //        Assert.AreEqual(DateTimeKind.Utc, t.LastUpdatedUTC.Value.Kind);
+        //        Assert.AreEqual(utcJoinDate, t.LastUpdatedUTC.Value);
+        //    });
+        //}
 
-        [Test]
-        public void UTCNullable_InsertLocalThenUpdateLocal()
-        {
-            var now = DateTime.Now.TruncateMilliseconds();
-            var id = SaveTeam(now);
+        //[Test]
+        //public void UTCNullable_InsertLocalThenUpdateLocal()
+        //{
+        //    var now = DateTime.Now.TruncateMilliseconds();
+        //    var id = SaveTeam(now);
 
-            var joinDate = now.AddDays(-10).AddHours(-1);
+        //    var joinDate = now.AddDays(-10).AddHours(-1);
 
-            UsingSession(s =>
-            {
-                var t = s.Get<Team>(id);
-                t.LastUpdatedUTC = joinDate;
-            });
+        //    UsingSession(s =>
+        //    {
+        //        var t = s.Get<Team>(id);
+        //        t.LastUpdatedUTC = joinDate;
+        //    });
 
-            UsingSession(s =>
-            {
-                var t = s.Get<Team>(id);
-                Assert.AreEqual(DateTimeKind.Utc, t.LastUpdatedUTC.Value.Kind);
-                Assert.AreEqual(joinDate.ToUniversalTime(), t.LastUpdatedUTC.Value);
-            });
-        }
+        //    UsingSession(s =>
+        //    {
+        //        var t = s.Get<Team>(id);
+        //        Assert.AreEqual(DateTimeKind.Utc, t.LastUpdatedUTC.Value.Kind);
+        //        Assert.AreEqual(joinDate.ToUniversalTime(), t.LastUpdatedUTC.Value);
+        //    });
+        //}
     }
 
     public static class DateTimeExtensions

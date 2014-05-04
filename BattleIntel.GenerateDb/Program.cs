@@ -11,7 +11,7 @@ namespace BattleIntel.Core.Db.Generate
 {
     class Program
     {
-        static readonly string connectionString = @"Server=localhost;Initial Catalog=BattleIntel;Integrated Security=SSPI;";
+        static readonly string connectionString = @"Server=localhost\SQLEXPRESS;Initial Catalog=BattleIntel;Integrated Security=SSPI;";
 
         static void Main(string[] args)
         {
@@ -82,16 +82,12 @@ namespace BattleIntel.Core.Db.Generate
                 {
                     Name = "BattleIntel Throwdown Test",
                     StartDateUTC = DateTime.Now,
-                    EndDateUTC = DateTime.Now.AddDays(3),
-                    CreatedUTC = DateTime.Now,
-                    CreatedBy = user
+                    EndDateUTC = DateTime.Now.AddDays(3)
                 };
 
                 var team = new Team
                 {
-                    Name = "Duck Squad",
-                    CreatedUTC = DateTime.Now,
-                    CreatedBy = user
+                    Name = "Duck Squad"
                 };
 
                 s.Save(user);
@@ -109,9 +105,7 @@ namespace BattleIntel.Core.Db.Generate
                             Level = i,
                             Name = "Duck-" + i,
                             Defense = (i * 10).ToString() + "k"
-                        },
-                        CreatedUTC = DateTime.Now,
-                        CreatedBy = user
+                        }
                     });
                 }
 

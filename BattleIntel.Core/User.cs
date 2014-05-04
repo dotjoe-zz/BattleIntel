@@ -20,4 +20,10 @@ namespace BattleIntel.Core
         /// </summary>
         public virtual DateTime JoinDateUTC { get; set; }
     }
+
+    public class UserOpenId : Entity
+    {
+        public virtual User User { get; set; }
+        public virtual string OpenIdentifier { get; set; }
+    }
 }
