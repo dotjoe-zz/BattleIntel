@@ -29,14 +29,6 @@ namespace BattleIntel.Core.Db.Mapping
                 map.Id(x => x.Id, m => m.Generator(Generators.Identity));
             });
 
-            this.BeforeMapManyToOne += (insp, prop, map) => 
-            {
-                if (prop.LocalMember.Name == "LastUpdatedBy")
-                {
-                    map.NotNullable(false);
-                }
-            };
-
             this.UniqueColumn<UserOpenId>(x => x.OpenIdentifier, 255);
             this.UniqueColumn<Battle>(x => x.Name, 255);
             this.UniqueColumn<Team>(x => x.Name, 255);
@@ -50,12 +42,19 @@ namespace BattleIntel.Core.Db.Mapping
             Class<BattleStat>(map =>
             {
                 map.Component(x => x.Stat);
+                map.ManyToOne(x => x.IntelReport, m => m.NotNullable(false));
             });
-        }
 
-        void EntityModelMapper_BeforeMapManyToOne(IModelInspector modelInspector, PropertyPath member, IManyToOneMapper propertyCustomizer)
-        {
-            throw new NotImplementedException();
+            Class<IntelReport>(map =>
+            {
+                map.Property(x => x.Text, m => m.Length(8001));
+                map.Set(x => x.ParsedStats, m =>
+                {
+                    m.Key(x => x.Column("IntelReportId"));
+                    m.Inverse(true);
+                    m.Cascade(Cascade.None);
+                });
+            });
         }
 
         public HbmMapping CompileMappings()

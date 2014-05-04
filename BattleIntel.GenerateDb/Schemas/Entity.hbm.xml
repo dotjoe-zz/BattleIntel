@@ -23,6 +23,23 @@
       <property name="DefenseValue" column="Stat_DefenseValue" />
       <property name="AdditionalInfo" column="Stat_AdditionalInfo" />
     </component>
+    <many-to-one name="IntelReport" column="IntelReportId" foreign-key="FK_BattleStat_IntelReport" />
+  </class>
+  <class name="IntelReport">
+    <id name="Id" type="Int32">
+      <generator class="identity" />
+    </id>
+    <property name="GroupId" />
+    <property name="MessageId" />
+    <property name="CreateDateUTC" not-null="true" />
+    <property name="UserName" />
+    <property name="UserId" />
+    <property name="Text" length="8001" />
+    <property name="ReadDateUTC" not-null="true" />
+    <set name="ParsedStats" inverse="true">
+      <key column="IntelReportId" />
+      <one-to-many class="BattleStat" />
+    </set>
   </class>
   <class name="Team">
     <id name="Id" type="Int32">

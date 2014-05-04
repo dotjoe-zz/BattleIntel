@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="Battle.cs" />
     <Compile Include="BattleStat.cs" />
+    <Compile Include="IntelReport.cs" />
     <Compile Include="Db\Mapping\EntityModelMapper.cs" />
     <Compile Include="Db\Mapping\ModelMapperExtensions.cs" />
     <Compile Include="Db\NHibernateConfiguration.cs" />

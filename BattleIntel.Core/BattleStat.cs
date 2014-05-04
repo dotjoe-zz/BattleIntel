@@ -7,5 +7,6 @@ namespace BattleIntel.Core
         public virtual Battle Battle { get; set; }
         public virtual Team Team { get; set; }
         public virtual Stat Stat { get; set; }
+        public virtual IntelReport IntelReport { get; set; }
     }
 }
