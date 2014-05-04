@@ -1,4 +1,6 @@
-﻿using NHibernate;
+﻿using BattleIntel.Core;
+using BattleIntel.Core.Db;
+using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
 using System;
@@ -7,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BattleIntel.Core.Db.Generate
+namespace BattleIntel.GenerateDb
 {
     class Program
     {
