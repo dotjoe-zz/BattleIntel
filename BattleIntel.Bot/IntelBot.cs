@@ -139,7 +139,7 @@ namespace BattleIntel.Bot
                 data.StartDateUTC = b.StartDateUTC;
                 data.EndDateUTC = b.EndDateUTC;
                 data.LastIntelReportMessageId = s.QueryOver<IntelReport>()
-                    .Where(x => x.GroupId == data.GroupId)
+                    .Where(x => x.Battle.Id == data.BattleId && x.GroupId == data.GroupId)
                     .Select(x => x.MessageId)
                     .OrderBy(x => x.CreateDateUTC).Desc
                     .Take(1)
@@ -174,74 +174,80 @@ namespace BattleIntel.Bot
         {
             NH.UsingSession(s =>
             {
-                var battle = s.Get<Battle>(battleId.Value);
-
                 foreach (var m in raw)
                 {
-                    var textHash = ComputeHash(m.text);
-                    
-                    //first check if this is a dupe before we save it...
-                    var existingReport = s.QueryOver<IntelReport>()
-                        .Where(x => x.Battle.Id == battle.Id)
-                        .And(x => x.TextHash == textHash)
-                        .Take(1)
-                        .SingleOrDefault();
-
-                    var report = new IntelReport
-                    {
-                        Battle = battle,
-                        MessageId = m.id,
-                        GroupId = m.group_id,
-                        UserId = m.user_id,
-                        UserName = m.name,
-                        CreateDateUTC = m.created_at.ToUniversalTime(),
-                        ReadDateUTC = DateTime.UtcNow,
-                        Text = m.text,
-                        TextHash = textHash
-                    };
-                    s.Save(report);
-
-                    if (existingReport != null)
-                    {
-                        report.IsDuplicate = true;
-                        continue; //we still save the duplicate so it won't be re-processed
-                    }
-
-                    var lines = m.text.SplitToNonEmptyLines();
-
-                    report.NonEmptyLineCount = lines.Count();
-                    if (report.NonEmptyLineCount < 2)
-                    {
-                        report.IsChat = true;
-                        continue; //assume chat if only 1 line
-                    }
-
-                    string teamName;
-                    lines = lines.RemoveTeamName(out teamName);
-
-                    if(string.IsNullOrEmpty(teamName))
-                    {
-                        report.IsUnknownTeamName = true;
-                        teamName = "Unknown Team " + report.Id;
-                    };
-
-                    var team = GetorCreateTeam(s, teamName);
-                    var stats = lines.Select(x => Stat.Parse(x)).Distinct();
-
-                    report.DistinctStatCount = stats.Count();
-
-                    foreach (var stat in stats)
-                    {
-                        s.Save(new BattleStat
-                        {
-                            Battle = battle,
-                            Team = team,
-                            IntelReport = report,
-                            Stat = stat
-                        });
-                    }
+                    var battle = s.Get<Battle>(battleId.Value);
+                    ProcessNewMessage(s, battle, m);
+                    s.Flush();
                 }
             });
+        }
+
+        private void ProcessNewMessage(ISession s, Battle battle, GroupMessage m)
+        {
+            var textHash = ComputeHash(m.text);
+                    
+            //first check if this is duplicate Text before we save it...
+            var existingReport = s.QueryOver<IntelReport>()
+                .Where(x => x.Battle.Id == battle.Id)
+                .And(x => x.TextHash == textHash)
+                .OrderBy(x => x.CreateDateUTC).Asc
+                .Take(1)
+                .SingleOrDefault();
+
+            var report = new IntelReport
+            {
+                Battle = battle,
+                MessageId = m.id,
+                GroupId = m.group_id,
+                UserId = m.user_id,
+                UserName = m.name,
+                CreateDateUTC = m.created_at.ToUniversalTime(),
+                ReadDateUTC = DateTime.UtcNow,
+                Text = m.text,
+                TextHash = textHash
+            };
+            s.Save(report);
+
+            if (existingReport != null)
+            {
+                report.DuplicateOf = existingReport;
+                return; //we still save the duplicate so it won't be re-processed
+            }
+
+            var lines = m.text.SplitToNonEmptyLines();
+
+            report.NonEmptyLineCount = lines.Count();
+            if (report.NonEmptyLineCount < 2)
+            {
+                report.IsChat = true;
+                return; //assume chat if only 1 line
+            }
+
+            string teamName;
+            lines = lines.RemoveTeamName(out teamName);
+
+            if(string.IsNullOrEmpty(teamName))
+            {
+                report.IsUnknownTeamName = true;
+                teamName = "Unknown Team " + report.Id;
+            };
+
+            var team = GetorCreateTeam(s, teamName);
+            var stats = lines.Select(x => Stat.Parse(x)).Distinct();
+
+            report.DistinctStatCount = stats.Count();
+
+            foreach (var stat in stats)
+            {
+                s.Save(new BattleStat
+                {
+                    Battle = battle,
+                    Team = team,
+                    IntelReport = report,
+                    Stat = stat
+                });
+            }
         }
 
         private string ComputeHash(string text)

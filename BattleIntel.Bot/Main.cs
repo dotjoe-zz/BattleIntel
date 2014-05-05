@@ -60,12 +60,14 @@ namespace BattleIntel.Bot
 
         private void btnStart_Click(object sender, EventArgs e)
         {
+            btnStart.Enabled = false;
+
             if (Bot.ProcessIntel()) 
             { 
                 BotTimer.Start();
-                SetBotControlsStatus();
             }
-            
+
+            SetBotControlsStatus();            
         }
 
         private void btnStop_Click(object sender, EventArgs e)

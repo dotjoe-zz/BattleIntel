@@ -17,7 +17,7 @@ namespace BattleIntel.Core
         public virtual string Text { get; set; }
         public virtual string TextHash { get; set; }
         public virtual DateTime ReadDateUTC { get; set; }
-        public virtual bool IsDuplicate { get; set; }
+        public virtual IntelReport DuplicateOf { get; set; }
         public virtual bool IsChat { get; set; }
         public virtual int NonEmptyLineCount { get; set; }
         public virtual bool IsUnknownTeamName { get; set; }

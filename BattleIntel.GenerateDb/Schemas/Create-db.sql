@@ -15,6 +15,10 @@ alter table dbo.BattleStat  drop constraint FK_BattleStat_IntelReport
 alter table dbo.IntelReport  drop constraint FK_IntelReport_Battle
 
 
+    if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'dbo.[FK_IntelReport_DuplicateOf]') AND parent_object_id = OBJECT_ID('dbo.IntelReport'))
+alter table dbo.IntelReport  drop constraint FK_IntelReport_DuplicateOf
+
+
     if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'dbo.[FK_UserOpenId_User]') AND parent_object_id = OBJECT_ID('dbo.UserOpenId'))
 alter table dbo.UserOpenId  drop constraint FK_UserOpenId_User
 
@@ -65,7 +69,7 @@ alter table dbo.UserOpenId  drop constraint FK_UserOpenId_User
        Text NVARCHAR(MAX) not null,
        TextHash NVARCHAR(40) not null,
        ReadDateUTC DATETIME not null,
-       IsDuplicate BIT not null,
+       DuplicateOfId INT null,
        IsChat BIT not null,
        NonEmptyLineCount INT not null,
        IsUnknownTeamName BIT not null,
@@ -113,6 +117,11 @@ alter table dbo.UserOpenId  drop constraint FK_UserOpenId_User
         add constraint FK_IntelReport_Battle 
         foreign key (BattleId) 
         references dbo.Battle
+
+    alter table dbo.IntelReport 
+        add constraint FK_IntelReport_DuplicateOf 
+        foreign key (DuplicateOfId) 
+        references dbo.IntelReport
 
     alter table dbo.UserOpenId 
         add constraint FK_UserOpenId_User 
