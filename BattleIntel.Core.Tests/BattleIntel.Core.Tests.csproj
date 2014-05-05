@@ -56,6 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EpochExtensions_Fixture.cs" />
     <Compile Include="SQLiteDatabaseScope.cs" />
     <Compile Include="StatEquality_Fixture.cs" />
     <Compile Include="StatParse_Fixture.cs" />

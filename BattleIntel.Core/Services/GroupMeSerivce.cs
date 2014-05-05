@@ -81,6 +81,48 @@ namespace GroupMe
             return results;
         }
 
+        /// <summary>
+        /// Returns ALL messages between the from and to dates, order by created_at ascending.
+        /// This is not part of the GroupMe API, it is many calls to the GroupMessages()
+        /// function using the before_message_id parameter.
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="from"></param>
+        /// <param name="thru"></param>
+        /// <returns></returns>
+        public IList<Message> GroupMessagesByDateRange(string groupId, DateTime fromDate, DateTime toDate)
+        {
+            //have to page back in time until we hit our after_message_id
+            var results = new List<Message>();
+
+            int fromEpoch = fromDate.ToEpoch();
+            int toEpoch = toDate.ToEpoch();
+
+            string beforeMessageId = null;
+
+            while (true)
+            {
+                var page = GroupMessages(groupId, beforeMessageId);
+                if (page.Count() == 0) break; //reached the start of the group
+
+                var messagesInTopRange = page.SkipWhile(x => x.created_at > toEpoch);
+                if (messagesInTopRange.Count() == 0) continue; //this whole page is past our range, keep looking back
+
+                var messagesInRange = messagesInTopRange.TakeWhile(x => x.created_at >= fromEpoch);
+                if (messagesInRange.Count() == 0) break; //the remaining messages are before our range
+
+                results.AddRange(messagesInTopRange);
+                if (messagesInRange.Count() != messagesInTopRange.Count()) break; //we went past our date range in this page
+
+                beforeMessageId = page.Last().id;
+            }
+
+            //reverse the list to sort by created_at ascending
+            results.Reverse();
+
+            return results;
+        }
+
         public Message PostGroupMessage(string groupId, string text)
         {
             //TODO split up text greater than 450 chars
@@ -152,6 +194,20 @@ namespace GroupMe
         }
     }
 
+    public static class EpochExtensions
+    {
+        public static int ToEpoch(this DateTime d)
+        {
+            return (int)(d.ToUniversalTime() - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
+        }
+
+        public static DateTime ToDateTime(this int epoch, DateTimeKind kind)
+        {
+            var d = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(epoch);
+            if (kind == DateTimeKind.Local) d = d.ToLocalTime();
+            return d;
+        }
+    }
 }
 
 namespace GroupMe.Models { 
@@ -209,5 +265,3 @@ namespace GroupMe.Models {
         public Message message { get; set; }
     }
 }
-
-
