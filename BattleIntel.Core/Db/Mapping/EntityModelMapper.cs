@@ -47,7 +47,16 @@ namespace BattleIntel.Core.Db.Mapping
 
             Class<IntelReport>(map =>
             {
-                map.Property(x => x.Text, m => m.Length(8001));
+                map.Property(x => x.Text, m =>  
+                {
+                    m.Length(8001);
+                    m.NotNullable(true);
+                });
+                map.Property(x => x.TextHash, m =>
+                {
+                    m.Length(40);
+                    m.NotNullable(true);
+                });
                 map.Set(x => x.ParsedStats, m =>
                 {
                     m.Key(x => x.Column("IntelReportId"));

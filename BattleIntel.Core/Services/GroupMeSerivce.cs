@@ -11,6 +11,7 @@ namespace GroupMe
     using System.Collections.Specialized;
     using System.IO;
     using System.Net;
+    using System.Threading;
 
     public class GroupMeService
     {
@@ -35,7 +36,7 @@ namespace GroupMe
         /// <param name="groupId"></param>
         /// <param name="before_message_id">get 20 message before this message</param>
         /// <returns></returns>
-        public IList<Message> GroupMessages(string groupId, string before_message_id = null)
+        public IList<GroupMessage> GroupMessages(string groupId, string before_message_id = null)
         {
             string action = string.Format("groups/{0}/messages", groupId);
 
@@ -44,7 +45,9 @@ namespace GroupMe
                 action += "?before_id=" + WebUtility.UrlEncode(before_message_id);
             }
 
-            return GET<GroupMessages>(action).messages;
+            var data = GET<GroupMessages>(action);
+            if(data == null) return null;
+            return data.messages;
         }
 
         /// <summary>
@@ -57,10 +60,10 @@ namespace GroupMe
         /// <param name="toDate"></param>
         /// <param name="afterMessageId"></param>
         /// <returns></returns>
-        public IList<Message> GroupMessagesByDateRange(string groupId, DateTime fromDate, DateTime toDate, string afterMessageId)
+        public IList<GroupMessage> GroupMessagesByDateRange(string groupId, DateTime fromDate, DateTime toDate, string afterMessageId)
         {
             //have to page back in time until we hit our after_message_id
-            var results = new List<Message>();
+            var results = new List<GroupMessage>();
 
             int fromEpoch = fromDate.ToEpoch();
             int toEpoch = toDate.ToEpoch();
@@ -70,7 +73,7 @@ namespace GroupMe
             while (true)
             {
                 var page = GroupMessages(groupId, beforeMessageId);
-                if (page.Count() == 0) break; //reached the start of the group
+                if (page == null || page.Count() == 0) break; //reached the start of the group
 
                 var messagesInTopRange = page.SkipWhile(x => x.created_at > toEpoch);
                 if (messagesInTopRange.Count() == 0) continue; //this whole page is past our range, keep looking back
@@ -83,6 +86,8 @@ namespace GroupMe
                 if (messagesInRange.Count() != messagesInTopRange.Count()) break; //done, we reached the bottom of the range
 
                 beforeMessageId = page.Last().id;
+
+                Thread.Sleep(5000); //Enhancing my calm to avoid rate limiting
             }
 
             //reverse the list to sort by created_at ascending
@@ -91,7 +96,7 @@ namespace GroupMe
             return results;
         }
 
-        public Message PostGroupMessage(string groupId, string text)
+        public GroupMessage PostGroupMessage(string groupId, string text)
         {
             //TODO split up text greater than 450 chars
             string action = string.Format("groups/{0}/messages", groupId);
@@ -103,10 +108,10 @@ namespace GroupMe
                 } 
             };
 
-            return POST<MessageContainer>(action, data).message;
+            return POST<GroupMessageContainer>(action, data).message;
         }
 
-        private T GET<T>(string action)
+        private T GET<T>(string action) where T: class
         {
             var url = string.Format("{0}/{1}", apiBaseUrl, action.TrimStart('/'));
             var request = (HttpWebRequest)WebRequest.Create(url);
@@ -117,11 +122,23 @@ namespace GroupMe
 
             ResponseEnvelope<T> envelope;
 
-            using (var response = (HttpWebResponse)request.GetResponse())
-            using (var reader = new StreamReader(response.GetResponseStream()))
+            try
             {
-                var obj = reader.ReadToEnd();
-                envelope = JsonConvert.DeserializeObject<ResponseEnvelope<T>>(obj);
+                using (var response = (HttpWebResponse)request.GetResponse())
+                using (var reader = new StreamReader(response.GetResponseStream()))
+                {
+                    var obj = reader.ReadToEnd();
+                    envelope = JsonConvert.DeserializeObject<ResponseEnvelope<T>>(obj);
+                }
+            }
+            catch (WebException ex)
+            {
+                if (ex.Status == WebExceptionStatus.ProtocolError
+                    && ((HttpWebResponse)ex.Response).StatusCode == HttpStatusCode.NotModified)
+                {
+                    return (T)null;
+                }
+                throw;
             }
 
             return envelope.response;
@@ -212,10 +229,10 @@ namespace GroupMe.Models {
     public class GroupMessages
     {
         public int count { get; set; }
-        public List<Message> messages { get; set; }
+        public List<GroupMessage> messages { get; set; }
     }
 
-    public class Message
+    public class GroupMessage
     {
         public string id { get; set; }
         public int created_at { get; set; }
@@ -238,8 +255,8 @@ namespace GroupMe.Models {
         public string text { get; set; }
     }
 
-    public class MessageContainer
+    public class GroupMessageContainer
     {
-        public Message message { get; set; }
+        public GroupMessage message { get; set; }
     }
 }

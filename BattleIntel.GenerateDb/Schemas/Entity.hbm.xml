@@ -29,13 +29,20 @@
     <id name="Id" type="Int32">
       <generator class="identity" />
     </id>
+    <many-to-one name="Battle" column="BattleId" not-null="true" foreign-key="FK_IntelReport_Battle" />
     <property name="GroupId" />
     <property name="MessageId" />
     <property name="CreateDateUTC" not-null="true" />
     <property name="UserName" />
     <property name="UserId" />
-    <property name="Text" length="8001" />
+    <property name="Text" length="8001" not-null="true" />
+    <property name="TextHash" length="40" not-null="true" />
     <property name="ReadDateUTC" not-null="true" />
+    <property name="IsDuplicate" not-null="true" />
+    <property name="IsChat" not-null="true" />
+    <property name="NonEmptyLineCount" not-null="true" />
+    <property name="IsUnknownTeamName" not-null="true" />
+    <property name="DistinctStatCount" not-null="true" />
     <set name="ParsedStats" inverse="true">
       <key column="IntelReportId" />
       <one-to-many class="BattleStat" />

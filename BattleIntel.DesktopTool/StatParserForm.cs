@@ -34,7 +34,9 @@ namespace BattleIntel.DesktopTool
             var lines = GetClipboardLines();
             if (!lines.Any()) return;
 
-            txtTeamName.Text = ConsumeTeamName(ref lines);
+            string teamName;
+            lines = lines.RemoveTeamName(out teamName);
+            txtTeamName.Text = teamName;
             txtTeamStats.Text = string.Join(Environment.NewLine, lines.ToArray());
         }
 
@@ -45,7 +47,8 @@ namespace BattleIntel.DesktopTool
             if (!lines.Any()) return;
 
             //discard an appended team name
-            ConsumeTeamName(ref lines);
+            string teamName;
+            lines = lines.RemoveTeamName(out teamName);
             
             //append to the stats
             txtTeamStats.Text += Environment.NewLine + string.Join(Environment.NewLine, lines.ToArray());
@@ -53,39 +56,7 @@ namespace BattleIntel.DesktopTool
 
         private IEnumerable<string> GetClipboardLines()
         {
-            return Clipboard.GetText(TextDataFormat.UnicodeText)
-                .Trim('"') //trim the quotations from a possible cell copy
-                .Split('\n')
-                .Where(x => !string.IsNullOrWhiteSpace(x))
-                .Select(x => x.Trim());
-        }
-
-        private string ConsumeTeamName(ref IEnumerable<string> lines)
-        {
-            //check if we copied from a spreadsheet having the team name on every line separated by a tab.
-            if (lines.Count() == lines.Where(x => x.Contains('\t')).Count())
-            {
-                //use it if every line has the same team name
-                var teamNames = lines.Select(x => x.Split('\t').First().Trim()).Distinct(StringComparer.OrdinalIgnoreCase);
-                if (teamNames.Count() == 1)
-                {
-                    //remove the team name from all the lines
-                    lines = lines.Select(x => string.Join(" ", x.Split('\t').Skip(1).ToArray()));
-                    return teamNames.First();
-                }
-            }
-            else
-            {
-                //check for team name on the first line
-                var firstLineStat = Stat.Parse(lines.First());
-                if (firstLineStat.Defense == null)
-                {
-                    lines = lines.Skip(1);
-                    return firstLineStat.RawInput;
-                }
-            }
-
-            return string.Empty;
+            return Clipboard.GetText(TextDataFormat.UnicodeText).SplitToNonEmptyLines();
         }
 
         private void txtTeamStats_TextChanged(object sender, EventArgs e)

@@ -128,7 +128,7 @@ namespace BattleIntel.Core
 
             SetDefenseValue(stat);
             SetNameAndAdditonalInfo(stat, tokens, defenseIndex, levelIndex);
-
+               
             return stat;
         }
 
@@ -275,6 +275,48 @@ namespace BattleIntel.Core
 
             if (string.IsNullOrWhiteSpace(stat.Name)) stat.Name = null;
             if (string.IsNullOrWhiteSpace(stat.AdditionalInfo)) stat.AdditionalInfo = null;
+        }
+    }
+
+    public static class StatParserExtensions
+    {
+        public static IEnumerable<string> SplitToNonEmptyLines(this string text)
+        {
+            return text.Trim('"') //trim the quotations from a possible cell copy
+                .Split('\n')
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => x.Trim());
+        }
+
+        public static IEnumerable<string> RemoveTeamName(this IEnumerable<string> lines, out string teamName)
+        {
+            teamName = string.Empty;
+
+            //check if we copied from a spreadsheet having the team name on every line separated by a tab.
+            if (lines.Count() == lines.Where(x => x.Contains('\t')).Count())
+            {
+                //use it if every line has the same team name
+                var teamNames = lines.Select(x => x.Split('\t').First().Trim()).Distinct(StringComparer.OrdinalIgnoreCase);
+                if (teamNames.Count() == 1)
+                {
+                    teamName = teamNames.First();
+                    //remove the team name from all the lines
+                    return lines.Select(x => string.Join(" ", x.Split('\t').Skip(1).ToArray()));
+                    
+                }
+            }
+            else
+            {
+                //check for team name on the first line
+                var firstLineStat = Stat.Parse(lines.First());
+                if (firstLineStat.Defense == null)
+                {
+                    teamName = firstLineStat.RawInput;
+                    return lines.Skip(1);
+                }
+            }
+
+            return lines;
         }
     }
 }
