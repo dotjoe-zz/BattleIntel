@@ -11,8 +11,7 @@ namespace BattleIntel.Bot
 {
     class IntelBot
     {
-        private IIntelMessagingConsole console;
-        private System.Timers.Timer timer;
+        private readonly IIntelBotConsole console;
 
         private int? battleId;
         private Group intelRoom;
@@ -22,27 +21,9 @@ namespace BattleIntel.Bot
         private GroupMeService groupMe;
         private GSheetService google;
 
-        public double TimerInterval
-        {
-            get
-            {
-                return timer.Interval;
-            }
-            set
-            {
-                timer.Interval = value;
-            }
-        }
-        public bool IsRunning { get; private set; }
-
-        public IntelBot(IIntelMessagingConsole console) 
+        public IntelBot(IIntelBotConsole console) 
         { 
             this.console = console;
-            this.IsRunning = false;
-
-            this.timer = new System.Timers.Timer(60000);
-            this.timer.SynchronizingObject = console;
-            this.timer.Elapsed += timer_Elapsed;
         }
 
         public bool ConnectToBattle(IWin32Window owner)
@@ -102,8 +83,14 @@ namespace BattleIntel.Bot
             return false;
         }
 
-        private void ProcessIntel()
+        public bool ProcessIntel()
         {
+            if (intelRoom == null || battleId == null)
+            {
+                console.AppendLine(string.Format("{0:G} BOT requires a battle AND intel room connection.", DateTime.Now));
+                return false;
+            }
+
             console.Append(string.Format("{0:G} checking for new intel...", DateTime.Now));
 
             Thread.Sleep(1000);
@@ -112,52 +99,11 @@ namespace BattleIntel.Bot
             //console.Append(string.Format("{0:G} writing new intel to sheet...", DateTime.Now));
             
             console.AppendLine("done");
-        }
-
-        private bool IsReadyToRun()
-        {
-            return intelRoom != null && battleId.HasValue;
-        }
-
-        public void Start()
-        {
-            if (!IsReadyToRun())
-            {
-                console.AppendLine(string.Format("{0:G} Cannot start Bot until you connect to a battle AND intel room.", DateTime.Now));
-                return;
-            }
-
-            console.AppendLine(string.Format("{0:G} Bot Starting", DateTime.Now));
-            IsRunning = true;
-            ProcessIntel(); //process intel right away, don't wait for first interval
-            timer.Start();
-        }
-
-        public void Stop()
-        {
-            IsRunning = false;
-            timer.Stop();
-            console.AppendLine(string.Format("{0:G} Bot Stopped", DateTime.Now));
-        }
-
-        void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            try
-            {
-                timer.Stop(); //stop timing while checking for intel
-                ProcessIntel();
-            }
-            finally
-            {
-                if (IsRunning) timer.Start(); //verify we didn't stop during the last intel check
-            }
+            return true;
         }
     }
 
-    /// <summary>
-    /// Used to send messages to the UI and also sync the timer workerthread to the UI thread.
-    /// </summary>
-    interface IIntelMessagingConsole : System.ComponentModel.ISynchronizeInvoke
+    interface IIntelBotConsole
     {
         void AppendLine(string s);
         void Append(string s);

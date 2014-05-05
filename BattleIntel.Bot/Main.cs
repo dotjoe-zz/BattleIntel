@@ -10,17 +10,22 @@ using System.Windows.Forms;
 
 namespace BattleIntel.Bot
 {
-    public partial class Main : Form, IIntelMessagingConsole
+    public partial class Main : Form, IIntelBotConsole
     {
         private IntelBot Bot;
+        private System.Timers.Timer BotTimer;
 
         public Main()
         {
             InitializeComponent();
 
+            BotTimer = new System.Timers.Timer();
+            SetTimerInterval();
+            BotTimer.Elapsed += Timer_Elapsed;
+            BotTimer.SynchronizingObject = this; //keep Bot processing on UI thread
+
             Bot = new IntelBot(this);
             SetBotControlsStatus();
-            SetBotTimerInterval();
         }
 
         private void Main_Load(object sender, EventArgs e)
@@ -55,35 +60,52 @@ namespace BattleIntel.Bot
 
         private void btnStart_Click(object sender, EventArgs e)
         {
-            Bot.Start();
-            SetBotControlsStatus();
+            if (Bot.ProcessIntel()) 
+            { 
+                BotTimer.Start();
+                SetBotControlsStatus();
+            }
+            
         }
 
         private void btnStop_Click(object sender, EventArgs e)
         {
-            Bot.Stop();
+            BotTimer.Stop();
             SetBotControlsStatus();
+        }
+
+        void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            BotTimer.Stop();
+            if (Bot.ProcessIntel())
+            {
+                BotTimer.Start();
+            }
+            else
+            {
+                SetBotControlsStatus();
+            }
         }
 
         private void nupIntervalSeconds_ValueChanged(object sender, EventArgs e)
         {
-            SetBotTimerInterval();
+            SetTimerInterval();
         }
 
         private void SetBotControlsStatus()
         {
-            btnStart.Enabled = !Bot.IsRunning;
-            btnStop.Enabled = Bot.IsRunning;
+            btnStart.Enabled = !BotTimer.Enabled;
+            btnStop.Enabled = BotTimer.Enabled;
         }
 
-        private void SetBotTimerInterval()
+        private void SetTimerInterval()
         {
-            Bot.TimerInterval = (double)(nupIntervalSeconds.Value * 1000);
+            BotTimer.Interval = (double)(nupIntervalSeconds.Value * 1000);
         }
 
         #endregion
 
-        #region "IIntelMessagingConsole"
+        #region "IIntelBotConsole"
 
         public void AppendLine(string s)
         {
