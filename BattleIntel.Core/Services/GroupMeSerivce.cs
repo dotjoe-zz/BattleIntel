@@ -45,9 +45,19 @@ namespace GroupMe
                 action += "?before_id=" + WebUtility.UrlEncode(before_message_id);
             }
 
-            var data = GET<GroupMessages>(action);
-            if(data == null) return null;
-            return data.messages;
+            try
+            {
+                return GET<GroupMessages>(action).messages;
+            }
+            catch (WebException ex)
+            {
+                if (ex.Status == WebExceptionStatus.ProtocolError
+                    && ((HttpWebResponse)ex.Response).StatusCode == HttpStatusCode.NotModified)
+                {
+                    return new List<GroupMessage>(); //empty list, we hit the beginning of the group
+                }
+                throw;
+            }
         }
 
         /// <summary>
@@ -122,23 +132,12 @@ namespace GroupMe
 
             ResponseEnvelope<T> envelope;
 
-            try
+            
+            using (var response = (HttpWebResponse)request.GetResponse())
+            using (var reader = new StreamReader(response.GetResponseStream()))
             {
-                using (var response = (HttpWebResponse)request.GetResponse())
-                using (var reader = new StreamReader(response.GetResponseStream()))
-                {
-                    var obj = reader.ReadToEnd();
-                    envelope = JsonConvert.DeserializeObject<ResponseEnvelope<T>>(obj);
-                }
-            }
-            catch (WebException ex)
-            {
-                if (ex.Status == WebExceptionStatus.ProtocolError
-                    && ((HttpWebResponse)ex.Response).StatusCode == HttpStatusCode.NotModified)
-                {
-                    return (T)null;
-                }
-                throw;
+                var obj = reader.ReadToEnd();
+                envelope = JsonConvert.DeserializeObject<ResponseEnvelope<T>>(obj);
             }
 
             return envelope.response;
