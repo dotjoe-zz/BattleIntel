@@ -48,49 +48,16 @@ namespace GroupMe
         }
 
         /// <summary>
-        /// Returns ALL messages after the message_id, order by created_at ascending.
+        /// Returns ALL messages between the from and to dates (optionally after the afterMessageId), order by created_at ascending.
         /// This is not part of the GroupMe API, it is many calls to the GroupMessages()
         /// function using the before_message_id parameter.
         /// </summary>
         /// <param name="groupId"></param>
-        /// <param name="afterMessageId">Want to get all message AFTER this id.</param>
+        /// <param name="fromDate"></param>
+        /// <param name="toDate"></param>
+        /// <param name="afterMessageId"></param>
         /// <returns></returns>
-        public IList<Message> GroupMessagesAfter(string groupId, string afterMessageId)
-        {
-            //have to page back in time until we hit our after_message_id
-            var results = new List<Message>();
-            string beforeMessageId = null;
-            
-            while(true)
-            {
-                var page = GroupMessages(groupId, beforeMessageId);
-                if(page.Count() == 0) break; //reached the start of the group
-                
-                var newMessages = page.TakeWhile(x => x.id != afterMessageId);
-                if (newMessages.Count() == 0) break; //no more new messages
-
-                results.AddRange(newMessages);
-                if (newMessages.Count() != page.Count()) break; //we hit our message in this page
-
-                beforeMessageId = newMessages.Last().id;
-            }
-
-            //reverse the list to sort by created_at ascending
-            results.Reverse();
-
-            return results;
-        }
-
-        /// <summary>
-        /// Returns ALL messages between the from and to dates, order by created_at ascending.
-        /// This is not part of the GroupMe API, it is many calls to the GroupMessages()
-        /// function using the before_message_id parameter.
-        /// </summary>
-        /// <param name="groupId"></param>
-        /// <param name="from"></param>
-        /// <param name="thru"></param>
-        /// <returns></returns>
-        public IList<Message> GroupMessagesByDateRange(string groupId, DateTime fromDate, DateTime toDate)
+        public IList<Message> GroupMessagesByDateRange(string groupId, DateTime fromDate, DateTime toDate, string afterMessageId)
         {
             //have to page back in time until we hit our after_message_id
             var results = new List<Message>();
@@ -108,11 +75,12 @@ namespace GroupMe
                 var messagesInTopRange = page.SkipWhile(x => x.created_at > toEpoch);
                 if (messagesInTopRange.Count() == 0) continue; //this whole page is past our range, keep looking back
 
-                var messagesInRange = messagesInTopRange.TakeWhile(x => x.created_at >= fromEpoch);
-                if (messagesInRange.Count() == 0) break; //the remaining messages are before our range
+                var messagesInRange = messagesInTopRange
+                    .TakeWhile(x => x.created_at >= fromEpoch && (afterMessageId == null || x.id != afterMessageId));
+                if (messagesInRange.Count() == 0) break; //the remaining messages are in range and after the last message
 
-                results.AddRange(messagesInTopRange);
-                if (messagesInRange.Count() != messagesInTopRange.Count()) break; //we went past our date range in this page
+                results.AddRange(messagesInRange);
+                if (messagesInRange.Count() != messagesInTopRange.Count()) break; //done, we reached the bottom of the range
 
                 beforeMessageId = page.Last().id;
             }
@@ -206,6 +174,16 @@ namespace GroupMe
             var d = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(epoch);
             if (kind == DateTimeKind.Local) d = d.ToLocalTime();
             return d;
+        }
+
+        public static DateTime ToUniversalTime(this int epoch)
+        {
+            return epoch.ToDateTime(DateTimeKind.Utc);
+        }
+
+        public static DateTime ToLocalTime(this int epoch)
+        {
+            return epoch.ToDateTime(DateTimeKind.Local);
         }
     }
 }
