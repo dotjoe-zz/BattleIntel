@@ -85,18 +85,18 @@ namespace GroupMe
                 var page = GroupMessages(groupId, beforeMessageId);
                 if (page == null || page.Count() == 0) break; //reached the start of the group
 
-                var messagesInTopRange = page.SkipWhile(x => x.created_at > toEpoch);
-                if (messagesInTopRange.Count() == 0) continue; //this whole page is past our range, keep looking back
+                var inTopRange = page.SkipWhile(x => x.created_at > toEpoch);
+                if (inTopRange.Count() > 0)
+                {
+                    var inRange = inTopRange.TakeWhile(x => x.created_at >= fromEpoch && (afterMessageId == null || x.id != afterMessageId));
+                    if (inRange.Count() == 0) break; //done, we went before the range or hit the afterMessage
 
-                var messagesInRange = messagesInTopRange
-                    .TakeWhile(x => x.created_at >= fromEpoch && (afterMessageId == null || x.id != afterMessageId));
-                if (messagesInRange.Count() == 0) break; //the remaining messages are in range and after the last message
+                    results.AddRange(inRange);
 
-                results.AddRange(messagesInRange);
-                if (messagesInRange.Count() != messagesInTopRange.Count()) break; //done, we reached the bottom of the range
+                    if (inRange.Count() != inTopRange.Count()) break; //done, we reached the bottom of the range
+                }
 
                 beforeMessageId = page.Last().id;
-
                 Thread.Sleep(5000); //Enhancing my calm to avoid rate limiting
             }
 
