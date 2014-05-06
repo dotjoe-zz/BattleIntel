@@ -232,9 +232,6 @@ namespace BattleIntel.Bot
 
                 foreach (var m in raw)
                 {
-                    //ignore the sheet URL posts
-                    if (m.text == settings.SpreadsheetURL) continue;
-
                     new IntelMessageProcessor(s, battle, m).Process();
                     s.Flush();
                 }
@@ -257,6 +254,7 @@ namespace BattleIntel.Bot
             public void Process()
             {
                 var report = SaveReport();
+
                 if (IsDuplicateOfExistingReport(report)) return;
 
                 var nonEmptyLines = report.Text.SplitToNonEmptyLines();
