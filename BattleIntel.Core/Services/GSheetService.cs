@@ -57,9 +57,44 @@ namespace GSheet
             return results;
         }
 
-        public bool InsertStats(string teamName, IList<Stat> stats)
+        public void MergeSheet(string listFeedURI, IList<IntelDataRow> rows)
         {
-            throw new NotImplementedException();
+            //TODO might need to use CellFeed to ensure ColumnHeader's exist with correct names
+
+            ListFeed feed = service.Query(new ListQuery(listFeedURI));
+
+            int i = 0;
+            //update existing rows
+            for (; i < feed.Entries.Count && i < rows.Count; ++i)
+            {
+                ListEntry entry = feed.Entries[i] as ListEntry;
+                IntelDataRow r = rows[i];
+
+                //TODO are elements ordered by column or do need to use the column header name?
+                //TODO check if we actually updated the value!! and skip if it has not changed
+                entry.Elements[0].Value = r.Team;
+                entry.Elements[1].Value = r.Stats;
+
+                entry.Update();
+            }
+
+            //delete the remaining rows
+            for (; i < feed.Entries.Count; ++i)
+            {
+                ListEntry entry = feed.Entries[i] as ListEntry;
+                entry.Delete();
+            }
+            
+            //or add the remaining intel
+            for (; i < rows.Count; ++i)
+            {
+                var r = rows[i];
+                var entry = new ListEntry();
+                entry.Elements.Add(new ListEntry.Custom() { LocalName = "team", Value = r.Team });
+                entry.Elements.Add(new ListEntry.Custom() { LocalName = "stats", Value = r.Stats });
+
+                service.Insert(new Uri(listFeedURI), entry);
+            }
         }
     }
 }
@@ -78,5 +113,11 @@ namespace GSheet.Models
         public string Title { get; set; }
         public string CellsFeedURI { get; set; }
         public string ListFeedURI { get; set; }
+    }
+
+    public class IntelDataRow
+    {
+        public string Team { get; set; }
+        public string Stats { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using GroupMe;
 using GroupMe.Models;
 using GSheet;
+using GSheet.Models;
 using NHibernate;
 using System;
 using System.Collections.Generic;
@@ -113,6 +114,7 @@ namespace BattleIntel.Bot
 
         public bool ProcessWorker()
         {
+            //TODO log with log4net, replace console calls with UI updates, clear the console on each processing
             console.AppendLine(string.Format("\t{0:G} Checking for new intel", DateTime.Now));
 
             var newMessages = TryGetNewMessages();
@@ -126,42 +128,47 @@ namespace BattleIntel.Bot
             console.AppendLine(string.Format("\t{0:G} Processing {1} new message(s)", DateTime.Now, newMessages.Count));
             ProcessNewMessages(newMessages);
 
-            //TODO write all intel to the Sheet!
-            //console.Append(string.Format("{0:G} writing new intel to sheet...", DateTime.Now));
+            if (settings.SpreadsheetURL != null) 
+            { 
+                console.AppendLine(string.Format("{0:G} Updating spreadsheet", DateTime.Now));
+                TryUpdateIntelSheet();
 
-            console.AppendLine(string.Format("\t{0:G} Done.", DateTime.Now));
+                console.AppendLine(string.Format("{0:G} Posting spreadsheet url", DateTime.Now));
+                TryPostSpeadsheetURL();
+            }
             return true;
+        }
+
+        private T TryServiceAction<T>(string serviceName, int maxAttempts, Func<T> action) where T: class
+        {
+            int attempts = 0;
+            while (attempts < maxAttempts)
+            {
+                try
+                {
+                    return action();
+                }
+                catch (Exception ex)
+                {
+                    console.AppendLine(string.Format("\t{0:G} {1} Error: {2}", DateTime.Now, serviceName, ex.Message));
+                    ++attempts;
+
+                    if (attempts < maxAttempts)
+                    {
+                        console.AppendLine("\tTry again in 7 seconds.");
+                        Thread.Sleep(7000);
+                    }
+                }
+            }
+
+            console.AppendLine(string.Format("\t{0:G} Gave up after {1} attempts :(", DateTime.Now, attempts));
+            return (T)null;
         }
 
         private IList<GroupMessage> TryGetNewMessages()
         {
             string lastMessageId = GetLastIntelReportMessageId();
-
-            int attempts = 0;
-            const int maxAttempts = 3;
-
-            while (attempts < 3) 
-            { 
-                try
-                {
-                    return groupMe.GroupMessagesByDateRange(settings.GroupId, settings.BattleStartDate, settings.BattleEndDate, lastMessageId);
-                }
-                catch (Exception ex)
-                {
-                    console.AppendLine(string.Format("\t{0:G} Error talking to GroupMe: {1}", DateTime.Now, ex.Message));
-                    ++attempts;
-
-                    if (attempts < maxAttempts) 
-                    {
-                        console.AppendLine("\tTry again in 7 seconds.");
-                        Thread.Sleep(7000);
-                    }
-                    
-                }
-            }
-
-            console.AppendLine(string.Format("\t{0:G} Gave up trying to talk to GroupMe after {1} attempts :(", DateTime.Now, attempts));
-            return null;
+            return TryServiceAction("GroupMe", 3, () => groupMe.GroupMessagesByDateRange(settings.GroupId, settings.BattleStartDate, settings.BattleEndDate, lastMessageId));
         }
 
         private string GetLastIntelReportMessageId()
@@ -182,6 +189,48 @@ namespace BattleIntel.Bot
             return lastMessageId;
         }
 
+        private void TryUpdateIntelSheet()
+        {
+            IList<BattleStat> allStats = null;
+
+            NH.UsingSession(s =>
+            {
+                Team teamAlias = null;
+
+                allStats = s.QueryOver<BattleStat>()
+                    .JoinAlias(x => x.Team, () => teamAlias)
+                    .Where(x => x.Battle.Id == settings.BattleId.Value)
+                    .OrderBy(x => x.Team).Asc
+                    .ThenBy(x => x.Stat.Level).Desc
+                    .ThenBy(x => x.Stat.DefenseValue).Desc
+                    .ThenBy(x => x.Stat.Name).Asc
+                    .List();
+            });
+
+            var sheetData = allStats.GroupBy(x => new { TeamId = x.Team.Id, TeamName = x.Team.Name })
+                .Select(k => new IntelDataRow
+                {
+                    Team = k.Key.TeamName,
+                    Stats = k.Key.TeamName + "\n" + string.Join("\n", k.Select(x => x.Stat)
+                            .OrderByDescending(x => x.Level)
+                            .ThenByDescending(x => x.DefenseValue)
+                            .ThenBy(x => x.Name)
+                            .Select(x => x.ToLine()))
+                }).OrderBy(x => x.Team).ToList();
+
+
+            TryServiceAction<object>("Google", 3, () =>
+            {
+                google.MergeSheet(settings.WorksheetListFeedURI, sheetData);
+                return null;
+            });
+        }
+
+        private GroupMessage TryPostSpeadsheetURL()
+        {
+            return TryServiceAction("GroupMe", 3, () => groupMe.PostGroupMessage(settings.GroupId, settings.SpreadsheetURL));
+        }
+
         private void ProcessNewMessages(IList<GroupMessage> raw)
         {
             NH.UsingSession(s =>
@@ -190,6 +239,9 @@ namespace BattleIntel.Bot
 
                 foreach (var m in raw)
                 {
+                    //ignore the sheet URL posts
+                    if (m.text == settings.SpreadsheetURL) continue;
+
                     new IntelMessageProcessor(s, battle, m).Process();
                     s.Flush();
                 }
