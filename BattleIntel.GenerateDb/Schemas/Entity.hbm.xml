@@ -38,6 +38,7 @@
     <property name="Text" length="8001" not-null="true" />
     <property name="TextHash" length="40" not-null="true" />
     <property name="ReadDateUTC" not-null="true" />
+    <property name="IsBotMessage" not-null="true" />
     <many-to-one name="DuplicateOf" column="DuplicateOfId" foreign-key="FK_IntelReport_DuplicateOf" />
     <property name="IsChat" not-null="true" />
     <property name="NonEmptyLineCount" not-null="true" />

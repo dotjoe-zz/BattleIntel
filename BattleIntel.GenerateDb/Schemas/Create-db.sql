@@ -69,6 +69,7 @@ alter table dbo.UserOpenId  drop constraint FK_UserOpenId_User
        Text NVARCHAR(MAX) not null,
        TextHash NVARCHAR(40) not null,
        ReadDateUTC DATETIME not null,
+       IsBotMessage BIT not null,
        DuplicateOfId INT null,
        IsChat BIT not null,
        NonEmptyLineCount INT not null,

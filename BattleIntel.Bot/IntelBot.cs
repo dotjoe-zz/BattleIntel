@@ -125,9 +125,10 @@ namespace BattleIntel.Bot
             }
 
             console.AppendLine(string.Format("\t{0:G} Processing {1} new message(s)", DateTime.Now, newMessages.Count));
-            ProcessNewMessages(newMessages);
+            int newStatsCount = ProcessNewMessages(newMessages);
+            console.AppendLine(string.Format("\t{0:G} Parsed {1} new stats", DateTime.Now, newStatsCount));
 
-            if (settings.SpreadsheetURL != null) 
+            if (newStatsCount > 0 && settings.SpreadsheetURL != null) 
             { 
                 console.AppendLine(string.Format("{0:G} Updating spreadsheet", DateTime.Now));
                 TryUpdateIntelSheet();
@@ -163,6 +164,7 @@ namespace BattleIntel.Bot
                 lastMessageId = s.QueryOver<IntelReport>()
                     .Where(x => x.Battle.Id == settings.BattleId.Value)
                     .And(x => x.GroupId == settings.GroupId)
+                    .And(x => x.IsBotMessage == false)
                     .Select(x => x.MessageId)
                     .OrderBy(x => x.CreateDateUTC).Desc
                     .Take(1)
@@ -216,7 +218,14 @@ namespace BattleIntel.Bot
         {
             try
             {
-                groupMe.PostGroupMessage(settings.GroupId, settings.SpreadsheetURL);
+                var botMessage = groupMe.PostGroupMessage(settings.GroupId, settings.SpreadsheetURL);
+
+                //save this so we can ignore
+                NH.UsingSession(s =>
+                {
+                    var battle = s.Get<Battle>(settings.BattleId.Value);
+                    new IntelMessageProcessor(s, battle, botMessage).Process(true);
+                });
             }
             catch (Exception ex)
             {
@@ -224,18 +233,24 @@ namespace BattleIntel.Bot
             }
         }
 
-        private void ProcessNewMessages(IList<GroupMessage> raw)
+        private int ProcessNewMessages(IList<GroupMessage> raw)
         {
+            int newStatsCount = 0;
+
             NH.UsingSession(s =>
             {
                 var battle = s.Get<Battle>(settings.BattleId.Value);
 
                 foreach (var m in raw)
                 {
-                    new IntelMessageProcessor(s, battle, m).Process();
+                    var p = new IntelMessageProcessor(s, battle, m);
+                    p.Process(false);
+                    newStatsCount += p.NewStatsCount;
                     s.Flush();
                 }
             });
+
+            return newStatsCount;
         }
 
         class IntelMessageProcessor
@@ -243,6 +258,7 @@ namespace BattleIntel.Bot
             private readonly ISession Session;
             private readonly Battle Battle;
             private readonly GroupMessage Message;
+            public int NewStatsCount { get; private set; }
 
             public IntelMessageProcessor(ISession session, Battle battle, GroupMessage message)
             {
@@ -251,10 +267,16 @@ namespace BattleIntel.Bot
                 this.Message = message;
             }
 
-            public void Process()
+            public void Process(bool isBotMessage)
             {
-                var report = SaveReport();
+                if (AlreadyProcessed(Message.id)) return;
 
+                var report = SaveReport();
+                if (isBotMessage)
+                {
+                    report.IsBotMessage = true;
+                    return;
+                }
                 if (IsDuplicateOfExistingReport(report)) return;
 
                 var nonEmptyLines = report.Text.SplitToNonEmptyLines();
@@ -282,6 +304,8 @@ namespace BattleIntel.Bot
                 var newStats = reportStats.Except(currentTeamStats);
 
                 report.NewStatsCount = newStats.Count();
+                this.NewStatsCount = report.NewStatsCount;
+
                 foreach (var stat in newStats)
                 {
                     Session.Save(new BattleStat
@@ -292,6 +316,15 @@ namespace BattleIntel.Bot
                         Stat = stat
                     });
                 }
+            }
+
+            private bool AlreadyProcessed(string messageId)
+            {
+                return Session.QueryOver<IntelReport>()
+                    .Where(x => x.Battle.Id == Battle.Id)
+                    .And(x => x.MessageId == messageId)
+                    .Take(1)
+                    .SingleOrDefault() != null;
             }
 
             private IntelReport SaveReport()
