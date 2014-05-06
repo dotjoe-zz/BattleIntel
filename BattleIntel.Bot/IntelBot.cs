@@ -231,9 +231,15 @@ namespace BattleIntel.Bot
                 };
                 var team = GetOrCreateTeam(teamName);
 
-                var distinctStats = nonEmptyLines.Select(x => Stat.Parse(x)).Distinct();
-                report.DistinctStatCount = distinctStats.Count();
-                foreach (var stat in distinctStats)
+                var reportStats = nonEmptyLines.Select(x => Stat.Parse(x)).Distinct();
+                report.ReportStatsCount = reportStats.Count();
+
+                //check for existing battle stats for this team
+                var currentTeamStats = GetCurrentTeamStats(team);
+                var newStats = reportStats.Except(currentTeamStats);
+
+                report.NewStatsCount = newStats.Count();
+                foreach (var stat in newStats)
                 {
                     Session.Save(new BattleStat
                     {
@@ -256,9 +262,10 @@ namespace BattleIntel.Bot
                     UserName = Message.name,
                     CreateDateUTC = Message.created_at.ToUniversalTime(),
                     ReadDateUTC = DateTime.UtcNow,
-                    Text = Message.text,
-                    TextHash = ComputeHash(Message.text)
+                    Text = Message.text ?? string.Empty                  
                 };
+                report.TextHash = ComputeHash(report.Text);
+
                 Session.Save(report);
 
                 return report;
@@ -300,6 +307,15 @@ namespace BattleIntel.Bot
                 }
 
                 return existingTeam;
+            }
+
+            private IList<Stat> GetCurrentTeamStats(Team team)
+            {
+                return Session.QueryOver<BattleStat>()
+                    .Where(x => x.Battle.Id == Battle.Id)
+                    .And(x => x.Team.Id == team.Id)
+                    .Select(x => x.Stat)
+                    .List<Stat>();
             }
         }
     }

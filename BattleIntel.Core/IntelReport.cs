@@ -21,13 +21,23 @@ namespace BattleIntel.Core
         public virtual bool IsChat { get; set; }
         public virtual int NonEmptyLineCount { get; set; }
         public virtual bool IsUnknownTeamName { get; set; }
-        public virtual int DistinctStatCount { get; set; }
 
-        public virtual IEnumerable<BattleStat> ParsedStats { get; protected set; }
+        /// <summary>
+        /// The number of stats in this report text.
+        /// </summary>
+        public virtual int ReportStatsCount { get; set; }
+
+        /// <summary>
+        /// The number of stats that where actually created. (i.e. Stats.Count()).
+        /// This is after merging with existing stats.
+        /// </summary>
+        public virtual int NewStatsCount { get; set; }
+
+        public virtual IEnumerable<BattleStat> Stats { get; protected set; }
 
         public IntelReport()
         {
-            ParsedStats = new Iesi.Collections.Generic.HashedSet<BattleStat>();
+            Stats = new Iesi.Collections.Generic.HashedSet<BattleStat>();
         }
     }
 }

@@ -58,7 +58,7 @@ namespace BattleIntel.Core.Db.Mapping
                     m.NotNullable(true);
                 });
                 map.ManyToOne(x => x.DuplicateOf, m => m.NotNullable(false));
-                map.Set(x => x.ParsedStats, m =>
+                map.Set(x => x.Stats, m =>
                 {
                     m.Key(x => x.Column("IntelReportId"));
                     m.Inverse(true);

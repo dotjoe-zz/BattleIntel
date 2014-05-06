@@ -42,8 +42,9 @@
     <property name="IsChat" not-null="true" />
     <property name="NonEmptyLineCount" not-null="true" />
     <property name="IsUnknownTeamName" not-null="true" />
-    <property name="DistinctStatCount" not-null="true" />
-    <set name="ParsedStats" inverse="true">
+    <property name="ReportStatsCount" not-null="true" />
+    <property name="NewStatsCount" not-null="true" />
+    <set name="Stats" inverse="true">
       <key column="IntelReportId" />
       <one-to-many class="BattleStat" />
     </set>
