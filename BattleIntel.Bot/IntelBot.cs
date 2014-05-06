@@ -10,7 +10,6 @@ using System.Configuration;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace BattleIntel.Bot
@@ -139,36 +138,20 @@ namespace BattleIntel.Bot
             return true;
         }
 
-        private T TryServiceAction<T>(string serviceName, int maxAttempts, Func<T> action) where T: class
-        {
-            int attempts = 0;
-            while (attempts < maxAttempts)
-            {
-                try
-                {
-                    return action();
-                }
-                catch (Exception ex)
-                {
-                    console.AppendLine(string.Format("\t{0:G} {1} Error: {2}", DateTime.Now, serviceName, ex.Message));
-                    ++attempts;
-
-                    if (attempts < maxAttempts)
-                    {
-                        console.AppendLine("\tTry again in 7 seconds.");
-                        Thread.Sleep(7000);
-                    }
-                }
-            }
-
-            console.AppendLine(string.Format("\t{0:G} Gave up after {1} attempts :(", DateTime.Now, attempts));
-            return (T)null;
-        }
-
         private IList<GroupMessage> TryGetNewMessages()
         {
             string lastMessageId = GetLastIntelReportMessageId();
-            return TryServiceAction("GroupMe", 3, () => groupMe.GroupMessagesByDateRange(settings.GroupId, settings.BattleStartDate, settings.BattleEndDate, lastMessageId));
+
+            try
+            {
+                return groupMe.GroupMessagesByDateRange(settings.GroupId, settings.BattleStartDate, settings.BattleEndDate, lastMessageId);
+            }
+            catch (Exception ex)
+            {
+                console.AppendLine(ex.ToString());
+            }
+
+            return null;
         }
 
         private string GetLastIntelReportMessageId()
@@ -219,16 +202,26 @@ namespace BattleIntel.Bot
                 }).OrderBy(x => x.Team).ToList();
 
 
-            TryServiceAction<object>("Google", 3, () =>
+            try
             {
-                google.MergeSheet(settings.WorksheetListFeedURI, sheetData);
-                return null;
-            });
+                google.MergeSheet(settings.WorksheetCellsFeedURI, settings.WorksheetListFeedURI, sheetData);
+            }
+            catch (Exception ex)
+            {
+                console.AppendLine(ex.ToString());
+            }
         }
 
-        private GroupMessage TryPostSpeadsheetURL()
+        private void TryPostSpeadsheetURL()
         {
-            return TryServiceAction("GroupMe", 3, () => groupMe.PostGroupMessage(settings.GroupId, settings.SpreadsheetURL));
+            try
+            {
+                groupMe.PostGroupMessage(settings.GroupId, settings.SpreadsheetURL);
+            }
+            catch (Exception ex)
+            {
+                console.AppendLine(ex.ToString());
+            }
         }
 
         private void ProcessNewMessages(IList<GroupMessage> raw)
