@@ -14,7 +14,7 @@ namespace BattleIntel.Bot
 {
     public partial class BattleSelector : Form
     {
-        public int? SelectedBattleId { get; private set; }
+        public Battle SelectedBattle { get; private set; }
 
         public BattleSelector()
         {
@@ -46,15 +46,13 @@ namespace BattleIntel.Bot
 
         private void btnOk_Click(object sender, EventArgs e)
         {
-            var SelectedBattle = listBox1.SelectedItem as Battle;
-
+            SelectedBattle = listBox1.SelectedItem as Battle;
             if (SelectedBattle == null)
             {
                 MessageBox.Show(this, "Please select a battle.");
                 return;
             }
 
-            SelectedBattleId = SelectedBattle.Id;
             DialogResult = DialogResult.OK;
         }
 
