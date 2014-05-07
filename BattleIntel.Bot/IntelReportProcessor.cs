@@ -1,9 +1,11 @@
 ﻿using BattleIntel.Core;
+using GroupMe;
 using GroupMe.Models;
 using NHibernate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
