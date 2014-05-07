@@ -141,14 +141,14 @@ namespace BattleIntel.Bot
             LogProcessInfo("Parsed {0} new stats", results.NewStatsCount);
 
             if (results.NewStatsCount > 0 && settings.SpreadsheetURL != null) 
-            { 
-                console.AppendLine("Updating spreadsheet");
+            {
+                LogProcessInfo("Updating spreadsheet");
                 TryUpdateIntelSheet();
             }
 
-            if (results.NewMessagesCount > 0 && settings.SpreadsheetURL != null) 
-            { 
-                console.AppendLine("Posting spreadsheet url");
+            if (!results.LastMessageWasBot && settings.SpreadsheetURL != null) 
+            {
+                LogProcessInfo("Posting spreadsheet url");
                 TryPostSpeadsheetURL();
             }
 
@@ -157,7 +157,7 @@ namespace BattleIntel.Bot
 
         private IList<GroupMessage> TryGetNewMessages()
         {
-            string lastMessageId = GetLastIntelReportMessageId();
+            string lastMessageId = GetLastNonBotGroupMessageId();
 
             try
             {
@@ -172,7 +172,7 @@ namespace BattleIntel.Bot
             return null;
         }
 
-        private string GetLastIntelReportMessageId()
+        private string GetLastNonBotGroupMessageId()
         {
             string lastMessageId = null;
 
@@ -207,9 +207,12 @@ namespace BattleIntel.Bot
                     for (int i = start; i < raw.Count && i < (start + batchSize); ++i)
                     {
                         var p = new IntelReportProcessor(s, battle, raw[i]);
-                        p.Process(false);
+                        
+                        p.Process();
+
                         results.NewStatsCount += p.NewStatsCount;
-                        if (p.IsNewMessage) results.NewMessagesCount++;
+                        results.LastMessageWasBot = p.IsBotMessage;
+
                         s.Flush();
                     }
                 });
@@ -221,7 +224,7 @@ namespace BattleIntel.Bot
         class ProcessResults
         {
             public int NewStatsCount { get; set; }
-            public int NewMessagesCount { get; set; }
+            public bool LastMessageWasBot { get; set; }
         }
 
         private void TryUpdateIntelSheet()
@@ -280,11 +283,10 @@ namespace BattleIntel.Bot
 
             if (botMessage != null) 
             { 
-                //save this as a BotMessage so we can exclude from the LastMessageProcessed lookup
                 NH.UsingSession(s =>
                 {
                     var battle = s.Get<Battle>(settings.BattleId.Value);
-                    new IntelReportProcessor(s, battle, botMessage).Process(true);
+                    new IntelReportProcessor(s, battle, botMessage).ProcessBotPost();
                 });
             }
         }

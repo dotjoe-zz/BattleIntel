@@ -17,7 +17,7 @@ namespace BattleIntel.Bot
         private readonly Battle Battle;
         private readonly GroupMessage Message;
         public int NewStatsCount { get; private set; }
-        public bool IsNewMessage { get; private set; }
+        public bool IsBotMessage { get; private set; }
 
         public IntelReportProcessor(ISession session, Battle battle, GroupMessage message)
         {
@@ -26,18 +26,44 @@ namespace BattleIntel.Bot
             this.Message = message;
         }
 
-        public void Process(bool isBotMessage)
+        /// <summary>
+        /// Use this to save the return result from posting a bot message, so we
+        /// can flag it as such.
+        /// </summary>
+        public void ProcessBotPost()
         {
-            if (AlreadyProcessed(Message.id)) return;
+            var report = Session.QueryOver<IntelReport>()
+                .Where(x => x.Battle.Id == Battle.Id)
+                .And(x => x.MessageId == Message.id)
+                .Take(1)
+                .SingleOrDefault();
 
-            IsNewMessage = true;
-            var report = SaveReport();
-
-            if (isBotMessage) //save with bot message flag so we can exclude from last message processed lookup
+            if (report != null)
             {
-                report.IsBotMessage = true;
-                return;
+                IsBotMessage = report.IsBotMessage;
+                return; //already processed! wow!
             }
+
+            report = SaveReport();
+
+            report.IsBotMessage = true;
+            IsBotMessage = true;
+        }
+
+        public void Process()
+        {
+            var report = Session.QueryOver<IntelReport>()
+                .Where(x => x.Battle.Id == Battle.Id)
+                .And(x => x.MessageId == Message.id)
+                .Take(1)
+                .SingleOrDefault();
+            if (report != null)
+            {
+                IsBotMessage = report.IsBotMessage;
+                return; //already processed! most likely we are reading our posted bot message
+            }
+
+            report = SaveReport();
 
             var duplicate = GetDuplicateBattleReport(report);
             if (duplicate != null) //this is an exact duplicate of a report we already processed
@@ -83,15 +109,6 @@ namespace BattleIntel.Bot
                     Stat = stat
                 });
             }
-        }
-
-        private bool AlreadyProcessed(string messageId)
-        {
-            return Session.QueryOver<IntelReport>()
-                .Where(x => x.Battle.Id == Battle.Id)
-                .And(x => x.MessageId == messageId)
-                .Take(1)
-                .SingleOrDefault() != null;
         }
 
         private IntelReport SaveReport()
