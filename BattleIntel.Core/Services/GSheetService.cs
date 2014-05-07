@@ -65,19 +65,35 @@ namespace GSheet
             
             ListFeed feed = service.Query(new ListQuery(listFeedURI));
 
+            //NOTE: LocalName is the ColumnHeader value except it MUST use lower case AND replace spaces with _
+            string[][] values = 
+            {
+                new string[] {"team", ""},
+                new string[] {"stats", ""}
+            };
+
             int i = 0;
             //update existing rows
             for (; i < feed.Entries.Count && i < rows.Count; ++i)
             {
                 ListEntry entry = (ListEntry)feed.Entries[i];
                 IntelDataRow r = rows[i];
+                values[0][1] = r.Team;
+                values[1][1] = r.Stats;  
 
-                //TODO are elements ordered by column or do need to use the column header name?
-                //TODO check if we actually updated the value!! and skip if it has not changed
+                bool update = false;
 
-                entry.Elements[0].Value = r.Team;
-                entry.Elements[1].Value = r.Stats;
-                entry.Update();
+                foreach (ListEntry.Custom el in entry.Elements)
+                foreach (var kv in values)
+                {
+                    if(el.LocalName == kv[0] && el.Value != kv[1])
+                    {
+                        update = true;
+                        el.Value = kv[1];
+                    }
+                }
+                
+                if(update) entry.Update();
             }
 
             //delete the remaining rows
@@ -92,7 +108,6 @@ namespace GSheet
             {
                 var r = rows[i];
                 var entry = new ListEntry();
-                //NOTE: LocalName must use lower case a replace spaces with _
                 entry.Elements.Add(new ListEntry.Custom() { LocalName = "team", Value = r.Team });
                 entry.Elements.Add(new ListEntry.Custom() { LocalName = "stats", Value = r.Stats });
 
