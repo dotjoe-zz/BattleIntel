@@ -16,6 +16,7 @@ namespace BattleIntel.Bot
 {
     class IntelBot
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(IntelBot));
         private readonly IIntelBotConsole console;
         private IntelBotSettings settings;
         private GroupMeService groupMe;
@@ -43,7 +44,7 @@ namespace BattleIntel.Bot
                     settings.BattleStartDate = bs.SelectedBattle.StartDateUTC.ToLocalTime();
                     settings.BattleEndDate = bs.SelectedBattle.EndDateUTC.ToLocalTime();
 
-                    console.AppendLine(string.Format("Connected to Battle: {0}/{1} ({2:D} - {3:D})", settings.BattleId, settings.BattleName, settings.BattleStartDate, settings.BattleEndDate));
+                    LogInfo("Connected to Battle: {0}/{1} ({2:D} - {3:D})", settings.BattleId, settings.BattleName, settings.BattleStartDate, settings.BattleEndDate);
                     return true;
                 }
             }
@@ -64,7 +65,7 @@ namespace BattleIntel.Bot
                 {
                     settings.GroupId = gs.SelectedGroup.id;
                     settings.GroupName = gs.SelectedGroup.name;
-                    console.AppendLine(string.Format("Connected to GroupMeRoom: {0}/{1}", settings.GroupId, settings.GroupName));
+                    LogInfo("Connected to GroupMeRoom: {0}/{1}", settings.GroupId, settings.GroupName);
                     return true;
                 }
             }
@@ -90,14 +91,14 @@ namespace BattleIntel.Bot
                     settings.WorksheetName = ws.SelectedWorksheet.Title;
                     settings.WorksheetCellsFeedURI = ws.SelectedWorksheet.CellsFeedURI;
                     settings.WorksheetListFeedURI = ws.SelectedWorksheet.ListFeedURI;
-                    console.AppendLine(string.Format("Connected to Spreadsheet: {0}/{1}", settings.SpreadsheetName, settings.WorksheetName));
+                    LogInfo("Connected to Spreadsheet: {0}/{1}", settings.SpreadsheetName, settings.WorksheetName);
                 }
             }
 
             return false;
         }
 
-        public bool ProcessIntel()
+        public bool Process()
         {
             if (settings.GroupId == null || settings.BattleId == null)
             {
@@ -105,37 +106,52 @@ namespace BattleIntel.Bot
                 return false;
             }
 
-            console.AppendLine(string.Format("{0:G} BOT BEGIN", DateTime.Now));
-            var result = ProcessWorker();
-            console.AppendLine(string.Format("{0:G} BOT END.", DateTime.Now));
-            return result;
+            LogInfo("BOT BEGIN");
+
+            bool continueProcessing = true;
+            try
+            {
+                continueProcessing = ProcessWorker();
+            }
+            catch (Exception ex)
+            {
+                LogError("ProcessWorker", ex);
+            }
+           
+            LogInfo("BOT END");
+            return continueProcessing;
         }
 
-        public bool ProcessWorker()
+        private bool ProcessWorker()
         {
-            //TODO log with log4net, replace console calls with UI updates, clear the console on each processing
-            console.AppendLine(string.Format("\t{0:G} Checking for new intel", DateTime.Now));
+            LogProcessInfo("Checking for new intel");
 
             var newMessages = TryGetNewMessages();
             if (newMessages == null) return true;
             if (newMessages.Count == 0)
             {
-                console.AppendLine(string.Format("\t{0:G} No new intel", DateTime.Now));
+                LogProcessInfo("No new intel");
                 return true;
             }
 
-            console.AppendLine(string.Format("\t{0:G} Processing {1} new message(s)", DateTime.Now, newMessages.Count));
-            int newStatsCount = ProcessNewMessages(newMessages);
-            console.AppendLine(string.Format("\t{0:G} Parsed {1} new stats", DateTime.Now, newStatsCount));
+            LogProcessInfo("Processing {0} message(s)", newMessages.Count);
+            
+            var results = ProcessNewMessages(newMessages);
 
-            if (newStatsCount > 0 && settings.SpreadsheetURL != null) 
+            LogProcessInfo("Parsed {0} new stats", results.NewStatsCount);
+
+            if (results.NewStatsCount > 0 && settings.SpreadsheetURL != null) 
             { 
-                console.AppendLine(string.Format("{0:G} Updating spreadsheet", DateTime.Now));
+                console.AppendLine("Updating spreadsheet");
                 TryUpdateIntelSheet();
+            }
 
-                console.AppendLine(string.Format("{0:G} Posting spreadsheet url", DateTime.Now));
+            if (results.NewMessagesCount > 0 && settings.SpreadsheetURL != null) 
+            { 
+                console.AppendLine("Posting spreadsheet url");
                 TryPostSpeadsheetURL();
             }
+
             return true;
         }
 
@@ -149,7 +165,8 @@ namespace BattleIntel.Bot
             }
             catch (Exception ex)
             {
-                console.AppendLine(ex.ToString());
+                log.Error("GroupMessagesByDateRange", ex);
+                console.AppendLine(ex.Message);
             }
 
             return null;
@@ -172,6 +189,35 @@ namespace BattleIntel.Bot
             });
 
             return lastMessageId;
+        }
+
+        private ProcessResults ProcessNewMessages(IList<GroupMessage> raw)
+        {
+            var results = new ProcessResults();
+
+            NH.UsingSession(s =>
+            {
+                var battle = s.Get<Battle>(settings.BattleId.Value);
+
+                foreach (var m in raw)
+                {
+                    var p = new IntelReportProcessor(s, battle, m);
+                    p.Process(false);
+
+                    results.NewStatsCount += p.NewStatsCount;
+                    if (p.IsNewMessage) results.NewMessagesCount++;
+
+                    s.Flush();
+                }
+            });
+
+            return results;
+        }
+
+        class ProcessResults
+        {
+            public int NewStatsCount { get; set; }
+            public int NewMessagesCount { get; set; }
         }
 
         private void TryUpdateIntelSheet()
@@ -210,189 +256,54 @@ namespace BattleIntel.Bot
             }
             catch (Exception ex)
             {
+                log.Error("MergeSheet", ex);
                 console.AppendLine(ex.ToString());
             }
         }
 
         private void TryPostSpeadsheetURL()
         {
+            GroupMessage botMessage = null;
             try
             {
-                var botMessage = groupMe.PostGroupMessage(settings.GroupId, settings.SpreadsheetURL);
-
-                //save this so we can ignore
-                NH.UsingSession(s =>
-                {
-                    var battle = s.Get<Battle>(settings.BattleId.Value);
-                    new IntelMessageProcessor(s, battle, botMessage).Process(true);
-                });
+                botMessage = groupMe.PostGroupMessage(settings.GroupId, settings.SpreadsheetURL);
             }
             catch (Exception ex)
             {
+                log.Error("PostGroupMessage", ex);
                 console.AppendLine(ex.ToString());
             }
+
+            if (botMessage != null) 
+            { 
+                //save this as a BotMessage so we can exclude from the LastMessageProcessed lookup
+                NH.UsingSession(s =>
+                {
+                    var battle = s.Get<Battle>(settings.BattleId.Value);
+                    new IntelReportProcessor(s, battle, botMessage).Process(true);
+                });
+            }
         }
 
-        private int ProcessNewMessages(IList<GroupMessage> raw)
+        private void LogInfo(string format, params object[] args)
         {
-            int newStatsCount = 0;
-
-            NH.UsingSession(s =>
-            {
-                var battle = s.Get<Battle>(settings.BattleId.Value);
-
-                foreach (var m in raw)
-                {
-                    var p = new IntelMessageProcessor(s, battle, m);
-                    p.Process(false);
-                    newStatsCount += p.NewStatsCount;
-                    s.Flush();
-                }
-            });
-
-            return newStatsCount;
+            var text = string.Format(format, args);
+            log.Info(text);
+            console.AppendLine(string.Format("{0:G} ", DateTime.Now) + text);
         }
 
-        class IntelMessageProcessor
+        private void LogProcessInfo(string format, params object[] args)
         {
-            private readonly ISession Session;
-            private readonly Battle Battle;
-            private readonly GroupMessage Message;
-            public int NewStatsCount { get; private set; }
+            string text = string.Format(format, args);
+            //if(args != null && args.Length > 0) text = 
+            log.Info(text);
+            console.AppendLine(string.Format("\t{0:G} ", DateTime.Now) + text);
+        }
 
-            public IntelMessageProcessor(ISession session, Battle battle, GroupMessage message)
-            {
-                this.Session = session;
-                this.Battle = battle;
-                this.Message = message;
-            }
-
-            public void Process(bool isBotMessage)
-            {
-                if (AlreadyProcessed(Message.id)) return;
-
-                var report = SaveReport();
-                if (isBotMessage)
-                {
-                    report.IsBotMessage = true;
-                    return;
-                }
-                if (IsDuplicateOfExistingReport(report)) return;
-
-                var nonEmptyLines = report.Text.SplitToNonEmptyLines();
-                report.NonEmptyLineCount = nonEmptyLines.Count();
-                if (report.NonEmptyLineCount < 2) //assume chat if only 1 line
-                {
-                    report.IsChat = true;
-                    return;
-                }
-
-                string teamName;
-                nonEmptyLines = nonEmptyLines.RemoveTeamName(out teamName);
-                if (string.IsNullOrEmpty(teamName)) //flag as unknown team and generate a name
-                {
-                    report.IsUnknownTeamName = true;
-                    teamName = "Unknown Team " + report.Id;
-                };
-                var team = GetOrCreateTeam(teamName);
-
-                var reportStats = nonEmptyLines.Select(x => Stat.Parse(x)).Distinct();
-                report.ReportStatsCount = reportStats.Count();
-
-                //check for existing battle stats for this team
-                var currentTeamStats = GetCurrentTeamStats(team);
-                var newStats = reportStats.Except(currentTeamStats);
-
-                report.NewStatsCount = newStats.Count();
-                this.NewStatsCount = report.NewStatsCount;
-
-                foreach (var stat in newStats)
-                {
-                    Session.Save(new BattleStat
-                    {
-                        Battle = Battle,
-                        Team = team,
-                        IntelReport = report,
-                        Stat = stat
-                    });
-                }
-            }
-
-            private bool AlreadyProcessed(string messageId)
-            {
-                return Session.QueryOver<IntelReport>()
-                    .Where(x => x.Battle.Id == Battle.Id)
-                    .And(x => x.MessageId == messageId)
-                    .Take(1)
-                    .SingleOrDefault() != null;
-            }
-
-            private IntelReport SaveReport()
-            {
-                var report = new IntelReport
-                {
-                    Battle = Battle,
-                    MessageId = Message.id,
-                    GroupId = Message.group_id,
-                    UserId = Message.user_id,
-                    UserName = Message.name,
-                    CreateDateUTC = Message.created_at.ToUniversalTime(),
-                    ReadDateUTC = DateTime.UtcNow,
-                    Text = Message.text ?? string.Empty                  
-                };
-                report.TextHash = ComputeHash(report.Text);
-
-                Session.Save(report);
-
-                return report;
-            }
-
-            private bool IsDuplicateOfExistingReport(IntelReport report)
-            {
-                var existingReport = Session.QueryOver<IntelReport>()
-                    .Where(x => x.Battle.Id == Battle.Id)
-                    .And(x => x.Id != report.Id)
-                    .And(x => x.TextHash == report.TextHash)
-                    .OrderBy(x => x.CreateDateUTC).Asc
-                    .Take(1)
-                    .SingleOrDefault();
-
-                if (existingReport == null) return false;
-
-                report.DuplicateOf = existingReport;
-                return true;
-            }
-
-            private string ComputeHash(string text)
-            {
-                var sha = new SHA1CryptoServiceProvider();
-                byte[] hash = sha.ComputeHash(Encoding.UTF8.GetBytes(text));
-                return Encoding.UTF8.GetString(hash);
-            }
-
-            private Team GetOrCreateTeam(string teamName)
-            {
-                var existingTeam = Session.QueryOver<Team>()
-                    .Where(x => x.Name == teamName)
-                    .SingleOrDefault();
-
-                if (existingTeam == null)
-                {
-                    existingTeam = new Team { Name = teamName };
-                    Session.Save(existingTeam);
-                }
-
-                return existingTeam;
-            }
-
-            private IList<Stat> GetCurrentTeamStats(Team team)
-            {
-                return Session.QueryOver<BattleStat>()
-                    .Where(x => x.Battle.Id == Battle.Id)
-                    .And(x => x.Team.Id == team.Id)
-                    .Select(x => x.Stat)
-                    .List<Stat>();
-            }
+        private void LogError(string message, Exception ex)
+        {
+            log.Error(message, ex);
+            console.AppendLine(ex.Message);
         }
     }
 

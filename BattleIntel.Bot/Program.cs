@@ -14,6 +14,7 @@ namespace BattleIntel.Bot
         [STAThread]
         static void Main()
         {
+            log4net.Config.XmlConfigurator.ConfigureAndWatch(new System.IO.FileInfo("log4net.config"));
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Main());

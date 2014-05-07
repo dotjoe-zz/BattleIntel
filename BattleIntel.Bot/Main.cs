@@ -62,7 +62,7 @@ namespace BattleIntel.Bot
         {
             btnStart.Enabled = false;
 
-            if (Bot.ProcessIntel()) 
+            if (Bot.Process()) 
             { 
                 BotTimer.Start();
             }
@@ -79,7 +79,7 @@ namespace BattleIntel.Bot
         void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             BotTimer.Stop();
-            if (Bot.ProcessIntel())
+            if (Bot.Process())
             {
                 BotTimer.Start();
             }
