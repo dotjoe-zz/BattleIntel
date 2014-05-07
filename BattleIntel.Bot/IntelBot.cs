@@ -195,21 +195,25 @@ namespace BattleIntel.Bot
         {
             var results = new ProcessResults();
 
-            NH.UsingSession(s =>
-            {
-                var battle = s.Get<Battle>(settings.BattleId.Value);
-
-                foreach (var m in raw)
+            //process messages in batches to reduce the size of the Transactions
+            //and have less loss due to an error
+            const int batchSize = 10;
+            for (int start = 0; start < raw.Count; start += batchSize)
+            { 
+                NH.UsingSession(s =>
                 {
-                    var p = new IntelReportProcessor(s, battle, m);
-                    p.Process(false);
+                    var battle = s.Get<Battle>(settings.BattleId.Value);
 
-                    results.NewStatsCount += p.NewStatsCount;
-                    if (p.IsNewMessage) results.NewMessagesCount++;
-
-                    s.Flush();
-                }
-            });
+                    for (int i = start; i < raw.Count && i < (start + batchSize); ++i)
+                    {
+                        var p = new IntelReportProcessor(s, battle, raw[i]);
+                        p.Process(false);
+                        results.NewStatsCount += p.NewStatsCount;
+                        if (p.IsNewMessage) results.NewMessagesCount++;
+                        s.Flush();
+                    }
+                });
+            }
 
             return results;
         }
