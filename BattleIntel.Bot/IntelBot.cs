@@ -102,7 +102,7 @@ namespace BattleIntel.Bot
         {
             if (settings.GroupId == null || settings.BattleId == null)
             {
-                console.AppendLine(string.Format("{0:G} BOT requires a battle AND intel room connection.", DateTime.Now));
+                LogInfo("BOT requires a battle AND intel room connection.");
                 return false;
             }
 
@@ -165,8 +165,7 @@ namespace BattleIntel.Bot
             }
             catch (Exception ex)
             {
-                log.Error("GroupMessagesByDateRange", ex);
-                console.AppendLine(ex.Message);
+                LogError("GroupMessagesByDateRange", ex);
             }
 
             return null;
@@ -263,8 +262,7 @@ namespace BattleIntel.Bot
             }
             catch (Exception ex)
             {
-                log.Error("MergeSheet", ex);
-                console.AppendLine(ex.ToString());
+                LogError("MergeSheet", ex);
             }
         }
 
@@ -277,8 +275,7 @@ namespace BattleIntel.Bot
             }
             catch (Exception ex)
             {
-                log.Error("PostGroupMessage", ex);
-                console.AppendLine(ex.ToString());
+                LogError("PostGroupMessage", ex);
             }
 
             if (botMessage != null) 
