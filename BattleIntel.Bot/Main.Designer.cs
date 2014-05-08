@@ -30,26 +30,20 @@
         {
             this.btnStart = new System.Windows.Forms.Button();
             this.btnStop = new System.Windows.Forms.Button();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.connectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.battleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.groupMeRoomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.googleSheetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.txtConsole = new System.Windows.Forms.TextBox();
             this.nupIntervalSeconds = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.lblBattle = new System.Windows.Forms.Label();
             this.lblGroupMeRoom = new System.Windows.Forms.Label();
             this.lblSheet = new System.Windows.Forms.Label();
-            this.cbPostSheetUrl = new System.Windows.Forms.CheckBox();
             this.txtSheetURL = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.lblBattle = new System.Windows.Forms.Label();
             this.lblBattleDates = new System.Windows.Forms.Label();
+            this.cbPostSheetUrl = new System.Windows.Forms.CheckBox();
             this.pnlBotControls = new System.Windows.Forms.Panel();
-            this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nupIntervalSeconds)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.pnlBotControls.SuspendLayout();
@@ -75,57 +69,16 @@
             this.btnStop.UseVisualStyleBackColor = true;
             this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
             // 
-            // menuStrip1
-            // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.connectToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(548, 24);
-            this.menuStrip1.TabIndex = 2;
-            this.menuStrip1.Text = "menuStrip1";
-            // 
-            // connectToolStripMenuItem
-            // 
-            this.connectToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.battleToolStripMenuItem,
-            this.groupMeRoomToolStripMenuItem,
-            this.googleSheetToolStripMenuItem});
-            this.connectToolStripMenuItem.Name = "connectToolStripMenuItem";
-            this.connectToolStripMenuItem.Size = new System.Drawing.Size(64, 20);
-            this.connectToolStripMenuItem.Text = "Connect";
-            // 
-            // battleToolStripMenuItem
-            // 
-            this.battleToolStripMenuItem.Name = "battleToolStripMenuItem";
-            this.battleToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
-            this.battleToolStripMenuItem.Text = "Battle";
-            this.battleToolStripMenuItem.Click += new System.EventHandler(this.battleToolStripMenuItem_Click);
-            // 
-            // groupMeRoomToolStripMenuItem
-            // 
-            this.groupMeRoomToolStripMenuItem.Name = "groupMeRoomToolStripMenuItem";
-            this.groupMeRoomToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
-            this.groupMeRoomToolStripMenuItem.Text = "GroupMe Room";
-            this.groupMeRoomToolStripMenuItem.Click += new System.EventHandler(this.groupMeRoomToolStripMenuItem_Click);
-            // 
-            // googleSheetToolStripMenuItem
-            // 
-            this.googleSheetToolStripMenuItem.Name = "googleSheetToolStripMenuItem";
-            this.googleSheetToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
-            this.googleSheetToolStripMenuItem.Text = "Google Sheet";
-            this.googleSheetToolStripMenuItem.Click += new System.EventHandler(this.googleSheetToolStripMenuItem_Click);
-            // 
             // txtConsole
             // 
             this.txtConsole.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtConsole.Location = new System.Drawing.Point(12, 146);
+            this.txtConsole.Location = new System.Drawing.Point(12, 133);
             this.txtConsole.Multiline = true;
             this.txtConsole.Name = "txtConsole";
             this.txtConsole.ReadOnly = true;
-            this.txtConsole.Size = new System.Drawing.Size(524, 299);
+            this.txtConsole.Size = new System.Drawing.Size(524, 312);
             this.txtConsole.TabIndex = 3;
             // 
             // nupIntervalSeconds
@@ -178,7 +131,7 @@
             this.tableLayoutPanel1.Controls.Add(this.lblBattle, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.lblBattleDates, 1, 1);
             this.tableLayoutPanel1.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 27);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 14);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(5);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 6;
@@ -190,17 +143,6 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.Size = new System.Drawing.Size(524, 111);
             this.tableLayoutPanel1.TabIndex = 6;
-            // 
-            // label2
-            // 
-            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(45, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(49, 14);
-            this.label2.TabIndex = 0;
-            this.label2.Text = "Battle";
             // 
             // label3
             // 
@@ -225,14 +167,6 @@
             this.label4.TabIndex = 2;
             this.label4.Text = "Google Sheet";
             // 
-            // lblBattle
-            // 
-            this.lblBattle.AutoSize = true;
-            this.lblBattle.Location = new System.Drawing.Point(100, 0);
-            this.lblBattle.Name = "lblBattle";
-            this.lblBattle.Size = new System.Drawing.Size(0, 14);
-            this.lblBattle.TabIndex = 3;
-            // 
             // lblGroupMeRoom
             // 
             this.lblGroupMeRoom.AutoSize = true;
@@ -249,19 +183,6 @@
             this.lblSheet.Size = new System.Drawing.Size(0, 14);
             this.lblSheet.TabIndex = 5;
             // 
-            // cbPostSheetUrl
-            // 
-            this.cbPostSheetUrl.AutoSize = true;
-            this.cbPostSheetUrl.Checked = true;
-            this.cbPostSheetUrl.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbPostSheetUrl.Location = new System.Drawing.Point(191, 7);
-            this.cbPostSheetUrl.Name = "cbPostSheetUrl";
-            this.cbPostSheetUrl.Size = new System.Drawing.Size(103, 17);
-            this.cbPostSheetUrl.TabIndex = 7;
-            this.cbPostSheetUrl.Text = "Post Sheet URL";
-            this.cbPostSheetUrl.UseVisualStyleBackColor = true;
-            this.cbPostSheetUrl.CheckedChanged += new System.EventHandler(this.cbPostSheetUrl_CheckedChanged);
-            // 
             // txtSheetURL
             // 
             this.txtSheetURL.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -274,6 +195,25 @@
             this.txtSheetURL.TabIndex = 7;
             this.txtSheetURL.Enter += new System.EventHandler(this.txtSheetURL_Enter);
             // 
+            // label2
+            // 
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(45, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(49, 14);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "Battle";
+            // 
+            // lblBattle
+            // 
+            this.lblBattle.AutoSize = true;
+            this.lblBattle.Location = new System.Drawing.Point(100, 0);
+            this.lblBattle.Name = "lblBattle";
+            this.lblBattle.Size = new System.Drawing.Size(0, 14);
+            this.lblBattle.TabIndex = 3;
+            // 
             // lblBattleDates
             // 
             this.lblBattleDates.AutoSize = true;
@@ -281,6 +221,19 @@
             this.lblBattleDates.Name = "lblBattleDates";
             this.lblBattleDates.Size = new System.Drawing.Size(0, 14);
             this.lblBattleDates.TabIndex = 8;
+            // 
+            // cbPostSheetUrl
+            // 
+            this.cbPostSheetUrl.AutoSize = true;
+            this.cbPostSheetUrl.Checked = true;
+            this.cbPostSheetUrl.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbPostSheetUrl.Location = new System.Drawing.Point(191, 7);
+            this.cbPostSheetUrl.Name = "cbPostSheetUrl";
+            this.cbPostSheetUrl.Size = new System.Drawing.Size(103, 17);
+            this.cbPostSheetUrl.TabIndex = 7;
+            this.cbPostSheetUrl.Text = "Post Sheet URL";
+            this.cbPostSheetUrl.UseVisualStyleBackColor = true;
+            this.cbPostSheetUrl.CheckedChanged += new System.EventHandler(this.cbPostSheetUrl_CheckedChanged);
             // 
             // pnlBotControls
             // 
@@ -304,13 +257,9 @@
             this.Controls.Add(this.pnlBotControls);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.txtConsole);
-            this.Controls.Add(this.menuStrip1);
-            this.MainMenuStrip = this.menuStrip1;
             this.Name = "Main";
             this.Text = "Intel Bot";
             this.Load += new System.EventHandler(this.Main_Load);
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nupIntervalSeconds)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
@@ -325,12 +274,7 @@
 
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Button btnStop;
-        private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem connectToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem groupMeRoomToolStripMenuItem;
         private System.Windows.Forms.TextBox txtConsole;
-        private System.Windows.Forms.ToolStripMenuItem battleToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem googleSheetToolStripMenuItem;
         private System.Windows.Forms.NumericUpDown nupIntervalSeconds;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;

@@ -49,62 +49,15 @@ namespace BattleIntel.Bot
             txtSheetURL.Text = settings.SpreadsheetURL;
         }
 
-        private void txtSheetURL_Enter(object sender, EventArgs e)
+        private void SetStartStopStatus()
         {
-            // Kick off SelectAll asyncronously so that it occurs after Click
-            BeginInvoke((Action)delegate
-            {
-                txtSheetURL.SelectAll();
-            });
+            btnStart.Enabled = !BotTimer.Enabled;
+            btnStop.Enabled = BotTimer.Enabled;
         }
 
-        #region "Menu Items"
-
-        private void battleToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SetBotTimerInterval()
         {
-            if (Bot.ConnectToBattle(this))
-            {
-                lblBattle.Text = Bot.GetSettings().GetBattleDescription();
-            }
-        }
-
-        private void groupMeRoomToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Bot.ConnectToIntelRoom(this))
-            {
-                lblGroupMeRoom.Text = Bot.GetSettings().GetGroupDescription();
-            }
-        }
-
-        private void googleSheetToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Bot.ConnectToGoogleSheet(this))
-            {
-                var settings = Bot.GetSettings();
-                lblSheet.Text = settings.GetSheetDescription();
-                txtSheetURL.Text = settings.SpreadsheetURL;
-            }
-        }
-
-        #endregion
-
-        #region "Bot Controls"
-
-        private void btnStart_Click(object sender, EventArgs e)
-        {
-            RunBot();          
-        }
-
-        private void btnStop_Click(object sender, EventArgs e)
-        {
-            BotTimer.Stop();
-            SetStartStopStatus();
-        }
-
-        void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            BotTimer.Stop();
-            RunBot();
+            BotTimer.Interval = (double)(nupIntervalSeconds.Value * 1000);
         }
 
         private void RunBot()
@@ -124,6 +77,34 @@ namespace BattleIntel.Bot
             }
         }
 
+    #region "Events"
+
+        private void txtSheetURL_Enter(object sender, EventArgs e)
+        {
+            // Kick off SelectAll asyncronously so that it occurs after Click
+            BeginInvoke((Action)delegate
+            {
+                txtSheetURL.SelectAll();
+            });
+        }
+
+        private void btnStart_Click(object sender, EventArgs e)
+        {
+            RunBot();          
+        }
+
+        private void btnStop_Click(object sender, EventArgs e)
+        {
+            BotTimer.Stop();
+            SetStartStopStatus();
+        }
+
+        void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            BotTimer.Stop();
+            RunBot();
+        }
+
         private void cbPostSheetUrl_CheckedChanged(object sender, EventArgs e)
         {
             Bot.PostSheetURL = cbPostSheetUrl.Checked;
@@ -134,20 +115,9 @@ namespace BattleIntel.Bot
             SetBotTimerInterval();
         }
 
-        private void SetStartStopStatus()
-        {
-            btnStart.Enabled = !BotTimer.Enabled;
-            btnStop.Enabled = BotTimer.Enabled;
-        }
+    #endregion
 
-        private void SetBotTimerInterval()
-        {
-            BotTimer.Interval = (double)(nupIntervalSeconds.Value * 1000);
-        }
-
-        #endregion
-
-        #region "IIntelBotConsole"
+    #region "IIntelBotConsole"
 
         public void AppendLine(string s)
         {
@@ -159,6 +129,6 @@ namespace BattleIntel.Bot
             txtConsole.AppendText(s);
         }
 
-        #endregion
+    #endregion
     }
 }
