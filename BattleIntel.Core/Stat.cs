@@ -302,14 +302,13 @@ namespace BattleIntel.Core
                     teamName = teamNames.First();
                     //remove the team name from all the lines
                     return lines.Select(x => string.Join(" ", x.Split('\t').Skip(1).ToArray()));
-                    
                 }
             }
             else
             {
                 //check for team name on the first line
                 var firstLineStat = Stat.Parse(lines.First());
-                if (firstLineStat.Defense == null)
+                if (firstLineStat.Level == null || firstLineStat.Defense == null)
                 {
                     teamName = firstLineStat.RawInput;
                     return lines.Skip(1);
