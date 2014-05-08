@@ -22,6 +22,8 @@ namespace BattleIntel.Bot
         private GroupMeService groupMe;
         private GSheetService google;
 
+        public bool PostSheetURL { get; set; }
+
         public IntelBot(IIntelBotConsole console) 
         { 
             this.console = console;
@@ -44,7 +46,7 @@ namespace BattleIntel.Bot
                     settings.BattleStartDate = bs.SelectedBattle.StartDateUTC.ToLocalTime();
                     settings.BattleEndDate = bs.SelectedBattle.EndDateUTC.ToLocalTime();
 
-                    LogInfo("Connected to Battle: {0}/{1} ({2:D} - {3:D})", settings.BattleId, settings.BattleName, settings.BattleStartDate, settings.BattleEndDate);
+                    LogInfo("Connected to Battle: " + settings.GetBattleDescription());
                     return true;
                 }
             }
@@ -65,7 +67,8 @@ namespace BattleIntel.Bot
                 {
                     settings.GroupId = gs.SelectedGroup.id;
                     settings.GroupName = gs.SelectedGroup.name;
-                    LogInfo("Connected to GroupMeRoom: {0}/{1}", settings.GroupId, settings.GroupName);
+
+                    LogInfo("Connected to GroupMeRoom: " + settings.GetGroupDescription());
                     return true;
                 }
             }
@@ -91,7 +94,9 @@ namespace BattleIntel.Bot
                     settings.WorksheetName = ws.SelectedWorksheet.Title;
                     settings.WorksheetCellsFeedURI = ws.SelectedWorksheet.CellsFeedURI;
                     settings.WorksheetListFeedURI = ws.SelectedWorksheet.ListFeedURI;
-                    LogInfo("Connected to Spreadsheet: {0}/{1}", settings.SpreadsheetName, settings.WorksheetName);
+
+                    LogInfo("Connected to Spreadsheet: " + settings.GetSheetDescription());
+                    return true;
                 }
             }
 
@@ -148,8 +153,15 @@ namespace BattleIntel.Bot
 
             if (!results.LastMessageWasBot && settings.SpreadsheetURL != null) 
             {
-                LogProcessInfo("Posting spreadsheet url");
-                TryPostSpeadsheetURL();
+                if (PostSheetURL) 
+                { 
+                    LogProcessInfo("Posting spreadsheet url");
+                    TryPostSpeadsheetURL();
+                }
+                else
+                {
+                    LogProcessInfo("Would have posted spreadsheet url but it is DISABLED");
+                }
             }
 
             return true;
@@ -335,6 +347,21 @@ namespace BattleIntel.Bot
         public IntelBotSettings Clone()
         {
             return (IntelBotSettings)this.MemberwiseClone();
+        }
+
+        public string GetBattleDescription()
+        {
+            return string.Format("{0}({1}) ({2:G} - {3:G})", BattleName, BattleId, BattleStartDate, BattleEndDate);
+        }
+
+        public string GetGroupDescription()
+        {
+            return string.Format("{0}({1})", GroupName, GroupId);
+        }
+
+        public string GetSheetDescription()
+        {
+            return string.Format("{0} - {1}", SpreadsheetName, WorksheetName);
         }
     }
 

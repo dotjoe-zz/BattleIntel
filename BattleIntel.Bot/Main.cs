@@ -20,12 +20,13 @@ namespace BattleIntel.Bot
             InitializeComponent();
 
             BotTimer = new System.Timers.Timer();
-            SetTimerInterval();
+            SetBotTimerInterval();
             BotTimer.Elapsed += Timer_Elapsed;
             BotTimer.SynchronizingObject = this; //keep Bot processing on UI thread
 
             Bot = new IntelBot(this);
-            SetBotControlsStatus();
+            Bot.PostSheetURL = cbPostSheetUrl.Checked;
+            SetStartStopStatus();
         }
 
         private void Main_Load(object sender, EventArgs e)
@@ -34,24 +35,50 @@ namespace BattleIntel.Bot
             Bot.ConnectToIntelRoom(this);
             Bot.ConnectToGoogleSheet(this);
 
-            SetBotControlsStatus();
+            RefreshBotSettings();
+            SetStartStopStatus();
+        }
+
+        private void RefreshBotSettings()
+        {
+            var settings = Bot.GetSettings();
+            lblBattle.Text = settings.GetBattleDescription();
+            lblGroupMeRoom.Text = settings.GetGroupDescription();
+            lblSheet.Text = settings.GetSheetDescription();
+            txtSheetURL.Text = settings.SpreadsheetURL;
+        }
+
+        private void txtSheetURL_Enter(object sender, EventArgs e)
+        {
+            txtSheetURL.SelectAll();
         }
 
         #region "Menu Items"
 
         private void battleToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Bot.ConnectToBattle(this);
+            if (Bot.ConnectToBattle(this))
+            {
+                lblBattle.Text = Bot.GetSettings().GetBattleDescription();
+            }
         }
 
         private void groupMeRoomToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Bot.ConnectToIntelRoom(this);
+            if (Bot.ConnectToIntelRoom(this))
+            {
+                lblGroupMeRoom.Text = Bot.GetSettings().GetGroupDescription();
+            }
         }
 
         private void googleSheetToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Bot.ConnectToGoogleSheet(this);
+            if (Bot.ConnectToGoogleSheet(this))
+            {
+                var settings = Bot.GetSettings();
+                lblSheet.Text = settings.GetSheetDescription();
+                txtSheetURL.Text = settings.SpreadsheetURL;
+            }
         }
 
         #endregion
@@ -67,13 +94,13 @@ namespace BattleIntel.Bot
                 BotTimer.Start();
             }
 
-            SetBotControlsStatus();            
+            SetStartStopStatus();            
         }
 
         private void btnStop_Click(object sender, EventArgs e)
         {
             BotTimer.Stop();
-            SetBotControlsStatus();
+            SetStartStopStatus();
         }
 
         void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
@@ -85,22 +112,27 @@ namespace BattleIntel.Bot
             }
             else
             {
-                SetBotControlsStatus();
+                SetStartStopStatus();
             }
+        }
+
+        private void cbPostSheetUrl_CheckedChanged(object sender, EventArgs e)
+        {
+            Bot.PostSheetURL = cbPostSheetUrl.Checked;
         }
 
         private void nupIntervalSeconds_ValueChanged(object sender, EventArgs e)
         {
-            SetTimerInterval();
+            SetBotTimerInterval();
         }
 
-        private void SetBotControlsStatus()
+        private void SetStartStopStatus()
         {
             btnStart.Enabled = !BotTimer.Enabled;
             btnStop.Enabled = BotTimer.Enabled;
         }
 
-        private void SetTimerInterval()
+        private void SetBotTimerInterval()
         {
             BotTimer.Interval = (double)(nupIntervalSeconds.Value * 1000);
         }
