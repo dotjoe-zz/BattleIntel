@@ -48,15 +48,16 @@
             this.cbPostSheetUrl = new System.Windows.Forms.CheckBox();
             this.txtSheetURL = new System.Windows.Forms.TextBox();
             this.lblBattleDates = new System.Windows.Forms.Label();
+            this.pnlBotControls = new System.Windows.Forms.Panel();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nupIntervalSeconds)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
+            this.pnlBotControls.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnStart
             // 
-            this.btnStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnStart.Location = new System.Drawing.Point(12, 459);
+            this.btnStart.Location = new System.Drawing.Point(3, 3);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(75, 23);
             this.btnStart.TabIndex = 0;
@@ -66,8 +67,7 @@
             // 
             // btnStop
             // 
-            this.btnStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnStop.Location = new System.Drawing.Point(93, 459);
+            this.btnStop.Location = new System.Drawing.Point(84, 3);
             this.btnStop.Name = "btnStop";
             this.btnStop.Size = new System.Drawing.Size(75, 23);
             this.btnStop.TabIndex = 1;
@@ -125,13 +125,13 @@
             this.txtConsole.Multiline = true;
             this.txtConsole.Name = "txtConsole";
             this.txtConsole.ReadOnly = true;
-            this.txtConsole.Size = new System.Drawing.Size(524, 307);
+            this.txtConsole.Size = new System.Drawing.Size(524, 299);
             this.txtConsole.TabIndex = 3;
             // 
             // nupIntervalSeconds
             // 
-            this.nupIntervalSeconds.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.nupIntervalSeconds.Location = new System.Drawing.Point(482, 462);
+            this.nupIntervalSeconds.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.nupIntervalSeconds.Location = new System.Drawing.Point(467, 7);
             this.nupIntervalSeconds.Maximum = new decimal(new int[] {
             7200,
             0,
@@ -154,9 +154,9 @@
             // 
             // label1
             // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(379, 464);
+            this.label1.Location = new System.Drawing.Point(364, 9);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(97, 13);
             this.label1.TabIndex = 5;
@@ -251,11 +251,10 @@
             // 
             // cbPostSheetUrl
             // 
-            this.cbPostSheetUrl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.cbPostSheetUrl.AutoSize = true;
             this.cbPostSheetUrl.Checked = true;
             this.cbPostSheetUrl.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbPostSheetUrl.Location = new System.Drawing.Point(214, 462);
+            this.cbPostSheetUrl.Location = new System.Drawing.Point(191, 7);
             this.cbPostSheetUrl.Name = "cbPostSheetUrl";
             this.cbPostSheetUrl.Size = new System.Drawing.Size(103, 17);
             this.cbPostSheetUrl.TabIndex = 7;
@@ -283,18 +282,28 @@
             this.lblBattleDates.Size = new System.Drawing.Size(0, 14);
             this.lblBattleDates.TabIndex = 8;
             // 
+            // pnlBotControls
+            // 
+            this.pnlBotControls.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlBotControls.Controls.Add(this.btnStart);
+            this.pnlBotControls.Controls.Add(this.cbPostSheetUrl);
+            this.pnlBotControls.Controls.Add(this.label1);
+            this.pnlBotControls.Controls.Add(this.btnStop);
+            this.pnlBotControls.Controls.Add(this.nupIntervalSeconds);
+            this.pnlBotControls.Location = new System.Drawing.Point(12, 451);
+            this.pnlBotControls.Name = "pnlBotControls";
+            this.pnlBotControls.Size = new System.Drawing.Size(524, 31);
+            this.pnlBotControls.TabIndex = 8;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(548, 494);
-            this.Controls.Add(this.cbPostSheetUrl);
+            this.Controls.Add(this.pnlBotControls);
             this.Controls.Add(this.tableLayoutPanel1);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.nupIntervalSeconds);
             this.Controls.Add(this.txtConsole);
-            this.Controls.Add(this.btnStop);
-            this.Controls.Add(this.btnStart);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Main";
@@ -305,6 +314,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.nupIntervalSeconds)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
+            this.pnlBotControls.ResumeLayout(false);
+            this.pnlBotControls.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -332,6 +343,7 @@
         private System.Windows.Forms.CheckBox cbPostSheetUrl;
         private System.Windows.Forms.TextBox txtSheetURL;
         private System.Windows.Forms.Label lblBattleDates;
+        private System.Windows.Forms.Panel pnlBotControls;
     }
 }
 

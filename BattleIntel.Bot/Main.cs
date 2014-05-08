@@ -92,14 +92,7 @@ namespace BattleIntel.Bot
 
         private void btnStart_Click(object sender, EventArgs e)
         {
-            btnStart.Enabled = false;
-
-            if (Bot.Process()) 
-            { 
-                BotTimer.Start();
-            }
-
-            SetStartStopStatus();            
+            RunBot();          
         }
 
         private void btnStop_Click(object sender, EventArgs e)
@@ -111,13 +104,23 @@ namespace BattleIntel.Bot
         void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             BotTimer.Stop();
-            if (Bot.Process())
+            RunBot();
+        }
+
+        private void RunBot()
+        {
+            try
             {
-                BotTimer.Start();
+                pnlBotControls.Enabled = false;
+                if (Bot.Process())
+                {
+                    BotTimer.Start();
+                }
             }
-            else
+            finally
             {
                 SetStartStopStatus();
+                pnlBotControls.Enabled = true;
             }
         }
 
