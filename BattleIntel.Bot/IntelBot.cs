@@ -46,7 +46,7 @@ namespace BattleIntel.Bot
                     settings.BattleStartDate = bs.SelectedBattle.StartDateUTC.ToLocalTime();
                     settings.BattleEndDate = bs.SelectedBattle.EndDateUTC.ToLocalTime();
 
-                    LogInfo("Connected to Battle: " + settings.GetBattleDescription());
+                    LogInfo("Connected to Battle: {0} {1}", settings.GetBattleDescription(), settings.GetBattleDatesDescription());
                     return true;
                 }
             }
@@ -351,7 +351,12 @@ namespace BattleIntel.Bot
 
         public string GetBattleDescription()
         {
-            return string.Format("{0}({1}) ({2:G} - {3:G})", BattleName, BattleId, BattleStartDate, BattleEndDate);
+            return string.Format("{0}({1})", BattleName, BattleId);
+        }
+
+        public string GetBattleDatesDescription()
+        {
+            return string.Format("{0:G} - {1:G}", BattleStartDate, BattleEndDate);
         }
 
         public string GetGroupDescription()

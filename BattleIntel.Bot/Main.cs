@@ -43,6 +43,7 @@ namespace BattleIntel.Bot
         {
             var settings = Bot.GetSettings();
             lblBattle.Text = settings.GetBattleDescription();
+            lblBattleDates.Text = settings.GetBattleDatesDescription();
             lblGroupMeRoom.Text = settings.GetGroupDescription();
             lblSheet.Text = settings.GetSheetDescription();
             txtSheetURL.Text = settings.SpreadsheetURL;
@@ -50,7 +51,11 @@ namespace BattleIntel.Bot
 
         private void txtSheetURL_Enter(object sender, EventArgs e)
         {
-            txtSheetURL.SelectAll();
+            // Kick off SelectAll asyncronously so that it occurs after Click
+            BeginInvoke((Action)delegate
+            {
+                txtSheetURL.SelectAll();
+            });
         }
 
         #region "Menu Items"

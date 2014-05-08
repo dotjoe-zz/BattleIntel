@@ -47,6 +47,7 @@
             this.lblSheet = new System.Windows.Forms.Label();
             this.cbPostSheetUrl = new System.Windows.Forms.CheckBox();
             this.txtSheetURL = new System.Windows.Forms.TextBox();
+            this.lblBattleDates = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nupIntervalSeconds)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
@@ -120,11 +121,11 @@
             this.txtConsole.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtConsole.Location = new System.Drawing.Point(12, 124);
+            this.txtConsole.Location = new System.Drawing.Point(12, 146);
             this.txtConsole.Multiline = true;
             this.txtConsole.Name = "txtConsole";
             this.txtConsole.ReadOnly = true;
-            this.txtConsole.Size = new System.Drawing.Size(524, 329);
+            this.txtConsole.Size = new System.Drawing.Size(524, 307);
             this.txtConsole.TabIndex = 3;
             // 
             // nupIntervalSeconds
@@ -168,24 +169,26 @@
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Controls.Add(this.label3, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.label4, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.lblGroupMeRoom, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.lblSheet, 1, 3);
+            this.tableLayoutPanel1.Controls.Add(this.txtSheetURL, 1, 4);
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.label3, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.label4, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.lblBattle, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.lblGroupMeRoom, 1, 1);
-            this.tableLayoutPanel1.Controls.Add(this.lblSheet, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.txtSheetURL, 1, 3);
+            this.tableLayoutPanel1.Controls.Add(this.lblBattleDates, 1, 1);
             this.tableLayoutPanel1.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 27);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(5);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 5;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
+            this.tableLayoutPanel1.RowCount = 6;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(524, 89);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(524, 111);
             this.tableLayoutPanel1.TabIndex = 6;
             // 
             // label2
@@ -204,7 +207,7 @@
             this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(3, 22);
+            this.label3.Location = new System.Drawing.Point(3, 40);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(91, 14);
             this.label3.TabIndex = 1;
@@ -215,7 +218,7 @@
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(3, 44);
+            this.label4.Location = new System.Drawing.Point(3, 60);
             this.label4.Name = "label4";
             this.tableLayoutPanel1.SetRowSpan(this.label4, 2);
             this.label4.Size = new System.Drawing.Size(91, 14);
@@ -233,7 +236,7 @@
             // lblGroupMeRoom
             // 
             this.lblGroupMeRoom.AutoSize = true;
-            this.lblGroupMeRoom.Location = new System.Drawing.Point(100, 22);
+            this.lblGroupMeRoom.Location = new System.Drawing.Point(100, 40);
             this.lblGroupMeRoom.Name = "lblGroupMeRoom";
             this.lblGroupMeRoom.Size = new System.Drawing.Size(0, 14);
             this.lblGroupMeRoom.TabIndex = 4;
@@ -241,7 +244,7 @@
             // lblSheet
             // 
             this.lblSheet.AutoSize = true;
-            this.lblSheet.Location = new System.Drawing.Point(100, 44);
+            this.lblSheet.Location = new System.Drawing.Point(100, 60);
             this.lblSheet.Name = "lblSheet";
             this.lblSheet.Size = new System.Drawing.Size(0, 14);
             this.lblSheet.TabIndex = 5;
@@ -265,12 +268,20 @@
             this.txtSheetURL.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtSheetURL.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtSheetURL.Location = new System.Drawing.Point(100, 61);
+            this.txtSheetURL.Location = new System.Drawing.Point(100, 83);
             this.txtSheetURL.Name = "txtSheetURL";
             this.txtSheetURL.ReadOnly = true;
             this.txtSheetURL.Size = new System.Drawing.Size(421, 20);
             this.txtSheetURL.TabIndex = 7;
             this.txtSheetURL.Enter += new System.EventHandler(this.txtSheetURL_Enter);
+            // 
+            // lblBattleDates
+            // 
+            this.lblBattleDates.AutoSize = true;
+            this.lblBattleDates.Location = new System.Drawing.Point(100, 20);
+            this.lblBattleDates.Name = "lblBattleDates";
+            this.lblBattleDates.Size = new System.Drawing.Size(0, 14);
+            this.lblBattleDates.TabIndex = 8;
             // 
             // Main
             // 
@@ -320,6 +331,7 @@
         private System.Windows.Forms.Label lblSheet;
         private System.Windows.Forms.CheckBox cbPostSheetUrl;
         private System.Windows.Forms.TextBox txtSheetURL;
+        private System.Windows.Forms.Label lblBattleDates;
     }
 }
 

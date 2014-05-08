@@ -30,6 +30,12 @@ namespace BattleIntel.Bot
 
         private void btnCreateBattle_Click(object sender, EventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(txtBattleName.Text))
+            {
+                MessageBox.Show(this, "Please enter a battle name.");
+                return;
+            }
+
             NH.UsingSession(s =>
             {
                 var b = new Battle
