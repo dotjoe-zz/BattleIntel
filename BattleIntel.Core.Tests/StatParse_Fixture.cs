@@ -111,9 +111,17 @@ namespace BattleIntel.Core.Tests
         }
 
         [Test]
+        public void StatParse_TextAfterDefenseAddedToInfo()
+        {
+            //text immediately after defense
+            AssertStatParse("250 duck 10mDUCK!!!", 250, "duck", "10m", 10000000, "DUCK!!!");
+            AssertStatParse("250 duck 10m🐥", 250, "duck", "10m", 10000000, "🐥");
+        }
+
+        [Test]
         public void StatParse_NamesWithNumbers()
         {
-            AssertStatParse("250 Tical2000 1.23m", 250, "Tical2000", "1.23m", 1230000);
+            AssertStatParse("250 Tical2000 1.23mil", 250, "Tical2000", "1.23mil", 1230000);
             AssertStatParse("250 Tical2.0 1.23m", 250, "Tical2.0", "1.23m", 1230000);
 
             AssertStatParse("250 Tical 2000 1.23m", 250, "Tical 2000", "1.23m", 1230000); //picks defense number with m indicator
