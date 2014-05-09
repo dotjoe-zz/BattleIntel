@@ -206,19 +206,26 @@ namespace BattleIntel.Bot
         {
             var results = new ProcessResults();
 
-            //process each message in separate transaction
-            //Note: they need to be processed in sequence so they can check for duplicate text
-            for (int i = 0; i < raw.Count; ++i)
-            {
+            //process messages in batches to reduce the size of the Transactions
+            //and have less loss due to an error
+            const int batchSize = 10;
+            for (int start = 0; start < raw.Count; start += batchSize)
+            { 
                 NH.UsingSession(s =>
                 {
                     var battle = s.Get<Battle>(settings.BattleId.Value);
-                    var p = new IntelReportProcessor(s, battle, raw[i]);
 
-                    p.Process();
+                    for (int i = start; i < raw.Count && i < (start + batchSize); ++i)
+                    {
+                        var p = new IntelReportProcessor(s, battle, raw[i]);
+                        
+                        p.Process();
 
-                    results.NewStatsCount += p.NewStatsCount;
-                    results.LastMessageWasBot = p.IsBotMessage;
+                        results.NewStatsCount += p.NewStatsCount;
+                        results.LastMessageWasBot = p.IsBotMessage;
+
+                        s.Flush();
+                    }
                 });
             }
 
