@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -77,8 +78,9 @@ namespace BattleIntel.Core
             //trim and remove any internal multi whitespace
             s = Regex.Replace(s.Trim(), @"\s+", " ");
 
-            //trim any quotation marks from erronious copy/paste and other duck indicators like "<----"
+            //trim any puncuation marks from erronious copy/paste and other duck indicators like "<----"
             s = s.Trim(new char[] { '"', '\'', '-', '<', '>' });
+            s = s.Trim();
 
             //we only check for a Canadian decimal separator if there is a single comma in the input
             if (Regex.Matches(s, ",").Count == 1) 
@@ -280,6 +282,8 @@ namespace BattleIntel.Core
 
     public static class StatParserExtensions
     {
+        private static readonly CultureInfo[] cultures = { CultureInfo.GetCultureInfo("en-US"), CultureInfo.GetCultureInfo("en-GB") };
+
         public static IEnumerable<string> SplitToNonEmptyLines(this string text)
         {
             return text.Trim('"') //trim the quotations from a possible cell copy
@@ -308,9 +312,43 @@ namespace BattleIntel.Core
             {
                 //check for team name on the first line
                 var firstLineStat = Stat.Parse(lines.First());
-                if (firstLineStat.Level == null || firstLineStat.Defense == null)
+                if (firstLineStat.Defense == null || firstLineStat.Level == null)
                 {
-                    teamName = firstLineStat.RawInput;
+                    teamName = firstLineStat.ScrubbedInput;
+                    return lines.Skip(1);
+                }
+
+                //check for a date token, remove it, and assume the remaining is the team name
+                bool removedDateTokens = false;
+                var tokens = firstLineStat.ScrubbedInput.Split(' ').ToList();
+
+                for (int i = tokens.Count - 1; i >= 0; --i)
+                {
+                    DateTime d;
+                    foreach (var culture in cultures) 
+                    { 
+                        if (DateTime.TryParse(tokens[i], culture, DateTimeStyles.None, out d))
+                        {
+                            removedDateTokens = true;
+                            tokens.RemoveAt(i);
+                            break;
+                        }
+                    }
+                }
+
+                if (removedDateTokens)
+                {
+                    //re-scrub and assume a team name
+                    var dateScrubbedLine = string.Join(" ", tokens.ToArray());
+                    teamName = Stat.Parse(dateScrubbedLine).ScrubbedInput;
+                    return lines.Skip(1);
+                }
+
+                //otherwsie check for really low levels or defense that could have been parsed from a date
+                if((firstLineStat.DefenseValue != null && firstLineStat.DefenseValue < (DateTime.Today.Year * 1000))
+                    || (firstLineStat.Level != null && firstLineStat.Level < 32))
+                {
+                    teamName = firstLineStat.ScrubbedInput;
                     return lines.Skip(1);
                 }
             }

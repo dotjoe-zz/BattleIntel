@@ -97,7 +97,7 @@ namespace GroupMe
                 }
 
                 beforeMessageId = page.Last().id;
-                Thread.Sleep(5000); //Enhancing my calm to avoid rate limiting
+                Thread.Sleep(2000); //Enhancing my calm to avoid rate limiting
             }
 
             //reverse the list to sort by created_at ascending

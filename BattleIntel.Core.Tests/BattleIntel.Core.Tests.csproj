@@ -61,6 +61,7 @@
     <Compile Include="StatEquality_Fixture.cs" />
     <Compile Include="StatParse_Fixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TeamName_Fixture.cs" />
     <Compile Include="UTCDateTimeInterceptor_Fixture.cs" />
   </ItemGroup>
   <ItemGroup>
