@@ -107,8 +107,8 @@ namespace BattleIntel.Core
 
             for (int i = 0; i < tokens.Count(); ++i)
             {
-                //levels are any number from 1 to infinity with an optional "Lvl" prefix
-                var lvlMatch = Regex.Match(tokens[i], "^(?:l|lv|lvl)?([1-9][0-9]*)$", RegexOptions.IgnoreCase);
+                //levels are any number from 1 to 250 with an optional "Lvl" prefix
+                var lvlMatch = Regex.Match(tokens[i], "^(?:l|lv|lvl)?([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|250)$", RegexOptions.IgnoreCase);
                 if (lvlMatch.Success)
                 {
                     stat.Level = int.Parse(lvlMatch.Groups[1].Value);
@@ -345,7 +345,7 @@ namespace BattleIntel.Core
                 }
 
                 //otherwsie check for really low levels or defense that could have been parsed from a date
-                if((firstLineStat.DefenseValue != null && firstLineStat.DefenseValue < (DateTime.Today.Year * 1000))
+                if ((firstLineStat.DefenseValue != null && firstLineStat.DefenseValue < (DateTime.Today.Year * 1000))
                     || (firstLineStat.Level != null && firstLineStat.Level < 32))
                 {
                     teamName = firstLineStat.ScrubbedInput;

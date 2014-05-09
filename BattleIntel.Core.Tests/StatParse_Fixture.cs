@@ -144,7 +144,17 @@ namespace BattleIntel.Core.Tests
             AssertStatParse("250 Name 10000", 250, "Name", "10000", 10000); 
             AssertStatParse("250 Name 9999", 250, "Name", "9999", 9999000); //assume k
             AssertStatParse("250 Name 999", 250, "Name", "999", 999000); //assume k
-            
+        }
+
+        [Test]
+        public void StatParse_LevelEdgeCases()
+        {
+            AssertStatParse("1 Name 10m", 1, "Name", "10m", 10000000);
+            AssertStatParse("249 Name 10m", 249, "Name", "10m", 10000000);
+            AssertStatParse("250 Name 10m", 250, "Name", "10m", 10000000);
+
+            AssertStatParse("251 Name 10m", null, "251 Name", "10m", 10000000);
+            AssertStatParse("0 Name 10m", null, "0 Name", "10m", 10000000);
         }
 
         private void AssertStatParse(string input, int? level, string name, string defense, decimal? defenseValue, string additionalInfo = null)
