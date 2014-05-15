@@ -289,7 +289,13 @@ namespace BattleIntel.Core
             return text.Trim('"') //trim the quotations from a possible cell copy
                 .Split('\n')
                 .Where(x => !string.IsNullOrWhiteSpace(x))
-                .Select(x => x.Trim());
+                .Select(x => x.Trim().Truncate(255));
+        }
+
+        public static string Truncate(this string s, int length)
+        {
+            if (s == null || s.Length < length) return s;
+            return s.Substring(0, length);
         }
 
         public static IEnumerable<string> RemoveTeamName(this IEnumerable<string> lines, out string teamName)
