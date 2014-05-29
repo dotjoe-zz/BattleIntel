@@ -34,6 +34,7 @@ namespace BattleIntel.Core
         /// </summary>
         public virtual int NewStatsCount { get; set; }
 
+        public virtual Team Team { get; set; }
         public virtual IEnumerable<BattleStat> Stats { get; protected set; }
 
         public IntelReport()

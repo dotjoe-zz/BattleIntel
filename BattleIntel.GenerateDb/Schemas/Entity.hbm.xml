@@ -7,12 +7,21 @@
     <property name="Name" length="255" not-null="true" unique="true" />
     <property name="StartDateUTC" not-null="true" />
     <property name="EndDateUTC" not-null="true" />
+    <set name="Reports" inverse="true">
+      <key column="BattleId" />
+      <one-to-many class="IntelReport" />
+    </set>
+    <set name="Stats" inverse="true">
+      <key column="BattleId" />
+      <one-to-many class="BattleStat" />
+    </set>
   </class>
   <class name="BattleStat">
     <id name="Id" type="Int32">
       <generator class="identity" />
     </id>
     <many-to-one name="Battle" column="BattleId" not-null="true" foreign-key="FK_BattleStat_Battle" />
+    <many-to-one name="IntelReport" column="IntelReportId" foreign-key="FK_BattleStat_IntelReport" />
     <many-to-one name="Team" column="TeamId" not-null="true" foreign-key="FK_BattleStat_Team" />
     <component class="Stat" name="Stat">
       <property name="RawInput" column="Stat_RawInput" />
@@ -23,7 +32,6 @@
       <property name="DefenseValue" column="Stat_DefenseValue" />
       <property name="AdditionalInfo" column="Stat_AdditionalInfo" />
     </component>
-    <many-to-one name="IntelReport" column="IntelReportId" foreign-key="FK_BattleStat_IntelReport" />
   </class>
   <class name="IntelReport">
     <id name="Id" type="Int32">
@@ -45,6 +53,7 @@
     <property name="IsUnknownTeamName" not-null="true" />
     <property name="ReportStatsCount" not-null="true" />
     <property name="NewStatsCount" not-null="true" />
+    <many-to-one name="Team" column="TeamId" foreign-key="FK_IntelReport_Team" />
     <set name="Stats" inverse="true">
       <key column="IntelReportId" />
       <one-to-many class="BattleStat" />

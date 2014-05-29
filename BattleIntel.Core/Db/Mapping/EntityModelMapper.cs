@@ -58,9 +58,26 @@ namespace BattleIntel.Core.Db.Mapping
                     m.NotNullable(true);
                 });
                 map.ManyToOne(x => x.DuplicateOf, m => m.NotNullable(false));
+                map.ManyToOne(x => x.Team, m => m.NotNullable(false));
                 map.Set(x => x.Stats, m =>
                 {
                     m.Key(x => x.Column("IntelReportId"));
+                    m.Inverse(true);
+                    m.Cascade(Cascade.None);
+                });
+            });
+
+            Class<Battle>(map =>
+            {
+                map.Set(x => x.Reports, m =>
+                {
+                    m.Key(x => x.Column("BattleId"));
+                    m.Inverse(true);
+                    m.Cascade(Cascade.None);
+                });
+                map.Set(x => x.Stats, m =>
+                {
+                    m.Key(x => x.Column("BattleId"));
                     m.Inverse(true);
                     m.Cascade(Cascade.None);
                 });

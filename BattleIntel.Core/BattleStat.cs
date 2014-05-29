@@ -5,8 +5,8 @@ namespace BattleIntel.Core
     public class BattleStat : Entity
     {
         public virtual Battle Battle { get; set; }
+        public virtual IntelReport IntelReport { get; set; }
         public virtual Team Team { get; set; }
         public virtual Stat Stat { get; set; }
-        public virtual IntelReport IntelReport { get; set; }
     }
 }

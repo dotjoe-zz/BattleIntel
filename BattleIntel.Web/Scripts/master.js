@@ -18,6 +18,34 @@
     };
 })(window);
 
+(function ($) {
+
+    /* http://stackoverflow.com/a/3833699/40822 */
+    $.fn.localTimeFromUTC = function (format) {
+
+        return this.each(function () {
+
+            // get time offset from browser
+            var currentDate = new Date();
+            var offset = -(currentDate.getTimezoneOffset() / 60);
+
+            // get provided date
+            var tagText = $(this).html();
+            var givenDate = new Date(tagText);
+
+            // apply offset
+            var hours = givenDate.getHours();
+            hours += offset;
+            givenDate.setHours(hours);
+
+            // format the date
+            var localDateString = $.format.date(givenDate, format);
+            $(this).html(localDateString);
+        });
+    };
+})(jQuery);
+
 $(function () {
     $("time.timeago").timeago();
+    $("time.utcdate").localTimeFromUTC("MM/dd/yyyy hh:mm a")
 });

@@ -88,6 +88,7 @@ namespace BattleIntel.Bot
                 teamName = "Unknown Team " + report.Id;
             };
             var team = GetOrCreateTeam(teamName);
+            report.Team = team;
 
             var reportStats = nonEmptyLines.Select(x => Stat.Parse(x)).Distinct();
             report.ReportStatsCount = reportStats.Count();

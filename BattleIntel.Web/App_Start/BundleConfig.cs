@@ -10,7 +10,8 @@ namespace BattleIntel.Web
         {
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-2.*",
-                        "~/Scripts/jquery.timeago.js"));
+                        "~/Scripts/jquery.timeago.js",
+                        "~/Scripts/jquery.dateFormat-1.0.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include(
                         "~/Scripts/jquery-ui*"));

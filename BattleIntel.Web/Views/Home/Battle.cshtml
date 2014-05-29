@@ -1,0 +1,14 @@
+﻿@model IList<IntelReportHeader>
+@{
+    ViewBag.Title = "Battle";
+}
+
+<div data-role="collapsible-set" data-mini="true">
+    @foreach (var r in @Model)
+    {
+    <div data-role="collapsible">
+        <h3>@r.TeamName</h3>
+        <p><time class="utcdate">@r.CreateDateUTC</time></p>
+    </div>
+    }
+</div>
