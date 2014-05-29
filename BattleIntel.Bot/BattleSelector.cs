@@ -20,6 +20,8 @@ namespace BattleIntel.Bot
         {
             InitializeComponent();
 
+            dtpBattleStarts.Value = DateTime.Today;
+            dtpBattleEnds.Value = DateTime.Today.AddDays(3);
             listBox1.DisplayMember = "Name";
             
             NH.UsingSession(s =>
