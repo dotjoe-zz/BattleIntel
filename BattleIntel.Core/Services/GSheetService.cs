@@ -65,6 +65,13 @@ namespace GSheet
             
             ListFeed feed = service.Query(new ListQuery(listFeedURI));
 
+            //treat all data as text, escape = and numbers
+            foreach (var r in rows)
+            {
+                r.Team = EscapeCellValue(r.Team);
+                r.Stats = EscapeCellValue(r.Stats);
+            }
+
             //NOTE: LocalName is the ColumnHeader value except it MUST use lower case AND replace spaces with _
             string[][] values = 
             {
@@ -113,6 +120,17 @@ namespace GSheet
 
                 service.Insert(new Uri(listFeedURI), entry);
             }
+        }
+
+        private string EscapeCellValue(string s)
+        {
+            int i;
+            if (s.StartsWith("=") || int.TryParse(s, out i))
+            {
+                return "'" + s;
+            }
+
+            return s;
         }
 
         private void SetColumnHeaders(string cellsFeedURI, params string[] headers)
