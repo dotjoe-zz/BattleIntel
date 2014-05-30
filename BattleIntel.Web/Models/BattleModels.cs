@@ -49,6 +49,7 @@ namespace BattleIntel.Web.Models
         public string Text { get; set; }
         public string UpdatedText { get; set; }
         public int NewStatsCount { get; set; }
+        public bool IsChat { get; set; }
     }
 
     public class BattleStatMini

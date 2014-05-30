@@ -42,7 +42,6 @@ namespace BattleIntel.Core.Db.Mapping
             Class<BattleStat>(map =>
             {
                 map.Component(x => x.Stat);
-                map.ManyToOne(x => x.IntelReport, m => m.NotNullable(false));
             });
 
             Class<IntelReport>(map =>
@@ -65,8 +64,13 @@ namespace BattleIntel.Core.Db.Mapping
                 map.ManyToOne(x => x.Team, m => m.NotNullable(false));
                 map.Set(x => x.Stats, m =>
                 {
-                    m.Key(x => x.Column("IntelReportId"));
-                    m.Cascade(Cascade.DeleteOrphans);
+                    m.Key(x =>
+                    {
+                        x.Column("IntelReportId");
+                        x.NotNullable(true);
+                    });
+                    m.Inverse(false);
+                    m.Cascade(Cascade.All | Cascade.DeleteOrphans);
                 });
             });
 

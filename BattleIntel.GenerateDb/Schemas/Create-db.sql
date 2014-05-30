@@ -3,12 +3,12 @@
 alter table dbo.BattleStat  drop constraint FK_BattleStat_Battle
 
 
-    if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'dbo.[FK_BattleStat_IntelReport]') AND parent_object_id = OBJECT_ID('dbo.BattleStat'))
-alter table dbo.BattleStat  drop constraint FK_BattleStat_IntelReport
-
-
     if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'dbo.[FK_BattleStat_Team]') AND parent_object_id = OBJECT_ID('dbo.BattleStat'))
 alter table dbo.BattleStat  drop constraint FK_BattleStat_Team
+
+
+    if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'dbo.[FK7A175387A1DA6D8F]') AND parent_object_id = OBJECT_ID('dbo.BattleStat'))
+alter table dbo.BattleStat  drop constraint FK7A175387A1DA6D8F
 
 
     if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'dbo.[FK_IntelReport_Battle]') AND parent_object_id = OBJECT_ID('dbo.IntelReport'))
@@ -50,7 +50,6 @@ alter table dbo.UserOpenId  drop constraint FK_UserOpenId_User
     create table dbo.BattleStat (
         Id INT IDENTITY NOT NULL,
        BattleId INT not null,
-       IntelReportId INT null,
        TeamId INT not null,
        Stat_RawInput NVARCHAR(255) null,
        Stat_ScrubbedInput NVARCHAR(255) null,
@@ -60,6 +59,7 @@ alter table dbo.UserOpenId  drop constraint FK_UserOpenId_User
        Stat_DefenseValue DECIMAL(19,5) null,
        Stat_AdditionalInfo NVARCHAR(255) null,
        IsDeleted BIT not null,
+       IntelReportId INT not null,
        primary key (Id)
     )
 
@@ -114,14 +114,14 @@ alter table dbo.UserOpenId  drop constraint FK_UserOpenId_User
         references dbo.Battle
 
     alter table dbo.BattleStat 
-        add constraint FK_BattleStat_IntelReport 
-        foreign key (IntelReportId) 
-        references dbo.IntelReport
-
-    alter table dbo.BattleStat 
         add constraint FK_BattleStat_Team 
         foreign key (TeamId) 
         references dbo.Team
+
+    alter table dbo.BattleStat 
+        add constraint FK7A175387A1DA6D8F 
+        foreign key (IntelReportId) 
+        references dbo.IntelReport
 
     alter table dbo.IntelReport 
         add constraint FK_IntelReport_Battle 

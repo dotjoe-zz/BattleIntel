@@ -108,11 +108,10 @@ namespace BattleIntel.Core.Services
 
             foreach (var stat in newStats)
             {
-                Session.Save(new BattleStat
+                report.Stats.Add(new BattleStat
                 {
                     Battle = Battle,
                     Team = team,
-                    IntelReport = report,
                     Stat = stat
                 });
             }
@@ -120,18 +119,8 @@ namespace BattleIntel.Core.Services
 
         public void ReParseReportText(IntelReport report)
         {
-            //reset all stats/counters/flags
-            report.HadTruncatedLine = false;
-            report.NonEmptyLineCount = 0;
-            report.IsChat = false;
-
-            report.ReportStatsCount = 0;
-            report.NewStatsCount = 0;
-            report.IsUnknownTeamName = false;
-            report.Team = null;
-            report.Stats.Clear();
-
-            //and re-parse
+            report.ClearStats();
+            Session.Flush(); //flush the stat deletes
             ParseReportText(report);
         }
 

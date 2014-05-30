@@ -43,5 +43,22 @@ namespace BattleIntel.Core
         {
             Stats = new Iesi.Collections.Generic.HashedSet<BattleStat>();
         }
+
+        /// <summary>
+        /// Clear the stats, remove team reference, and reset all counters/flags.
+        /// </summary>
+        public virtual void ClearStats()
+        {
+            //reset all stats/counters/flags
+            HadTruncatedLine = false;
+            NonEmptyLineCount = 0;
+            IsChat = false;
+
+            ReportStatsCount = 0;
+            NewStatsCount = 0;
+            IsUnknownTeamName = false;
+            Team = null;
+            Stats.Clear();
+        }
     }
 }

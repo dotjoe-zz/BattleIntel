@@ -78,7 +78,8 @@ namespace BattleIntel.Web.Controllers
                     .Select(x => x.CreateDateUTC).WithAlias(() => reportDto.CreateDateUTC)
                     .Select(x => x.Text).WithAlias(() => reportDto.Text)
                     .Select(x => x.UpdatedText).WithAlias(() => reportDto.UpdatedText)
-                    .Select(x => x.NewStatsCount).WithAlias(() => reportDto.NewStatsCount))
+                    .Select(x => x.NewStatsCount).WithAlias(() => reportDto.NewStatsCount)
+                    .Select(x => x.IsChat).WithAlias(() => reportDto.IsChat))
                 .OrderBy(x => x.CreateDateUTC).Asc
                 .TransformUsing(Transformers.AliasToBean<IntelReportMini>())
                 .List<IntelReportMini>();
@@ -103,10 +104,17 @@ namespace BattleIntel.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult UpdateReport(int id, string text)
+        public ActionResult UpdateReport(int id, string text, bool? isChat)
         {
             var report = Session.Get<IntelReport>(id);
             if (report == null) return HttpNotFound();
+
+            if (isChat == true && !report.IsChat)
+            {
+                report.ClearStats();
+                report.IsChat = true;
+                return RedirectToAction("Index");
+            }
 
             var currentText = report.UpdatedText ?? report.Text;
             if (currentText.Equals(text)) return RedirectToAction("Details", new { id = report.Team.Id }); //nothing updated

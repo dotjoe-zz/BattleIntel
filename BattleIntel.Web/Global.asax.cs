@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
@@ -16,6 +17,7 @@ namespace BattleIntel.Web
     {
         protected void Application_Start()
         {
+            log4net.Config.XmlConfigurator.ConfigureAndWatch(new FileInfo(Path.Combine(HttpRuntime.AppDomainAppPath, "log4net.config")));
             AreaRegistration.RegisterAllAreas();
 
             WebApiConfig.Register(GlobalConfiguration.Configuration);

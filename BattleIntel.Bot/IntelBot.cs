@@ -226,7 +226,7 @@ namespace BattleIntel.Bot
                         s.Flush();
                     }
 
-                    results.NewStatsCount = p.NewStatsCount;
+                    results.NewStatsCount += p.NewStatsCount;
                 });
             }
 

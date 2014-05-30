@@ -4,7 +4,7 @@
 }
 
 @section Header {
-    @Html.ActionLink("Teams", "Index", "Teams", null, new { data_icon = "arrow-l", data_rel = "back" })
+    @Html.ActionLink("Teams", "Index", "Teams", null, new { data_icon = "arrow-l" })
     <h1>@ViewBag.Title</h1>
 }
 
@@ -37,10 +37,10 @@
 
             @using (Html.BeginForm("UpdateReport", "Teams", new { id = r.Id }))
             {
-                <label>Message</label>
+                <label>Message (New Stats: @r.NewStatsCount)</label>
                 <fieldset data-role="controlgroup">
                     <textarea name="text" cols="40" rows="8">@(r.UpdatedText ?? r.Text)</textarea>
-                    New Stats: @r.NewStatsCount
+                    <label><input type="checkbox" value="true" name="isChat" @(r.IsChat ? "checked" : "") /> Is Chat/Ignore?</label>
                     <input type="submit" value="Update Message" />
                 </fieldset>
             }

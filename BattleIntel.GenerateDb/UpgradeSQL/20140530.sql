@@ -12,3 +12,5 @@ alter table dbo.IntelReport
 	alter column HadTruncatedLine BIT not null
 alter table dbo.BattleStat 
     alter column IsDeleted BIT not null
+alter table dbo.BattleStat 
+    alter column IntelReportId INT not null
