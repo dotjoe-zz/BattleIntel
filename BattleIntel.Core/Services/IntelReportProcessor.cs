@@ -9,61 +9,59 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BattleIntel.Bot
+namespace BattleIntel.Core.Services
 {
-    class IntelReportProcessor
+    public class IntelReportProcessor
     {
         private readonly ISession Session;
         private readonly Battle Battle;
-        private readonly GroupMessage Message;
+        
+        /// <summary>
+        /// new stats count is incremented while processing a message
+        /// </summary>
         public int NewStatsCount { get; private set; }
-        public bool IsBotMessage { get; private set; }
 
-        public IntelReportProcessor(ISession session, Battle battle, GroupMessage message)
+        public IntelReportProcessor(ISession session, Battle battle)
         {
             this.Session = session;
             this.Battle = battle;
-            this.Message = message;
         }
 
         /// <summary>
         /// Use this to save the return result from posting a bot message, so we
         /// can flag it as such.
         /// </summary>
-        public void ProcessBotPost()
+        public void ProcessBotPost(GroupMessage message)
         {
             var report = Session.QueryOver<IntelReport>()
                 .Where(x => x.Battle.Id == Battle.Id)
-                .And(x => x.MessageId == Message.id)
+                .And(x => x.MessageId == message.id)
                 .Take(1)
                 .SingleOrDefault();
 
-            if (report != null)
-            {
-                IsBotMessage = report.IsBotMessage;
-                return; //already processed! wow!
-            }
+            if (report != null) return; //already processed! wow!
 
-            report = SaveReport();
-
+            report = SaveReport(message);
             report.IsBotMessage = true;
-            IsBotMessage = true;
         }
 
-        public void Process()
+        public void ProcessMessage(GroupMessage message, out bool isBot)
         {
+            isBot = false;
+
             var report = Session.QueryOver<IntelReport>()
                 .Where(x => x.Battle.Id == Battle.Id)
-                .And(x => x.MessageId == Message.id)
+                .And(x => x.MessageId == message.id)
                 .Take(1)
                 .SingleOrDefault();
+            
             if (report != null)
             {
-                IsBotMessage = report.IsBotMessage;
-                return; //already processed! most likely we are reading our posted bot message
+                isBot = report.IsBotMessage;
+                return; //already processed! we are reading our posted bot message
             }
 
-            report = SaveReport();
+            report = SaveReport(message);
 
             var duplicate = GetDuplicateBattleReport(report);
             if (duplicate != null) //this is an exact duplicate of a report we already processed
@@ -72,9 +70,15 @@ namespace BattleIntel.Bot
                 return;
             }
 
+            ParseReportText(report);
+        }
+
+        private void ParseReportText(IntelReport report)
+        {
             bool hadTruncatedLine;
-            var nonEmptyLines = report.Text.SplitToNonEmptyLines(255, out hadTruncatedLine);
-            
+            var Text = report.UpdatedText ?? report.Text;
+            var nonEmptyLines = Text.SplitToNonEmptyLines(255, out hadTruncatedLine);
+
             report.HadTruncatedLine = hadTruncatedLine;
             report.NonEmptyLineCount = nonEmptyLines.Count();
             report.IsChat = report.NonEmptyLineCount < 2; //assume chat if only 1 line
@@ -99,7 +103,8 @@ namespace BattleIntel.Bot
             var newStats = reportStats.Except(currentTeamStats);
 
             report.NewStatsCount = newStats.Count();
-            this.NewStatsCount = report.NewStatsCount;
+
+            this.NewStatsCount += report.NewStatsCount;
 
             foreach (var stat in newStats)
             {
@@ -113,18 +118,35 @@ namespace BattleIntel.Bot
             }
         }
 
-        private IntelReport SaveReport()
+        public void ReParseReportText(IntelReport report)
+        {
+            //reset all stats/counters/flags
+            report.HadTruncatedLine = false;
+            report.NonEmptyLineCount = 0;
+            report.IsChat = false;
+
+            report.ReportStatsCount = 0;
+            report.NewStatsCount = 0;
+            report.IsUnknownTeamName = false;
+            report.Team = null;
+            report.Stats.Clear();
+
+            //and re-parse
+            ParseReportText(report);
+        }
+
+        private IntelReport SaveReport(GroupMessage message)
         {
             var report = new IntelReport
             {
                 Battle = Battle,
-                MessageId = Message.id,
-                GroupId = Message.group_id,
-                UserId = Message.user_id,
-                UserName = Message.name,
-                CreateDateUTC = Message.created_at.ToUniversalTime(),
+                MessageId = message.id,
+                GroupId = message.group_id,
+                UserId = message.user_id,
+                UserName = message.name,
+                CreateDateUTC = message.created_at.ToUniversalTime(),
                 ReadDateUTC = DateTime.UtcNow,
-                Text = Message.text ?? string.Empty
+                Text = message.text ?? string.Empty
             };
             report.TextHash = ComputeHash(report.Text);
 

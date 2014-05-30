@@ -66,8 +66,7 @@ namespace BattleIntel.Core.Db.Mapping
                 map.Set(x => x.Stats, m =>
                 {
                     m.Key(x => x.Column("IntelReportId"));
-                    m.Inverse(true);
-                    m.Cascade(Cascade.None);
+                    m.Cascade(Cascade.DeleteOrphans);
                 });
             });
 

@@ -92,7 +92,6 @@
     <Compile Include="GroupMeRoomSelector.Designer.cs">
       <DependentUpon>GroupMeRoomSelector.cs</DependentUpon>
     </Compile>
-    <Compile Include="IntelReportProcessor.cs" />
     <Compile Include="Main.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -10,17 +10,44 @@
 
 @using (Html.BeginForm("StatDelete", "Teams", new { id = Model.Id })) 
 { 
-    <h2>Stats</h2>
+    <h2>@Model.Stats.Where(x => !x.IsDeleted).Count() Stats (+ @Model.Stats.Where(x => x.IsDeleted).Count() Hidden)</h2>
     <p>Check duplicate/invalid stats to hide them from display.</p>
-    <div class="ui-field-contain">
-        <fieldset data-role="controlgroup">
-            @foreach (var s in Model.Stats)
-            {
-            <label><input type="checkbox" value="@s.Id" name="statsToDelete" @(s.IsDeleted ? "checked" : "") />  @s.Level @s.Name @s.Defense @s.AdditionalInfo</label>
-            }
-            <input type="submit" value="Save" />
-        </fieldset>
-    </div>
-    
+    <fieldset data-role="controlgroup">
+        @foreach (var s in Model.Stats)
+        {
+        <label><input type="checkbox" value="@s.Id" name="statsToDelete" @(s.IsDeleted ? "checked" : "") />  @s.Level @s.Name @s.Defense @s.AdditionalInfo</label>
+        }
+        <input type="submit" value="Update Hidden Stats" />
+    </fieldset>
 }
+
+<h2>Reports</h2>
+<p>Clean up the message and re-parse all the stats. Will re-create the team and ALL stats</p>
+
+<ul data-role="listview">
+    @foreach (var r in Model.Reports)
+    {
+        <li>
+            <time class="utcdate">@r.CreateDateUTC</time> <em>@r.UserName</em>
+            @if (r.UpdatedText != null)
+            {
+                <label>Original Message</label>
+                <textarea rows="8" cols="40" readonly>@r.Text</textarea>
+            }
+
+            @using (Html.BeginForm("UpdateReport", "Teams", new { id = r.Id }))
+            {
+                <label>Message</label>
+                <fieldset data-role="controlgroup">
+                    <textarea name="text" cols="40" rows="8">@(r.UpdatedText ?? r.Text)</textarea>
+                    New Stats: @r.NewStatsCount
+                    <input type="submit" value="Update Message" />
+                </fieldset>
+            }
+        </li>
+    }
+</ul>
+
+
+
 

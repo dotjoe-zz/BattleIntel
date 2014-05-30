@@ -1,4 +1,5 @@
 ﻿using BattleIntel.Core;
+using BattleIntel.Core.Services;
 using GroupMe;
 using GroupMe.Models;
 using GSheet;
@@ -214,18 +215,18 @@ namespace BattleIntel.Bot
                 NH.UsingSession(s =>
                 {
                     var battle = s.Get<Battle>(settings.BattleId.Value);
+                    var p = new IntelReportProcessor(s, battle);
 
                     for (int i = start; i < raw.Count && i < (start + batchSize); ++i)
                     {
-                        var p = new IntelReportProcessor(s, battle, raw[i]);
-                        
-                        p.Process();
-
-                        results.NewStatsCount += p.NewStatsCount;
-                        results.LastMessageWasBot = p.IsBotMessage;
+                        bool isBot;
+                        p.ProcessMessage(raw[i], out isBot);
+                        results.LastMessageWasBot = isBot;
 
                         s.Flush();
                     }
+
+                    results.NewStatsCount = p.NewStatsCount;
                 });
             }
 
@@ -296,7 +297,7 @@ namespace BattleIntel.Bot
                 NH.UsingSession(s =>
                 {
                     var battle = s.Get<Battle>(settings.BattleId.Value);
-                    new IntelReportProcessor(s, battle, botMessage).ProcessBotPost();
+                    new IntelReportProcessor(s, battle).ProcessBotPost(botMessage);
                 });
             }
         }

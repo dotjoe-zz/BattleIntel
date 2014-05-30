@@ -1,4 +1,5 @@
 ﻿using BattleIntel.Core;
+using BattleIntel.Core.Services;
 using BattleIntel.Web.Models;
 using NHibernate.Transform;
 using System;
@@ -95,10 +96,26 @@ namespace BattleIntel.Web.Controllers
 
             foreach (var stat in stats)
             {
-                stat.IsDeleted = (statsToDelete.Contains(stat.Id));
+                stat.IsDeleted = (statsToDelete != null && statsToDelete.Contains(stat.Id));
             }
 
             return RedirectToAction("Details", new { id = id });
+        }
+
+        [HttpPost]
+        public ActionResult UpdateReport(int id, string text)
+        {
+            var report = Session.Get<IntelReport>(id);
+            if (report == null) return HttpNotFound();
+
+            var currentText = report.UpdatedText ?? report.Text;
+            if (currentText.Equals(text)) return RedirectToAction("Details", new { id = report.Team.Id }); //nothing updated
+
+            report.UpdatedText = text;
+            new IntelReportProcessor(Session, report.Battle).ReParseReportText(report);
+            
+            //team could have changed!
+            return RedirectToAction("Details", new { id = report.Team.Id });
         }
     }
 }

@@ -3,10 +3,10 @@
     ViewBag.Title = "Teams";
 }
 
-<ul data-role="listview" data-mini="true">
+<ul data-role="listview">
 @foreach (var t in Model)
 {
-    <li data-mini="true">
+    <li>
         <a href="@Url.Action("Details", new { id = t.Id })" class="ui-link-inherit">
             @t.Name <span class="ui-li-count">@t.NumStats</span>
         </a>
