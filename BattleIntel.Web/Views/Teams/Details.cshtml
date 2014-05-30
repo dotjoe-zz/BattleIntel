@@ -32,14 +32,14 @@
             @if (r.UpdatedText != null)
             {
                 <label>Original Message</label>
-                <textarea rows="8" cols="40" readonly>@r.Text</textarea>
+                <textarea rows="8" cols="40" data-theme="a" readonly>@r.Text</textarea>
             }
 
             @using (Html.BeginForm("UpdateReport", "Teams", new { id = r.Id }))
             {
                 <label>Message (New Stats: @r.NewStatsCount)</label>
                 <fieldset data-role="controlgroup">
-                    <textarea name="text" cols="40" rows="8">@(r.UpdatedText ?? r.Text)</textarea>
+                    <textarea name="text" cols="40" rows="8" data-theme="a">@(r.UpdatedText ?? r.Text)</textarea>
                     <label><input type="checkbox" value="true" name="isChat" @(r.IsChat ? "checked" : "") /> Is Chat/Ignore?</label>
                     <input type="submit" value="Update Message" />
                 </fieldset>
