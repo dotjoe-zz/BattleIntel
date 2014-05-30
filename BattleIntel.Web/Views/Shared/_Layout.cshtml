@@ -15,7 +15,20 @@
                     @RenderSection("Header")
                 } else {
                     <h1>@ViewBag.Title</h1>
-                    @Html.Partial("_LoginPartial")
+                    if (Request.IsAuthenticated)
+                    {
+                        var u = ViewBag.UserData as UserDataModel;
+                        @Html.ActionLink(u.DisplayName, "Index", "Account", routeValues: null, htmlAttributes: new { data_icon = "gear" })
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { data_icon = "gear" })
+                    }
+                    
+                    var b = ViewBag.SelectedBattle as BattleMini;
+                    var linkText = (b == null ? "Select a Battle" : b.Name);
+                    
+                    @Html.ActionLink(linkText, "Index", "Home", routeValues: null, htmlAttributes: new { @class = "ui-btn-right", data_icon = "gear" })
                 }
             </div>
             <div data-role="content">

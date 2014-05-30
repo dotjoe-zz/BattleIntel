@@ -14,10 +14,9 @@ namespace BattleIntel.Web.Controllers
         public ActionResult Index()
         {
             IntelReport reportsAlias = null;
+            BattleHeader dto = null;
 
-            BattleSummary dto = null;
-
-            var model = Session.QueryOver<Battle>()
+            var battles = Session.QueryOver<Battle>()
                 .Left.JoinAlias(x => x.Reports, () => reportsAlias)
                 .Where(() => reportsAlias.Id == null || reportsAlias.ReportStatsCount > 0) //ignore the chat and botmessages
                 .SelectList(list => list
@@ -30,22 +29,34 @@ namespace BattleIntel.Web.Controllers
                     .SelectCountDistinct(() => reportsAlias.Team.Id).WithAlias(() => dto.NumTeams)
                     .SelectSum(() => reportsAlias.NewStatsCount).WithAlias(() => dto.NumStats))
                 .OrderBy(x => x.StartDateUTC).Desc
-                .TransformUsing(Transformers.AliasToBean<BattleSummary>())
-                .List<BattleSummary>();
+                .TransformUsing(Transformers.AliasToBean<BattleHeader>())
+                .List<BattleHeader>();
                     
-            return View(model);
+            return View(battles);
         }
 
-        public ActionResult Battle(int id)
+        public ActionResult BattleSelect(int id)
+        {
+            var battle = Session.Get<Battle>(id);
+            if (battle == null) return HttpNotFound();
+
+            var cookie = new HttpCookie("Battle", id.ToString());
+            cookie.Expires = DateTime.UtcNow.AddDays(7);
+           
+            Response.Cookies.Set(cookie);
+
+            return RedirectToAction("Index", "Team");
+        }
+
+        public ActionResult BattleReports(int id)
         {
             var battle = Session.Get<Battle>(id);
             if (battle == null) return HttpNotFound();
 
             Team teamAlias = null;
-
             IntelReportHeader dto = null;
 
-            var model = Session.QueryOver<IntelReport>()
+            var reports = Session.QueryOver<IntelReport>()
                 .Left.JoinAlias(x => x.Team, () => teamAlias)
                 .Where(x => x.Battle.Id == id)
                 .SelectList(list => list
@@ -60,7 +71,7 @@ namespace BattleIntel.Web.Controllers
                 .TransformUsing(Transformers.AliasToBean<IntelReportHeader>())
                 .List<IntelReportHeader>();
 
-            return View(model);
+            return View(reports);
         }
 
         public ActionResult About()

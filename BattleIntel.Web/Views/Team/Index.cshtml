@@ -1,0 +1,16 @@
+﻿@model IList<TeamIntelHeader>
+@{
+    ViewBag.Title = "Teams";
+}
+
+<ul data-role="listview" data-mini="true">
+@foreach (var t in Model)
+{
+    <li>
+        <a href="@Url.Action("Details", new { id = t.Id })" class="ui-link-inherit">
+            @t.Name
+        </a>
+    </li>
+}
+</ul>
+

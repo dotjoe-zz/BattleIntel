@@ -1,11 +1,18 @@
-﻿using System;
+﻿using BattleIntel.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
 namespace BattleIntel.Web.Models
 {
-    public class BattleSummary
+    public class BattleMini
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+
+    public class BattleHeader
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -15,6 +22,37 @@ namespace BattleIntel.Web.Models
         public int NumReports { get; set; }
         public int NumTeams { get; set; }
         public int NumStats { get; set; }
+    }
+
+    public class TeamIntelHeader
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int NumReports { get; set; }
+        public int NumStats { get; set; }
+        public DateTime MostRecentReportUTC { get; set; }
+    }
+
+    public class TeamIntelDetails
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public IList<IntelReportMini> Reports { get; set; }
+        public IList<BattleStatMini> Stats { get; set; }
+    }
+
+    public class IntelReportMini 
+    {
+        public int Id { get; set; }
+        public string UserName { get; set; }
+        public DateTime CreateDateUTC { get; set; }
+        public string Text { get; set; }
+    }
+
+    public class BattleStatMini
+    {
+        public int Id { get; set; }
+        public string StatLine { get; set; }
     }
 
     public class IntelReportHeader
@@ -28,4 +66,6 @@ namespace BattleIntel.Web.Models
         public int TeamId { get; set; }
         public string TeamName { get; set; }
     }
+
+    
 }

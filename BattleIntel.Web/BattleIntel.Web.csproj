@@ -205,10 +205,12 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\NHibernateController.cs" />
+    <Compile Include="Controllers\TeamController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Infrastructure\HttpResponseBaseExtensions.cs" />
+    <Compile Include="Infrastructure\BattleSelectedAttribute.cs" />
+    <Compile Include="Infrastructure\HttpBaseExtensions.cs" />
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Models\BattleModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -534,12 +536,12 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Web.config" />
     <Content Include="Views\Shared\DisplayTemplates\DateTime.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Battle.cshtml" />
+    <Content Include="Views\Home\BattleReports.cshtml" />
+    <Content Include="Views\Team\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

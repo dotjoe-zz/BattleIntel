@@ -27,5 +27,19 @@ namespace BattleIntel.Web
 
             return encTicket.Length;
         }
+
+        public static int? GetBattleCookieValue(this HttpRequestBase requestBase)
+        {
+            var battleCookie = requestBase.Cookies["Battle"];
+            if (battleCookie != null)
+            {
+                int id;
+                if (int.TryParse(battleCookie.Value, out id))
+                {
+                    return id;
+                }
+            }
+            return null;
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿@model IList<BattleSummary>
+﻿@model IList<BattleHeader>
 @{
     ViewBag.Title = "Select a Battle";
 }
@@ -7,7 +7,7 @@
 @foreach (var bs in Model)
 {
     <li>
-        <a href="@Url.Action("Battle", new { id = bs.Id })" class="ui-link-inherit">
+        <a href="@Url.Action("BattleSelect", new { id = bs.Id })" class="ui-link-inherit">
             <p class="ui-li-aside"><time class="utcdate">@bs.StartDateUTC</time> - <time class="utcdate">@bs.EndDateUTC</time></p>
             <h3 class="ui-li-heading">@bs.Name</h3>
             <p class="ui-li-desc">Scouts: @bs.NumUsersReporting, Reports: @bs.NumReports, Teams: @bs.NumTeams, Stats: @bs.NumStats</p>

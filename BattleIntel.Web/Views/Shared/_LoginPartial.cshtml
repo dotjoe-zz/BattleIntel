@@ -1,7 +1,0 @@
-﻿@if(Request.IsAuthenticated) {
-    var u = ViewBag.UserData as UserDataModel;
-    @Html.ActionLink(u.DisplayName, "Index", "Account", routeValues: null, htmlAttributes: new { data_icon = "gear" })
-}
-else {
-    @Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { data_icon = "gear" })
-}

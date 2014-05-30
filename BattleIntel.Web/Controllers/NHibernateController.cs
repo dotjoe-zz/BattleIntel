@@ -1,4 +1,5 @@
-﻿using BattleIntel.Core.Db;
+﻿using BattleIntel.Core;
+using BattleIntel.Core.Db;
 using BattleIntel.Web.Models;
 using Newtonsoft.Json;
 using NHibernate;
@@ -15,8 +16,9 @@ namespace BattleIntel.Web.Controllers
     {
         public HttpSessionStateBase HttpSession { get { return base.Session; } }
         public new ISession Session { get; set; }
-        public UserDataModel UserData { get; set; }
-        
+        public UserDataModel UserData { get; private set; }
+        public BattleMini SelectedBattle { get; private set; }
+
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             UserData = LoadUserData();
@@ -31,6 +33,17 @@ namespace BattleIntel.Web.Controllers
 
             //deserialize the forms ticket user data
             return JsonConvert.DeserializeObject<UserDataModel>(((FormsIdentity)User.Identity).Ticket.UserData) ?? new UserDataModel();
+        }
+
+        public void LoadSelectedBattle()
+        {
+            int? battleId = Request.GetBattleCookieValue();
+            if (battleId == null) return;
+            var battle = Session.Get<Battle>(battleId.Value);
+            if (battle == null) return;
+
+            SelectedBattle = new BattleMini { Id = battle.Id, Name = battle.Name };
+            ViewBag.SelectedBattle = SelectedBattle;
         }
 	}
 
@@ -56,6 +69,7 @@ namespace BattleIntel.Web.Controllers
             transaction = session.BeginTransaction();
 
             nhController.Session = session;
+            nhController.LoadSelectedBattle();
         }
 
         public void OnActionExecuted(ActionExecutedContext filterContext)

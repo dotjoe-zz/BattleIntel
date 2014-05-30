@@ -59,6 +59,7 @@ alter table dbo.UserOpenId  drop constraint FK_UserOpenId_User
        Stat_Defense NVARCHAR(255) null,
        Stat_DefenseValue DECIMAL(19,5) null,
        Stat_AdditionalInfo NVARCHAR(255) null,
+       IsDeleted BIT not null,
        primary key (Id)
     )
 
@@ -72,6 +73,7 @@ alter table dbo.UserOpenId  drop constraint FK_UserOpenId_User
        UserId NVARCHAR(255) null,
        Text NVARCHAR(MAX) not null,
        TextHash NVARCHAR(40) not null,
+       UpdatedText NVARCHAR(MAX) null,
        ReadDateUTC DATETIME not null,
        IsBotMessage BIT not null,
        DuplicateOfId INT null,

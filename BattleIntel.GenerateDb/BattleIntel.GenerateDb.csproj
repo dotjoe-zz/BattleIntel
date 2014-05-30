@@ -72,6 +72,7 @@
   <ItemGroup>
     <Content Include="Schemas\Create-db.sql" />
     <Content Include="Schemas\Entity.hbm.xml" />
+    <Content Include="UpgradeSQL\20140530.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

@@ -57,6 +57,10 @@ namespace BattleIntel.Core.Db.Mapping
                     m.Length(40);
                     m.NotNullable(true);
                 });
+                map.Property(x => x.UpdatedText, m =>
+                {
+                    m.Length(8001);
+                });
                 map.ManyToOne(x => x.DuplicateOf, m => m.NotNullable(false));
                 map.ManyToOne(x => x.Team, m => m.NotNullable(false));
                 map.Set(x => x.Stats, m =>

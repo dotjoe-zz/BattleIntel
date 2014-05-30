@@ -32,6 +32,7 @@
       <property name="DefenseValue" column="Stat_DefenseValue" />
       <property name="AdditionalInfo" column="Stat_AdditionalInfo" />
     </component>
+    <property name="IsDeleted" not-null="true" />
   </class>
   <class name="IntelReport">
     <id name="Id" type="Int32">
@@ -45,6 +46,7 @@
     <property name="UserId" />
     <property name="Text" length="8001" not-null="true" />
     <property name="TextHash" length="40" not-null="true" />
+    <property name="UpdatedText" length="8001" />
     <property name="ReadDateUTC" not-null="true" />
     <property name="IsBotMessage" not-null="true" />
     <many-to-one name="DuplicateOf" column="DuplicateOfId" foreign-key="FK_IntelReport_DuplicateOf" />

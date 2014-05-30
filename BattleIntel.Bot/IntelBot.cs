@@ -249,6 +249,7 @@ namespace BattleIntel.Bot
                 allStats = s.QueryOver<BattleStat>()
                     .JoinAlias(x => x.Team, () => teamAlias)
                     .Where(x => x.Battle.Id == settings.BattleId.Value)
+                    .And(x => !x.IsDeleted)
                     .OrderBy(x => x.Team).Asc
                     .ThenBy(x => x.Stat.Level).Desc
                     .ThenBy(x => x.Stat.DefenseValue).Desc

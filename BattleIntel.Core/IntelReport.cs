@@ -16,6 +16,7 @@ namespace BattleIntel.Core
         public virtual string UserId { get; set; }
         public virtual string Text { get; set; }
         public virtual string TextHash { get; set; }
+        public virtual string UpdatedText { get; set; }
         public virtual DateTime ReadDateUTC { get; set; }
         public virtual bool IsBotMessage { get; set; }
         public virtual IntelReport DuplicateOf { get; set; }

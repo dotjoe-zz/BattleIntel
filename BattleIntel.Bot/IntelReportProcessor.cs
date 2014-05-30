@@ -171,6 +171,7 @@ namespace BattleIntel.Bot
             return Session.QueryOver<BattleStat>()
                 .Where(x => x.Battle.Id == Battle.Id)
                 .And(x => x.Team.Id == team.Id)
+                .And(x => !x.IsDeleted)
                 .Select(x => x.Stat)
                 .List<Stat>();
         }
