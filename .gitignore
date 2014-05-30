@@ -156,3 +156,4 @@ $RECYCLE.BIN/
 .DS_Store
 /BattleIntel.Bot/App.Debug.config
 /BattleIntel.GenerateDb/Schemas/Alter-db.sql
+/BattleIntel.Web/logs/log.txt
