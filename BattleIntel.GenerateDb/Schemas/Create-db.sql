@@ -77,6 +77,7 @@ alter table dbo.UserOpenId  drop constraint FK_UserOpenId_User
        DuplicateOfId INT null,
        IsChat BIT not null,
        NonEmptyLineCount INT not null,
+       HadTruncatedLine BIT not null,
        IsUnknownTeamName BIT not null,
        ReportStatsCount INT not null,
        NewStatsCount INT not null,

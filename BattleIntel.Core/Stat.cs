@@ -72,6 +72,7 @@ namespace BattleIntel.Core
         public static Stat Parse(string s)
         {
             if (s == null) throw new ArgumentNullException("s");
+            if (s.Length > 255) throw new ArgumentException("length cannot exceed 255 characters");
 
             var stat = new Stat { RawInput = s };
 
@@ -289,13 +290,25 @@ namespace BattleIntel.Core
             return text.Trim('"') //trim the quotations from a possible cell copy
                 .Split('\n')
                 .Where(x => !string.IsNullOrWhiteSpace(x))
-                .Select(x => x.Trim().Truncate(255));
+                .Select(x => x.Trim());
         }
 
-        public static string Truncate(this string s, int length)
+        public static IEnumerable<string> SplitToNonEmptyLines(this string text, int maxLineLength, out bool hadTruncatedLine)
         {
-            if (s == null || s.Length < length) return s;
-            return s.Substring(0, length);
+            hadTruncatedLine = false;
+
+            var rawLines = text.SplitToNonEmptyLines().ToList();
+            for (int i = 0; i < rawLines.Count; ++i)
+            {
+                var raw = rawLines[i];
+                if (raw.Length > maxLineLength)
+                {
+                    hadTruncatedLine = true;
+                    raw = raw.Substring(0, maxLineLength);
+                }
+            }
+
+            return rawLines;
         }
 
         public static IEnumerable<string> RemoveTeamName(this IEnumerable<string> lines, out string teamName)

@@ -72,13 +72,14 @@ namespace BattleIntel.Bot
                 return;
             }
 
-            var nonEmptyLines = report.Text.SplitToNonEmptyLines();
+            bool hadTruncatedLine;
+            var nonEmptyLines = report.Text.SplitToNonEmptyLines(255, out hadTruncatedLine);
+            
+            report.HadTruncatedLine = hadTruncatedLine;
             report.NonEmptyLineCount = nonEmptyLines.Count();
-            if (report.NonEmptyLineCount < 2) //assume chat if only 1 line
-            {
-                report.IsChat = true;
-                return;
-            }
+            report.IsChat = report.NonEmptyLineCount < 2; //assume chat if only 1 line
+
+            if (report.IsChat || report.HadTruncatedLine) return;
 
             string teamName;
             nonEmptyLines = nonEmptyLines.RemoveTeamName(out teamName);

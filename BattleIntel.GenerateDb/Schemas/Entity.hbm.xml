@@ -50,6 +50,7 @@
     <many-to-one name="DuplicateOf" column="DuplicateOfId" foreign-key="FK_IntelReport_DuplicateOf" />
     <property name="IsChat" not-null="true" />
     <property name="NonEmptyLineCount" not-null="true" />
+    <property name="HadTruncatedLine" not-null="true" />
     <property name="IsUnknownTeamName" not-null="true" />
     <property name="ReportStatsCount" not-null="true" />
     <property name="NewStatsCount" not-null="true" />

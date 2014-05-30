@@ -21,6 +21,7 @@ namespace BattleIntel.Core
         public virtual IntelReport DuplicateOf { get; set; }
         public virtual bool IsChat { get; set; }
         public virtual int NonEmptyLineCount { get; set; }
+        public virtual bool HadTruncatedLine { get; set; }
         public virtual bool IsUnknownTeamName { get; set; }
 
         /// <summary>
