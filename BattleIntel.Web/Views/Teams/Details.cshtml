@@ -1,0 +1,26 @@
+﻿@model TeamIntelDetails
+@{
+    ViewBag.Title = Model.Name;
+}
+
+@section Header {
+    @Html.ActionLink("Teams", "Index", "Teams", null, new { data_icon = "arrow-l", data_rel = "back" })
+    <h1>@ViewBag.Title</h1>
+}
+
+@using (Html.BeginForm("StatDelete", "Teams", new { id = Model.Id })) 
+{ 
+    <h2>Stats</h2>
+    <p>Check duplicate/invalid stats to hide them from display.</p>
+    <div class="ui-field-contain">
+        <fieldset data-role="controlgroup">
+            @foreach (var s in Model.Stats)
+            {
+            <label><input type="checkbox" value="@s.Id" name="statsToDelete" @(s.IsDeleted ? "checked" : "") />  @s.Level @s.Name @s.Defense @s.AdditionalInfo</label>
+            }
+            <input type="submit" value="Save" />
+        </fieldset>
+    </div>
+    
+}
+

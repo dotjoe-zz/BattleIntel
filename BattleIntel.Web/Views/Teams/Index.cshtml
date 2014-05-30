@@ -6,9 +6,9 @@
 <ul data-role="listview" data-mini="true">
 @foreach (var t in Model)
 {
-    <li>
+    <li data-mini="true">
         <a href="@Url.Action("Details", new { id = t.Id })" class="ui-link-inherit">
-            @t.Name
+            @t.Name <span class="ui-li-count">@t.NumStats</span>
         </a>
     </li>
 }

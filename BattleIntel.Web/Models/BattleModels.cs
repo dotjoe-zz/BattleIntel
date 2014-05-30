@@ -47,12 +47,18 @@ namespace BattleIntel.Web.Models
         public string UserName { get; set; }
         public DateTime CreateDateUTC { get; set; }
         public string Text { get; set; }
+        public string UpdatedText { get; set; }
+        public int NewStatsCount { get; set; }
     }
 
     public class BattleStatMini
     {
         public int Id { get; set; }
-        public string StatLine { get; set; }
+        public int? Level { get; set; }
+        public string Name { get; set; }
+        public string Defense { get; set; }
+        public string AdditionalInfo { get; set; }
+        public bool IsDeleted { get; set; }
     }
 
     public class IntelReportHeader

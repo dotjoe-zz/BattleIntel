@@ -11,8 +11,10 @@ namespace BattleIntel.Web.Controllers
 {
     public class HomeController : NHibernateController
     {
-        public ActionResult Index()
+        public ActionResult Index(bool? change)
         {
+            if (change != true && SelectedBattle != null) return RedirectToAction("Index", "Teams");
+
             IntelReport reportsAlias = null;
             BattleHeader dto = null;
 
@@ -45,7 +47,7 @@ namespace BattleIntel.Web.Controllers
            
             Response.Cookies.Set(cookie);
 
-            return RedirectToAction("Index", "Team");
+            return RedirectToAction("Index", "Teams");
         }
 
         public ActionResult BattleReports(int id)

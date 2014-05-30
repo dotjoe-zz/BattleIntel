@@ -166,12 +166,16 @@ namespace BattleIntel.Bot
             return existingTeam;
         }
 
+        /// <summary>
+        /// Get ALL current stats for this team. Even includes Deleted stats so they don't get re-added.
+        /// </summary>
+        /// <param name="team"></param>
+        /// <returns></returns>
         private IList<Stat> GetCurrentTeamStats(Team team)
         {
             return Session.QueryOver<BattleStat>()
                 .Where(x => x.Battle.Id == Battle.Id)
                 .And(x => x.Team.Id == team.Id)
-                .And(x => !x.IsDeleted)
                 .Select(x => x.Stat)
                 .List<Stat>();
         }
