@@ -110,6 +110,11 @@ namespace BattleIntel.Bot
             Bot.PostSheetURL = cbPostSheetUrl.Checked;
         }
 
+        private void btnWriteSheet_Click(object sender, EventArgs e)
+        {
+            Bot.WriteSheet();
+        }
+
         private void nupIntervalSeconds_ValueChanged(object sender, EventArgs e)
         {
             SetBotTimerInterval();
@@ -130,5 +135,6 @@ namespace BattleIntel.Bot
         }
 
     #endregion
+
     }
 }

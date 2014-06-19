@@ -44,6 +44,7 @@
             this.lblBattleDates = new System.Windows.Forms.Label();
             this.cbPostSheetUrl = new System.Windows.Forms.CheckBox();
             this.pnlBotControls = new System.Windows.Forms.Panel();
+            this.btnWriteSheet = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.nupIntervalSeconds)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.pnlBotControls.SuspendLayout();
@@ -109,11 +110,11 @@
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(364, 9);
+            this.label1.Location = new System.Drawing.Point(419, 9);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(97, 13);
+            this.label1.Size = new System.Drawing.Size(42, 13);
             this.label1.TabIndex = 5;
-            this.label1.Text = "Processing Interval";
+            this.label1.Text = "Interval";
             // 
             // tableLayoutPanel1
             // 
@@ -227,7 +228,7 @@
             this.cbPostSheetUrl.AutoSize = true;
             this.cbPostSheetUrl.Checked = true;
             this.cbPostSheetUrl.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbPostSheetUrl.Location = new System.Drawing.Point(191, 7);
+            this.cbPostSheetUrl.Location = new System.Drawing.Point(165, 7);
             this.cbPostSheetUrl.Name = "cbPostSheetUrl";
             this.cbPostSheetUrl.Size = new System.Drawing.Size(103, 17);
             this.cbPostSheetUrl.TabIndex = 7;
@@ -239,6 +240,7 @@
             // 
             this.pnlBotControls.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlBotControls.Controls.Add(this.btnWriteSheet);
             this.pnlBotControls.Controls.Add(this.btnStart);
             this.pnlBotControls.Controls.Add(this.cbPostSheetUrl);
             this.pnlBotControls.Controls.Add(this.label1);
@@ -248,6 +250,16 @@
             this.pnlBotControls.Name = "pnlBotControls";
             this.pnlBotControls.Size = new System.Drawing.Size(524, 31);
             this.pnlBotControls.TabIndex = 8;
+            // 
+            // btnWriteSheet
+            // 
+            this.btnWriteSheet.Location = new System.Drawing.Point(274, 3);
+            this.btnWriteSheet.Name = "btnWriteSheet";
+            this.btnWriteSheet.Size = new System.Drawing.Size(75, 23);
+            this.btnWriteSheet.TabIndex = 8;
+            this.btnWriteSheet.Text = "Write Sheet";
+            this.btnWriteSheet.UseVisualStyleBackColor = true;
+            this.btnWriteSheet.Click += new System.EventHandler(this.btnWriteSheet_Click);
             // 
             // Main
             // 
@@ -288,6 +300,7 @@
         private System.Windows.Forms.TextBox txtSheetURL;
         private System.Windows.Forms.Label lblBattleDates;
         private System.Windows.Forms.Panel pnlBotControls;
+        private System.Windows.Forms.Button btnWriteSheet;
     }
 }
 

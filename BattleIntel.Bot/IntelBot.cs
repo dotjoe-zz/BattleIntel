@@ -146,10 +146,9 @@ namespace BattleIntel.Bot
 
             LogProcessInfo("Parsed {0} new stats", results.NewStatsCount);
 
-            if (results.NewStatsCount > 0 && settings.SpreadsheetURL != null) 
+            if (results.NewStatsCount > 0) 
             {
-                LogProcessInfo("Updating spreadsheet");
-                TryUpdateIntelSheet();
+                WriteSheet();
             }
 
             if (!results.LastMessageWasBot && settings.SpreadsheetURL != null) 
@@ -166,6 +165,15 @@ namespace BattleIntel.Bot
             }
 
             return true;
+        }
+
+        public void WriteSheet()
+        {
+            if(settings.SpreadsheetURL != null) 
+            {
+                LogProcessInfo("Updating spreadsheet");
+                TryUpdateIntelSheet();
+            }
         }
 
         private IList<GroupMessage> TryGetNewMessages()

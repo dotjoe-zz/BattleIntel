@@ -45,10 +45,6 @@ namespace BattleIntel.DesktopTool
             var lines = GetClipboardLines();
             if (!lines.Any()) return;
 
-            //discard an appended team name
-            string teamName;
-            lines = lines.RemoveTeamName(out teamName);
-            
             //append to the stats
             txtTeamStats.Text += Environment.NewLine + string.Join(Environment.NewLine, lines.ToArray());
         }
