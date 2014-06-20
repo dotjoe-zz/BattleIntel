@@ -209,6 +209,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\HtmlHelperExtensions.cs" />
     <Compile Include="Infrastructure\BattleSelectedAttribute.cs" />
     <Compile Include="Infrastructure\HttpBaseExtensions.cs" />
     <Compile Include="Models\AccountModels.cs" />
@@ -539,7 +540,6 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Web.config" />
-    <Content Include="Views\Shared\DisplayTemplates\DateTime.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\BattleReports.cshtml" />
     <Content Include="Views\Teams\Index.cshtml" />

@@ -1,6 +1,7 @@
 ﻿using BattleIntel.Core;
 using BattleIntel.Core.Services;
 using BattleIntel.Web.Models;
+using NHibernate.Criterion;
 using NHibernate.Transform;
 using System;
 using System.Collections.Generic;
@@ -14,15 +15,16 @@ namespace BattleIntel.Web.Controllers
     public class TeamsController : NHibernateController
     {
         // GET: Team
-        public ActionResult Index()
+        public ActionResult Index(string sort)
         {
             var battle = Session.Get<Battle>(SelectedBattle.Id);
             if (battle == null) return HttpNotFound();
 
+            ViewBag.Sort = sort;
             Team teamAlias = null;
             TeamIntelHeader dto = null;
 
-            var teams = Session.QueryOver<IntelReport>()
+            var q = Session.QueryOver<IntelReport>()
                 .Inner.JoinAlias(x => x.Team, () => teamAlias)
                 .Where(x => x.Battle.Id == battle.Id)
                 .SelectList(list => list
@@ -30,8 +32,18 @@ namespace BattleIntel.Web.Controllers
                     .SelectGroup(() => teamAlias.Name).WithAlias(() => dto.Name)
                     .SelectCount(x => x.Id).WithAlias(() => dto.NumReports)
                     .SelectSum(x => x.NewStatsCount).WithAlias(() => dto.NumStats)
-                    .SelectMax(x => x.CreateDateUTC).WithAlias(() => dto.MostRecentReportUTC))
-                .OrderByAlias(() => teamAlias.Name).Asc
+                    .SelectMax(x => x.CreateDateUTC).WithAlias(() => dto.MostRecentReportUTC));
+
+            if(string.IsNullOrEmpty(sort))
+            {
+                q.OrderByAlias(() => teamAlias.Name).Asc();
+            }
+            else if (sort == "date")
+            {
+                q.UnderlyingCriteria.AddOrder(new Order("MostRecentReportUTC", false));
+            }
+
+            var teams = q
                 .TransformUsing(Transformers.AliasToBean<TeamIntelHeader>())
                 .List<TeamIntelHeader>();
 

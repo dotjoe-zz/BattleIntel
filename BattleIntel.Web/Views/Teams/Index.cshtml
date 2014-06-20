@@ -1,16 +1,31 @@
 ﻿@model IList<TeamIntelHeader>
 @{
     ViewBag.Title = "Teams";
+    string byNameClass = null, byDateClass = null, listViewDataAttr = null;
+    if("date".Equals(ViewBag.Sort))
+    {
+        byDateClass = "ui-btn-active";
+    }
+    else
+    {
+        byNameClass = "ui-btn-active";
+        listViewDataAttr = "data-filter=\"true\" data-autodividers=\"true\"";
+    }
 }
-
-<ul data-role="listview" data-filter="true" data-autodividers="true" data-inset="true">
-@foreach (var t in Model)
-{
-    <li>
-        <a href="@Url.Action("Details", new { id = t.Id })" class="ui-link-inherit">
-            @t.Name <span class="ui-li-count">@t.NumStats</span>
-        </a>
-    </li>
-}
+<div data-role="navbar">
+    <ul>
+        <li>@Html.ActionLink("By Name", "Index", null, new { @class = byNameClass })</li>
+        <li>@Html.ActionLink("By Date", "Index", new { sort = "date" }, new { @class = byDateClass })</li>
+    </ul>
+</div>
+<ul data-role="listview" data-inset="true" @listViewDataAttr>
+    @foreach (var t in Model)
+    {
+        <li>
+            <a href="@Url.Action("Details", new { id = t.Id })" class="ui-link-inherit">
+                @t.Name <small>(@Html.TimeAgo(t.MostRecentReportUTC))</small> <span class="ui-li-count">@t.NumStats</span>
+            </a>
+        </li>
+    }
 </ul>
 

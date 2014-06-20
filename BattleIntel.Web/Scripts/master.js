@@ -47,5 +47,5 @@
 
 $(function () {
     $("time.timeago").timeago();
-    $("time.utcdate").localTimeFromUTC("MM/dd/yyyy hh:mm a")
+    $("time.utcdate").localTimeFromUTC("MM/dd/yyyy hh:mm a");
 });
